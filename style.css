@@ -1470,6 +1470,326 @@ body {
 }
 
 /* ========================================
+   SPLIT CTO BANNER (Business + Healthcare)
+   ======================================== */
+.cto-split-banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cto-split-panel {
+  padding: var(--space-12) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cto-split-panel::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cto-split-panel--business {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0d2a5c 100%);
+}
+
+.cto-split-panel--business::before {
+  right: -10%;
+  background: rgba(0, 86, 179, 0.12);
+}
+
+.cto-split-panel--healthcare {
+  background: linear-gradient(135deg, #0d2a1a 0%, #0a3d25 100%);
+}
+
+.cto-split-panel--healthcare::before {
+  left: -10%;
+  background: rgba(40, 167, 69, 0.12);
+}
+
+.cto-split-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-5);
+}
+
+.cto-split-panel--business .cto-split-icon {
+  background: rgba(88, 166, 255, 0.12);
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  color: #58a6ff;
+}
+
+.cto-split-panel--healthcare .cto-split-icon {
+  background: rgba(40, 167, 69, 0.15);
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  color: #28a745;
+}
+
+.cto-split-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.cto-split-panel h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: var(--space-2);
+}
+
+.cto-split-panel p {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  max-width: 380px;
+  margin-bottom: var(--space-5);
+}
+
+.cto-split-panel .btn--cto-business {
+  background: var(--color-primary);
+  color: #fff;
+  padding: var(--space-3) var(--space-6);
+  font-weight: 700;
+}
+
+.cto-split-panel .btn--cto-business:hover {
+  background: var(--color-primary-hover);
+  color: #fff;
+}
+
+.cto-split-panel .btn--cto-healthcare {
+  background: #28a745;
+  color: #fff;
+  padding: var(--space-3) var(--space-6);
+  font-weight: 700;
+}
+
+.cto-split-panel .btn--cto-healthcare:hover {
+  background: #1e8e3a;
+  color: #fff;
+}
+
+/* Vertical divider between panels */
+.cto-split-banner::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  bottom: 15%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .cto-split-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .cto-split-banner::after {
+    top: auto;
+    left: 15%;
+    right: 15%;
+    bottom: 50%;
+    width: auto;
+    height: 1px;
+  }
+
+  .cto-split-panel {
+    padding: var(--space-10) var(--space-6);
+  }
+}
+
+/* ========================================
+   CONFIGURATOR FEATURE BAR
+   ======================================== */
+.configurator-bar {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+  padding: var(--space-10) 0;
+}
+
+.configurator-bar .container {
+  max-width: var(--content-wide);
+}
+
+.configurator-bar-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.configurator-bar-header h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.configurator-bar-header p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.configurator-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.configurator-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-5);
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-interactive);
+  text-decoration: none;
+  color: inherit;
+}
+
+.configurator-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.configurator-card-icon {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.configurator-card-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.configurator-card-icon--network {
+  background: var(--color-primary-highlight);
+  color: var(--color-primary);
+}
+
+.configurator-card-icon--nursecall {
+  background: var(--color-success-highlight);
+  color: var(--color-success);
+}
+
+.configurator-card-icon--directv {
+  background: var(--color-warning-highlight);
+  color: var(--color-warning);
+}
+
+.configurator-card h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.configurator-card p {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.configurator-card .configurator-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: auto;
+}
+
+.configurator-card .configurator-cta svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--transition-interactive);
+}
+
+.configurator-card:hover .configurator-cta svg {
+  transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+  .configurator-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   MEGA MENU — TWO-COLUMN DROPDOWN
+   ======================================== */
+.nav-dropdown--mega {
+  min-width: 520px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: var(--space-3);
+}
+
+.nav-dropdown--mega .dropdown-col {
+  padding: var(--space-1);
+}
+
+.nav-dropdown--mega .dropdown-col:first-child {
+  border-right: 1px solid var(--color-divider);
+  padding-right: var(--space-3);
+}
+
+.nav-dropdown--mega .dropdown-col:last-child {
+  padding-left: var(--space-3);
+}
+
+@media (max-width: 1024px) {
+  .nav-dropdown--mega {
+    min-width: auto;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .nav-dropdown--mega .dropdown-col:first-child {
+    border-right: none;
+    border-bottom: 1px solid var(--color-divider);
+    padding-right: var(--space-1);
+    padding-bottom: var(--space-2);
+  }
+
+  .nav-dropdown--mega .dropdown-col:last-child {
+    padding-left: var(--space-1);
+    padding-top: var(--space-2);
+  }
+}
+
+/* ========================================
    NURSE CALL DESIGNER PAGE WRAPPER
    ======================================== */
 .nc-designer-wrapper {

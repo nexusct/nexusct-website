@@ -45,6 +45,10 @@
       link.addEventListener('click', function(e) {
         if (window.innerWidth <= 1024) {
           e.preventDefault();
+          // Close other dropdowns when opening this one
+          navItems.forEach(function(other) {
+            if (other !== item) other.classList.remove('open');
+          });
           item.classList.toggle('open');
         }
       });
