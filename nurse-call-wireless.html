@@ -10,15 +10,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./base.css">
   <link rel="stylesheet" href="./style.css">
+
+  <!-- jsPDF for quote PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Nurse call tool styles -->
+  <link rel="stylesheet" href="./nurse-call-base.css">
+  <link rel="stylesheet" href="./nurse-call-style.css">
 </head>
 <body>
 <div class="page-wrapper">
+
+<!-- Site Header -->
 <header class="site-header">
   <div class="container">
     <a href="index.html" class="site-logo" aria-label="NexusCT Home">
-      <div class="site-logo-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <div class="site-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
       <div class="site-logo-text">Nexus<span>CT</span></div>
     </a>
+
     <nav class="main-nav" id="mainNav" aria-label="Main navigation">
       <div class="nav-item" data-dropdown>
         <a href="#" class="nav-link">Solutions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
@@ -41,14 +54,18 @@
       <a href="nurse-call-designer.html" class="nav-link">System Designer</a>
       <a href="contact.html" class="nav-link">Contact</a>
     </nav>
+
     <div class="header-actions">
-      <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+      <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <a href="contact.html" class="btn btn--primary btn--sm header-cta header-cta-desktop">Get a Quote</a>
       <button class="mobile-toggle" aria-label="Toggle navigation"><span></span></button>
     </div>
   </div>
 </header>
 <main class="page-content">
+
 
 <section class="hero hero--page">
   <div class="container">
@@ -98,41 +115,165 @@
       <h2 class="section-title">Why Choose Wireless Nurse Call</h2>
     </div>
     <div class="feature-grid">
-      <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div><div class="feature-text"><h3>No Wiring Required</h3><p>Deploy in days, not weeks. Ideal for existing buildings where pulling cable is costly or disruptive.</p></div></div>
-      <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 00-16 0c0 3 2.7 6.9 8 11.7z"/></svg></div><div class="feature-text"><h3>Location Awareness</h3><p>Real-time location tracking tells caregivers exactly where a call is coming from across your campus.</p></div></div>
-      <div class="feature-item"><div class="feature-icon feature-icon--success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="feature-text"><h3>Telehealth Integration</h3><p>Remote monitoring capabilities extend care beyond the facility walls with virtual check-ins.</p></div></div>
-      <div class="feature-item"><div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="feature-text"><h3>99.99% Uptime</h3><p>Redundant mesh architecture ensures system availability exceeds 99.99% for life-safety reliability.</p></div></div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+        </div>
+        <div class="feature-text"><h3>No Wiring Required</h3><p>Deploy in days, not weeks. Ideal for existing buildings where pulling cable is costly or disruptive.</p></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 00-16 0c0 3 2.7 6.9 8 11.7z"/></svg>
+        </div>
+        <div class="feature-text"><h3>Location Awareness</h3><p>Real-time location tracking tells caregivers exactly where a call is coming from across your campus.</p></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon feature-icon--success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="feature-text"><h3>Telehealth Integration</h3><p>Remote monitoring capabilities extend care beyond the facility walls with virtual check-ins.</p></div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="feature-text"><h3>99.99% Uptime</h3><p>Redundant mesh architecture ensures system availability exceeds 99.99% for life-safety reliability.</p></div>
+      </div>
     </div>
   </div>
 </section>
 
 <section class="section section--surface reveal">
   <div class="container">
-    <div class="highlight-box"><h4>Exclusive Illinois Distributor</h4><p>NexusCT is the exclusive Illinois distributor for RCare wireless nurse call systems. We provide complete design, installation, and ongoing support for the RCare G4 platform — backed by our 24/7 NOC.</p></div>
+    <div class="highlight-box">
+      <h4>Exclusive Illinois Distributor</h4>
+      <p>NexusCT is the exclusive Illinois distributor for RCare wireless nurse call systems. We provide complete design, installation, and ongoing support for the RCare G4 platform — backed by our 24/7 NOC.</p>
+    </div>
   </div>
 </section>
 
-<section class="nc-cta-banner">
-  <div class="nc-cta-inner">
-    <div class="nc-cta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><path d="M12 2v1"/></svg></div>
-    <div class="nc-cta-content"><h2>Design Your Nurse Call System</h2><p>Use our interactive system designer to configure your ideal nurse call solution and get an instant budget estimate.</p></div>
-    <div class="nc-cta-action"><a href="nurse-call-designer.html" class="btn">Launch System Designer &rarr;</a></div>
+
+
+<!-- Nurse Call System Designer — Embedded -->
+<section class="nc-designer-section" id="system-designer">
+  <div class="container">
+    <div class="section-header section-header--center" style="margin-bottom:var(--space-8);">
+      <span class="section-overline">Interactive Tool</span>
+      <h2 class="section-title">Design Your Nurse Call System</h2>
+      <p style="color:var(--color-text-muted);max-width:640px;margin:var(--space-4) auto 0;">Answer a few questions about your facility and our designer will configure an optimal system with an instant budget estimate.</p>
+    </div>
+  </div>
+  <div class="nc-designer-wrapper">
+    <div class="app-container" id="app">
+      <!-- The tool's own header (hidden via CSS) -->
+      <header class="app-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <div class="logo-text">Nexus<span>CT</span></div>
+        </div>
+        <div class="header-right">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted);">Nurse Call System Designer</span>
+        </div>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar-inner">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+          <div class="progress-text" id="progressText">Step 0 of 12</div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <main id="mainContent">
+        <!-- Chat View -->
+        <div class="chat-container" id="chatView">
+          <div class="chat-messages" id="chatMessages"></div>
+        </div>
+
+        <!-- Designing Overlay (hidden by default) -->
+        <div class="designing-overlay" id="designingView" style="display:none;">
+          <div class="designing-spinner"></div>
+          <div class="designing-text">Designing your system...</div>
+          <div class="designing-sub" id="designingSubtext">Analyzing facility requirements and optimizing component selection</div>
+        </div>
+
+        <!-- Quote View (hidden by default) -->
+        <div class="quote-container" id="quoteView" style="display:none;"></div>
+
+        <!-- Admin View (hidden by default) -->
+        <div class="admin-container" id="adminView" style="display:none;"></div>
+      </main>
+
+      <!-- Footer (hidden via CSS) -->
+      <footer class="app-footer">
+        Powered by <strong>NexusCT</strong> | Nexus Communications Technology | <a href="tel:8477965585">(847) 796-5585</a> | <a href="mailto:info@nxsct.com">info@nxsct.com</a>
+      </footer>
+    </div>
   </div>
 </section>
+
 
 </main>
+<!-- Site Footer -->
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-brand"><div class="site-logo-text" style="font-size:var(--text-lg);font-weight:700;">Nexus<span style="color:#58a6ff;">CT</span></div><p>Connecting Your World, Powering Your Future. Enterprise-grade technology solutions for healthcare, commercial real estate, and hospitality since 2016.</p><div class="footer-contact"><a href="tel:8477965585"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (847) 796-5585</a><a href="mailto:info@nxsct.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> info@nxsct.com</a><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support Portal</a></div></div>
-      <div class="footer-col"><h4>Healthcare</h4><ul class="footer-links"><li><a href="healthcare.html">Healthcare Overview</a></li><li><a href="nurse-call-wired.html">Wired Nurse Call</a></li><li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li><li><a href="ncaas.html">NCaaS</a></li><li><a href="rtls.html">RTLS</a></li><li><a href="patient-safety.html">Patient Safety</a></li><li><a href="nexus360.html">Nexus360</a></li></ul></div>
-      <div class="footer-col"><h4>Solutions</h4><ul class="footer-links"><li><a href="unifi360.html">UniFi360</a></li><li><a href="services.html">All Services</a></li><li><a href="nurse-call-designer.html">System Designer</a></li></ul></div>
-      <div class="footer-col"><h4>Company</h4><ul class="footer-links"><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a></li></ul></div>
+      <div class="footer-brand">
+        <div class="site-logo-text" style="font-size:var(--text-lg);font-weight:700;">Nexus<span style="color:#58a6ff;">CT</span></div>
+        <p>Connecting Your World, Powering Your Future. Enterprise-grade technology solutions for healthcare, commercial real estate, and hospitality since 2016.</p>
+        <div class="footer-contact">
+          <a href="tel:8477965585"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (847) 796-5585</a>
+          <a href="mailto:info@nxsct.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> info@nxsct.com</a>
+          <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support Portal</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Healthcare</h4>
+        <ul class="footer-links">
+          <li><a href="healthcare.html">Healthcare Overview</a></li>
+          <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
+          <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
+          <li><a href="ncaas.html">NCaaS</a></li>
+          <li><a href="rtls.html">RTLS</a></li>
+          <li><a href="patient-safety.html">Patient Safety</a></li>
+          <li><a href="nexus360.html">Nexus360</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <ul class="footer-links">
+          <li><a href="unifi360.html">UniFi360</a></li>
+          <li><a href="services.html">All Services</a></li>
+          <li><a href="nurse-call-designer.html">System Designer</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="footer-bottom"><p>&copy; 2026 NexusComm LLC. All rights reserved. Schaumburg, IL</p><div class="footer-certifications"><span>BICSI</span><span>AVIXA</span></div></div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 NexusComm LLC. All rights reserved. Schaumburg, IL</p>
+      <div class="footer-certifications">
+        <span>BICSI</span>
+        <span>AVIXA</span>
+      </div>
+    </div>
   </div>
 </footer>
 </div>
 <script src="./site.js"></script>
+<script src="./nurse-call-app.js"></script>
 </body>
 </html>

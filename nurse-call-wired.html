@@ -10,6 +10,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./base.css">
   <link rel="stylesheet" href="./style.css">
+
+  <!-- jsPDF for quote PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Nurse call tool styles -->
+  <link rel="stylesheet" href="./nurse-call-base.css">
+  <link rel="stylesheet" href="./nurse-call-style.css">
 </head>
 <body>
 <div class="page-wrapper">
@@ -23,6 +31,7 @@
       </div>
       <div class="site-logo-text">Nexus<span>CT</span></div>
     </a>
+
     <nav class="main-nav" id="mainNav" aria-label="Main navigation">
       <div class="nav-item" data-dropdown>
         <a href="#" class="nav-link">Solutions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
@@ -45,6 +54,7 @@
       <a href="nurse-call-designer.html" class="nav-link">System Designer</a>
       <a href="contact.html" class="nav-link">Contact</a>
     </nav>
+
     <div class="header-actions">
       <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -55,6 +65,7 @@
   </div>
 </header>
 <main class="page-content">
+
 
 <section class="hero hero--page">
   <div class="container">
@@ -105,19 +116,27 @@
     </div>
     <div class="feature-grid">
       <div class="feature-item">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
         <div class="feature-text"><h3>Proven Reliability</h3><p>Hardwired connections deliver 100% signal reliability with no wireless interference concerns.</p></div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
         <div class="feature-text"><h3>Faster Response Times</h3><p>Priority-based alerting ensures critical calls are routed to the right caregiver immediately.</p></div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon feature-icon--success"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="feature-icon feature-icon--success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
         <div class="feature-text"><h3>Full Compliance</h3><p>Meets UL1069, UL2560, CMS, Joint Commission, and state licensing requirements.</p></div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
         <div class="feature-text"><h3>Long Lifecycle</h3><p>Wired systems offer decades of reliable service with minimal maintenance requirements.</p></div>
       </div>
     </div>
@@ -138,15 +157,76 @@
   </div>
 </section>
 
-<section class="nc-cta-banner">
-  <div class="nc-cta-inner">
-    <div class="nc-cta-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/><path d="M12 2v1"/></svg></div>
-    <div class="nc-cta-content"><h2>Design Your Nurse Call System</h2><p>Use our interactive system designer to configure your ideal nurse call solution and get an instant budget estimate.</p></div>
-    <div class="nc-cta-action"><a href="nurse-call-designer.html" class="btn">Launch System Designer &rarr;</a></div>
+
+
+<!-- Nurse Call System Designer — Embedded -->
+<section class="nc-designer-section" id="system-designer">
+  <div class="container">
+    <div class="section-header section-header--center" style="margin-bottom:var(--space-8);">
+      <span class="section-overline">Interactive Tool</span>
+      <h2 class="section-title">Design Your Nurse Call System</h2>
+      <p style="color:var(--color-text-muted);max-width:640px;margin:var(--space-4) auto 0;">Answer a few questions about your facility and our designer will configure an optimal system with an instant budget estimate.</p>
+    </div>
+  </div>
+  <div class="nc-designer-wrapper">
+    <div class="app-container" id="app">
+      <!-- The tool's own header (hidden via CSS) -->
+      <header class="app-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <div class="logo-text">Nexus<span>CT</span></div>
+        </div>
+        <div class="header-right">
+          <span style="font-size:var(--text-xs);color:var(--color-text-muted);">Nurse Call System Designer</span>
+        </div>
+      </header>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar-inner">
+          <div class="progress-track">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+          <div class="progress-text" id="progressText">Step 0 of 12</div>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <main id="mainContent">
+        <!-- Chat View -->
+        <div class="chat-container" id="chatView">
+          <div class="chat-messages" id="chatMessages"></div>
+        </div>
+
+        <!-- Designing Overlay (hidden by default) -->
+        <div class="designing-overlay" id="designingView" style="display:none;">
+          <div class="designing-spinner"></div>
+          <div class="designing-text">Designing your system...</div>
+          <div class="designing-sub" id="designingSubtext">Analyzing facility requirements and optimizing component selection</div>
+        </div>
+
+        <!-- Quote View (hidden by default) -->
+        <div class="quote-container" id="quoteView" style="display:none;"></div>
+
+        <!-- Admin View (hidden by default) -->
+        <div class="admin-container" id="adminView" style="display:none;"></div>
+      </main>
+
+      <!-- Footer (hidden via CSS) -->
+      <footer class="app-footer">
+        Powered by <strong>NexusCT</strong> | Nexus Communications Technology | <a href="tel:8477965585">(847) 796-5585</a> | <a href="mailto:info@nxsct.com">info@nxsct.com</a>
+      </footer>
+    </div>
   </div>
 </section>
 
+
 </main>
+<!-- Site Footer -->
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
@@ -159,14 +239,46 @@
           <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support Portal</a>
         </div>
       </div>
-      <div class="footer-col"><h4>Healthcare</h4><ul class="footer-links"><li><a href="healthcare.html">Healthcare Overview</a></li><li><a href="nurse-call-wired.html">Wired Nurse Call</a></li><li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li><li><a href="ncaas.html">NCaaS</a></li><li><a href="rtls.html">RTLS</a></li><li><a href="patient-safety.html">Patient Safety</a></li><li><a href="nexus360.html">Nexus360</a></li></ul></div>
-      <div class="footer-col"><h4>Solutions</h4><ul class="footer-links"><li><a href="unifi360.html">UniFi360</a></li><li><a href="services.html">All Services</a></li><li><a href="nurse-call-designer.html">System Designer</a></li></ul></div>
-      <div class="footer-col"><h4>Company</h4><ul class="footer-links"><li><a href="about.html">About Us</a></li><li><a href="contact.html">Contact</a></li><li><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a></li></ul></div>
+      <div class="footer-col">
+        <h4>Healthcare</h4>
+        <ul class="footer-links">
+          <li><a href="healthcare.html">Healthcare Overview</a></li>
+          <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
+          <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
+          <li><a href="ncaas.html">NCaaS</a></li>
+          <li><a href="rtls.html">RTLS</a></li>
+          <li><a href="patient-safety.html">Patient Safety</a></li>
+          <li><a href="nexus360.html">Nexus360</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <ul class="footer-links">
+          <li><a href="unifi360.html">UniFi360</a></li>
+          <li><a href="services.html">All Services</a></li>
+          <li><a href="nurse-call-designer.html">System Designer</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="footer-bottom"><p>&copy; 2026 NexusComm LLC. All rights reserved. Schaumburg, IL</p><div class="footer-certifications"><span>BICSI</span><span>AVIXA</span></div></div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 NexusComm LLC. All rights reserved. Schaumburg, IL</p>
+      <div class="footer-certifications">
+        <span>BICSI</span>
+        <span>AVIXA</span>
+      </div>
+    </div>
   </div>
 </footer>
 </div>
 <script src="./site.js"></script>
+<script src="./nurse-call-app.js"></script>
 </body>
 </html>

@@ -1330,7 +1330,11 @@ window.downloadPDF = function() {
     doc.text('NexusCT | Nexus Communications Technology | (847) 796-5585 | info@nxsct.com | Schaumburg, IL', pw / 2, ph - 8, { align: 'center' });
   }
 
+  // ==========================================
   // PAGE 1: COVER PAGE
+  // ==========================================
+
+  // Full-width dark header
   doc.setFillColor(26, 26, 46);
   doc.rect(0, 0, pw, 50, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1341,6 +1345,7 @@ window.downloadPDF = function() {
   doc.setFont('helvetica', 'normal');
   doc.text('Nexus Communications Technology', 14, 32);
   doc.text('(847) 796-5585  |  info@nxsct.com  |  Schaumburg, IL', 14, 40);
+
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.text('SYSTEM ESTIMATE', pw - 14, 22, { align: 'right' });
@@ -1351,6 +1356,7 @@ window.downloadPDF = function() {
 
   let yPos = 65;
 
+  // Facility image (if available)
   if (result.facilityImage) {
     try {
       const imgWidth = pw - 28;
@@ -1362,12 +1368,14 @@ window.downloadPDF = function() {
     }
   }
 
+  // Prepared For
   if (a.leadName || a.leadFacility) {
     doc.setTextColor(0, 86, 179);
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
     doc.text('Prepared For', 14, yPos);
     yPos += 8;
+
     doc.setTextColor(60, 60, 60);
     doc.setFontSize(10);
     if (a.leadFacility) { doc.setFont('helvetica', 'bold'); doc.text(a.leadFacility, 14, yPos); yPos += 6; }
@@ -1379,6 +1387,7 @@ window.downloadPDF = function() {
     yPos += 5;
   }
 
+  // Investment Range box on cover
   doc.setFillColor(26, 26, 46);
   doc.roundedRect(14, yPos, pw - 28, 30, 3, 3, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1395,8 +1404,12 @@ window.downloadPDF = function() {
 
   addFooter();
 
+  // ==========================================
   // PAGE 2: FACILITY PROFILE + SYSTEM COMPONENTS
+  // ==========================================
   doc.addPage();
+
+  // Header bar
   doc.setFillColor(26, 26, 46);
   doc.rect(0, 0, pw, 18, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1405,13 +1418,16 @@ window.downloadPDF = function() {
   doc.text('NexusCT System Estimate', 14, 12);
   doc.setFont('helvetica', 'normal');
   doc.text(`Ref #${refNo}`, pw - 14, 12, { align: 'right' });
+
   yPos = 28;
 
+  // Facility Profile
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.text('Facility Profile', 14, yPos);
   yPos += 7;
+
   doc.setTextColor(60, 60, 60);
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
@@ -1440,6 +1456,7 @@ window.downloadPDF = function() {
 
   yPos += 5;
 
+  // System Components table
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
@@ -1475,8 +1492,12 @@ window.downloadPDF = function() {
     didDrawPage: function() { addFooter(); }
   });
 
+  // ==========================================
   // PAGE 3: FINANCING + NCaaS
+  // ==========================================
   doc.addPage();
+
+  // Header bar
   doc.setFillColor(26, 26, 46);
   doc.rect(0, 0, pw, 18, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1485,8 +1506,10 @@ window.downloadPDF = function() {
   doc.text('NexusCT System Estimate', 14, 12);
   doc.setFont('helvetica', 'normal');
   doc.text(`Ref #${refNo}`, pw - 14, 12, { align: 'right' });
+
   yPos = 28;
 
+  // Investment box again
   doc.setFillColor(26, 26, 46);
   doc.roundedRect(14, yPos, pw - 28, 28, 3, 3, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1500,8 +1523,10 @@ window.downloadPDF = function() {
   doc.setFontSize(8);
   doc.setTextColor(180, 180, 200);
   doc.text('Including equipment + installation', 20, yPos + 18);
+
   yPos += 40;
 
+  // Financing Options
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
@@ -1539,8 +1564,10 @@ window.downloadPDF = function() {
   doc.setTextColor(120, 120, 120);
   doc.setFont('helvetica', 'italic');
   doc.text('Financing subject to credit approval. Rates and terms may vary. Estimated payments based on investment range.', 14, yPos);
+
   yPos += 14;
 
+  // NCaaS Section
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
@@ -1552,6 +1579,7 @@ window.downloadPDF = function() {
   doc.text('Eliminate capital expenditure. Get a fully managed nurse call system as a monthly operating expense.', 14, yPos + 3);
   yPos += 10;
 
+  // NCaaS pricing box
   const nc = result.ncaas;
   const ncMonthLow = Math.round(nc.monthly * 0.70);
   const ncMonthHigh = Math.round(nc.monthly * 1.30);
@@ -1563,14 +1591,17 @@ window.downloadPDF = function() {
   doc.setDrawColor(0, 86, 179);
   doc.setLineWidth(0.3);
   doc.roundedRect(14, yPos, pw - 28, 48, 3, 3, 'S');
+
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text(`${fmtWhole(ncMonthLow)} \u2014 ${fmtWhole(ncMonthHigh)} /month`, pw / 2, yPos + 14, { align: 'center' });
+
   doc.setFontSize(9);
   doc.setTextColor(80, 80, 80);
   doc.setFont('helvetica', 'normal');
   doc.text(`$${ncBedLow} \u2014 $${ncBedHigh} per bed/month  |  ${nc.termMonths}-month service agreement`, pw / 2, yPos + 22, { align: 'center' });
+
   doc.setFontSize(8);
   doc.setTextColor(60, 60, 60);
   let includeY = yPos + 30;
@@ -1580,14 +1611,17 @@ window.downloadPDF = function() {
   const includeText = nc.includes.join('  |  ');
   const splitIncludes = doc.splitTextToSize(includeText, pw - 48);
   doc.text(splitIncludes, 20, includeY + 5);
+
   yPos += 60;
 
   doc.setFontSize(7);
   doc.setTextColor(120, 120, 120);
   doc.setFont('helvetica', 'italic');
   doc.text('NCaaS pricing estimated and subject to final site survey. CapEx-to-OpEx conversion simplifies budgeting with full lifecycle management.', 14, yPos);
+
   yPos += 14;
 
+  // Terms
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
   doc.setFont('helvetica', 'italic');
@@ -1597,6 +1631,7 @@ window.downloadPDF = function() {
 
   addFooter();
 
+  // Save
   const blob = doc.output('blob');
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -1613,7 +1648,7 @@ async function saveQuote(result) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        facility_name: result.answers.leadFacility || (result.answers.facilityTypeLabel + ' \u2014 ' + result.answers.beds + ' beds'),
+        facility_name: result.answers.leadFacility || (result.answers.facilityTypeLabel + ' — ' + result.answers.beds + ' beds'),
         facility_type: result.answers.facilityType,
         beds: result.answers.beds,
         platform: result.answers.platformLabel,
