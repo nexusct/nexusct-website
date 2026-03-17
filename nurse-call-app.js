@@ -81,10 +81,10 @@ const JERON_PARTS = {
   "7985":  { name: "PC Console Software", cost: 1500.00 },
   "7986":  { name: "PC Console MapView", cost: 1500.00 },
   "7987":  { name: "Android Notification (w/2 devices)", cost: 4500.00 },
-  "7987-05":{ name: "Additional Android Devices (5-pack)", cost: 2000.00 },
+  "7987-05":{ name: "Additional Android Devices (5-pack)", cost: 1500.00 },
   "7990":  { name: "Admin/Programming Software", cost: 727.50 },
   // Services
-  "9966":  { name: "Jeron Commissioning", cost: 3000.00 },
+  "9965":  { name: "Jeron Commissioning", cost: 3000.00 },
   "9967":  { name: "Jeron Integration Support", cost: 3750.00 },
   "9971":  { name: "Jeron Clinical In-Service", cost: 2250.00 },
   // NEW — Room/Hallway/Display
