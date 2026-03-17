@@ -8,9 +8,8 @@ const CGI_BIN = "__CGI_BIN__";
 (function() {
   const toggle = document.querySelector('[data-theme-toggle]');
   const root = document.documentElement;
-  let theme = 'light'; // default to light for healthcare
+  let theme = 'light';
   root.setAttribute('data-theme', theme);
-
   if (toggle) {
     toggle.addEventListener('click', () => {
       theme = theme === 'dark' ? 'light' : 'dark';
@@ -88,6 +87,22 @@ const JERON_PARTS = {
   "9966":  { name: "Jeron Commissioning", cost: 3000.00 },
   "9967":  { name: "Jeron Integration Support", cost: 3750.00 },
   "9971":  { name: "Jeron Clinical In-Service", cost: 2250.00 },
+  // NEW — Room/Hallway/Display
+  "7912-STA": { name: "Staff Assignment Display Panel", cost: 285.00 },
+  "7967-DIS": { name: "Annunciator/Secondary Display", cost: 750.00 },
+  "7950-DB":  { name: "Door Monitor Contact Interface", cost: 145.00 },
+  "7950-BE":  { name: "Bed Exit Alarm Interface", cost: 175.00 },
+  "7970-PA":  { name: "Hallway Audio Annunciator", cost: 425.00 },
+  "7973-D":   { name: "Digital Hallway Display Panel", cost: 1250.00 },
+  "7973-M":   { name: "Master Display Panel", cost: 1875.00 },
+  "7973-RM":  { name: "Room Number LED Panel", cost: 165.00 },
+  "7973-ST":  { name: "Patient Status Display", cost: 245.00 },
+  "7973-RGB": { name: "Multi-Color Room LED Strip", cost: 125.00 },
+  "TV-INT":   { name: "In-Room TV Integration Module", cost: 350.00 },
+  "AI-ASST":  { name: "AI Virtual Assistant (Alexa Healthcare)", cost: 275.00 },
+  "TAB-CC":   { name: "Patient Care Coordination Tablet", cost: 850.00 },
+  "DIS-INFO": { name: "Bedside Patient Infotainment Display", cost: 650.00 },
+  "PP-SENSOR":{ name: "Pressure Pad Sensor", cost: 165.00 },
 };
 
 const RCARE_PARTS = {
@@ -110,8 +125,8 @@ const RCARE_PARTS = {
   "UT-RE3":    { name: "Universal Transmitter", cost: 85 },
   "RC-BCA9":   { name: "Bed/Chair Pad Alarm", cost: 140 },
   "RK-77":     { name: "Remote Keypad", cost: 95 },
-  "CC980":     { name: "CC980 Touchscreen Console 15\"", cost: 1875 },
-  "CC-10":     { name: "CC-10 Compact Console 10\"", cost: 1350 },
+  "CC980":     { name: 'CC980 Touchscreen Console 15"', cost: 1875 },
+  "CC-10":     { name: 'CC-10 Compact Console 10"', cost: 1350 },
   "RC-3900":   { name: "Voice Communicator", cost: 280 },
   "RC-5200":   { name: "Cellular Voice Dialer", cost: 350 },
   "Indoor-Int":{ name: "Indoor Intercom", cost: 220 },
@@ -122,6 +137,19 @@ const RCARE_PARTS = {
   "Wander-Int":{ name: "Wander Management Integration", cost: 1875 },
   "VCube":     { name: "Voice-to-Voice (VCube) Upgrade", cost: 2000 },
   "MCube":     { name: "RCare Mobile (MCube) Upgrade", cost: 2500 },
+  // NEW
+  "RC-TV":    { name: "In-Room TV Integration", cost: 325 },
+  "RC-AI":    { name: "AI Virtual Assistant (Alexa Healthcare)", cost: 275 },
+  "RC-TAB":   { name: "Patient Care Coordination Tablet", cost: 850 },
+  "RC-INFO":  { name: "Bedside Patient Infotainment Display", cost: 650 },
+  "RC-HAUD":  { name: "Hallway Audio Annunciator", cost: 400 },
+  "RC-HDIS":  { name: "Digital Hallway Display", cost: 1200 },
+  "RC-MDIS":  { name: "Master Display Panel", cost: 1800 },
+  "RC-RMPN":  { name: "Room Number LED Panel", cost: 160 },
+  "RC-STPN":  { name: "Patient Status Display", cost: 235 },
+  "RC-RGB":   { name: "Multi-Color Room LED Strip", cost: 120 },
+  "RC-PP":    { name: "Pressure Pad Sensor", cost: 155 },
+  "RC-ACT":   { name: "Activity Monitoring & Reporting License", cost: 500 },
 };
 
 const MARGIN = 0.25;
@@ -129,10 +157,10 @@ function sellPrice(cost) { return cost / (1 - MARGIN); }
 function fmt(n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 function fmtWhole(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
 
-// ---- Financing Calculations ----
-const FINANCE_APR = 0.079; // 7.9% APR
-const NCAAS_MARKUP = 1.20; // 20% service premium on NCaaS
-const NCAAS_TERM = 60; // 60-month NCaaS agreement
+// ---- Financing ----
+const FINANCE_APR = 0.079;
+const NCAAS_MARKUP = 1.20;
+const NCAAS_TERM = 60;
 
 function calcMonthlyPayment(principal, apr, months) {
   const r = apr / 12;
@@ -141,12 +169,12 @@ function calcMonthlyPayment(principal, apr, months) {
 }
 
 // ---- Facility Image ----
-let facilityImageData = null; // Will hold base64 data URI after search
+let facilityImageData = null;
 
 // ---- State ----
 let answers = {};
 let currentStep = 0;
-const TOTAL_STEPS = 13;
+const TOTAL_STEPS = 12;
 
 const chatMessages = document.getElementById('chatMessages');
 const progressFill = document.getElementById('progressFill');
@@ -158,6 +186,7 @@ function updateProgress(step) {
   progressFill.style.width = pct + '%';
   progressText.textContent = `Step ${step} of ${TOTAL_STEPS}`;
 }
+
 
 // ---- Chat Helpers ----
 function addMessage(type, html) {
@@ -224,20 +253,34 @@ async function typeDelay(ms = 800) {
 }
 
 function disableAllOptions() {
-  chatMessages.querySelectorAll('.option-card, .option-check, .btn').forEach(el => {
+  chatMessages.querySelectorAll('.option-card, .option-check, .btn, .rc-form-card').forEach(el => {
     el.style.pointerEvents = 'none';
     el.style.opacity = '0.6';
   });
 }
 
+// ---- Shared Form Helpers ----
+const _formCSS = {
+  card: 'background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);max-width:720px;',
+  sectionTitle: 'font-size:var(--text-sm);font-weight:700;color:var(--color-primary);text-transform:uppercase;letter-spacing:0.05em;margin:var(--space-5) 0 var(--space-3) 0;padding-bottom:var(--space-2);border-bottom:1px solid var(--color-divider);',
+  label: 'font-size:var(--text-sm);font-weight:600;color:var(--color-text);margin-bottom:var(--space-2);display:block;',
+  input: 'width:100%;padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-sm);background:var(--color-surface-2);color:var(--color-text);',
+  btnGroup: 'display:flex;gap:var(--space-2);flex-wrap:wrap;',
+  btnOpt: 'padding:var(--space-2) var(--space-4);border:2px solid var(--color-border);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:600;cursor:pointer;background:var(--color-surface-2);color:var(--color-text);transition:all 150ms;',
+  btnOptActive: 'border-color:var(--color-primary);background:var(--color-primary-highlight);color:var(--color-primary);',
+  checkbox: 'display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer;font-size:var(--text-sm);background:var(--color-surface-2);transition:all 150ms;margin-bottom:var(--space-2);',
+  checkboxChecked: 'border-color:var(--color-primary);background:var(--color-primary-highlight);',
+  radio: 'display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border:1px solid var(--color-border);border-radius:var(--radius-md);cursor:pointer;font-size:var(--text-sm);background:var(--color-surface-2);transition:all 150ms;margin-bottom:var(--space-2);',
+  row: 'display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-3);',
+};
+
+
 // ---- Questions Flow ----
 async function startConversation() {
-  // Check for admin route
   if (window.location.hash === '#admin') {
     showAdmin();
     return;
   }
-
   await typeDelay(600);
   addMessage('ai', "Welcome to the <strong>NexusCT Nurse Call System Designer</strong>. I'll walk you through a series of questions to design and price the perfect nurse call system for your facility.");
   await typeDelay(800);
@@ -281,10 +324,10 @@ window.selectFacilityType = async function(id, title) {
 // Q2: Beds
 async function askBeds() {
   updateProgress(2);
-  addMessage('ai', "How many beds/rooms does your facility need to cover?");
+  addMessage('ai', "How many total beds/rooms does your facility need to cover?");
   const html = `
     <div class="numeric-input-wrap">
-      <input type="number" id="bedInput" min="10" max="999" placeholder="e.g., 120" value="">
+      <input type="number" id="bedInput" min="1" max="999" placeholder="e.g., 120" value="">
       <button class="btn btn-primary" onclick="submitBeds()">Continue</button>
     </div>
     <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);">Enter a number from 10 to 500+</div>
@@ -303,7 +346,7 @@ window.submitBeds = async function() {
   askConstructionType();
 };
 
-// Q3: New/Retrofit
+// Q3: Construction Type
 async function askConstructionType() {
   updateProgress(3);
   addMessage('ai', "Is this a new construction or a retrofit/upgrade of an existing system?");
@@ -368,7 +411,7 @@ window.selectPlatform = async function(id, title) {
   answers.platformLabel = title;
   addMessage('user', title);
   await typeDelay();
-  askPatientStation();
+  askRoomConfigs();
 };
 
 function showComparisonTable() {
@@ -376,14 +419,7 @@ function showComparisonTable() {
   const html = `
     <div class="comparison-table-wrap">
       <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Jeron 790</th>
-            <th>Jeron 700</th>
-            <th>RCare G4</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Feature</th><th>Jeron 790</th><th>Jeron 700</th><th>RCare G4</th></tr></thead>
         <tbody>
           <tr><td><strong>Type</strong></td><td>IP-Based</td><td>Networked</td><td>Wireless</td></tr>
           <tr><td><strong>Best For</strong></td><td>Hospitals, Acute Care</td><td>SNF, Sub-Acute</td><td>Assisted Living, SNF</td></tr>
@@ -394,7 +430,6 @@ function showComparisonTable() {
           <tr><td><strong>Wander Mgmt</strong></td><td>No</td><td>No</td><td>Yes</td></tr>
           <tr><td><strong>UL-1069</strong></td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
           <tr><td><strong>Install Complexity</strong></td><td>High</td><td>Medium</td><td>Low</td></tr>
-          <tr><td><strong>Cost Level</strong></td><td>$$$</td><td>$$</td><td>$$</td></tr>
         </tbody>
       </table>
     </div>
@@ -407,240 +442,480 @@ function showComparisonTable() {
   addOptions(html);
 }
 
-// Q5: Patient Station
-async function askPatientStation() {
+
+// ---- Q5: Room Configurations ----
+answers.roomConfigs = [];
+
+async function askRoomConfigs() {
   updateProgress(5);
+  addMessage('ai', "Now let's configure your room types. You can define up to <strong>3 different room configurations</strong> (e.g., Standard Patient Room, ICU Room, Memory Care Room). Each configuration describes a type of room and how many you need.");
+  await typeDelay(600);
+  showRoomConfigForm(1);
+}
+
+function showRoomConfigForm(configNum) {
   const isRCare = answers.platform === 'rcare';
-  addMessage('ai', "What level of patient station do you need?");
+  const isJeron = !isRCare;
 
-  let opts;
-  if (isRCare) {
-    opts = [
-      { id: 'rcare_pendant', title: 'Wireless Pendant Only', desc: 'Basic pendant for mobile residents', price: sellPrice(96) },
-      { id: 'rcare_pendant_pull', title: 'Pendant + Pull Cord', desc: 'Pendant worn plus bathroom pull cord', price: sellPrice(96 + 90) },
-      { id: 'rcare_pendant_bed', title: 'Pendant + Bedside Station', desc: 'Pendant plus bedside call button', price: sellPrice(96 + 110) },
-      { id: 'rcare_full', title: 'Full Room Package', desc: 'Pendant + Pull Cord + Bedside Station', price: sellPrice(96 + 90 + 110) },
-    ];
-  } else {
-    opts = [
-      { id: 'standard', title: 'Standard Audio (7920)', desc: 'Single patient station with audio', price: sellPrice(252) },
-      { id: 'enhanced', title: 'Enhanced Audio w/Light (7923)', desc: 'Single station with enhanced audio and indicator', price: sellPrice(300) },
-      { id: 'enhanced_dual', title: 'Enhanced Dual (7924)', desc: 'Dual-bed station with enhanced audio', price: sellPrice(396) },
-      { id: 'behavioral', title: 'Behavioral Security (7920-PC)', desc: 'Tamper-resistant with cancel button', price: sellPrice(592.50) },
-    ];
-  }
+  const sensorOpts = isJeron ? `
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="staff_assign" style="display:none;"> <span>&#9634;</span> Staff Assignment Panel</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="code_blue" style="display:none;"> <span>&#9634;</span> Code Blue Station</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="door_monitor" style="display:none;"> <span>&#9634;</span> Door Monitoring Contact</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="bed_exit" style="display:none;"> <span>&#9634;</span> Bed Exit Alarm Interface</label>
+  ` : `
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="door_window" style="display:none;"> <span>&#9634;</span> Door/Window Contact</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="activity" style="display:none;"> <span>&#9634;</span> Activity Sensor</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="bed_chair" style="display:none;"> <span>&#9634;</span> Bed/Chair Pad Alarm</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="universal_tx" style="display:none;"> <span>&#9634;</span> Universal Transmitter</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="rc_sensor" value="wander_tx" style="display:none;"> <span>&#9634;</span> Wander Transmitter</label>
+  `;
 
-  let html = '<div class="options-grid">';
-  opts.forEach(o => {
-    html += `<button class="option-card" onclick="selectStation('${o.id}','${o.title}')">
-      <div class="option-title">${o.title}</div>
-      <div class="option-desc">${o.desc}</div>
-    </button>`;
-  });
-  html += '</div>';
-  addOptions(html);
-}
-
-window.selectStation = async function(id, title) {
-  disableAllOptions();
-  answers.stationType = id;
-  answers.stationTypeLabel = title;
-  addMessage('user', title);
-  await typeDelay();
-  askBathroom();
-};
-
-// Q6: Bathroom
-async function askBathroom() {
-  updateProgress(6);
-  addMessage('ai', "Do you need bathroom/shower emergency stations?");
-  const opts = [
-    { id: 'bath_1', title: 'Yes — 1 per room', desc: 'One emergency pull cord per bathroom' },
-    { id: 'bath_2', title: 'Yes — 2 per room', desc: 'Pull cord in bathroom + shower area' },
-    { id: 'bath_no', title: 'No', desc: 'No bathroom emergency stations needed' },
-  ];
-  let html = '<div class="options-grid">';
-  opts.forEach(o => {
-    html += `<button class="option-card" onclick="selectBathroom('${o.id}','${o.title}')">
-      <div class="option-title">${o.title}</div>
-      <div class="option-desc">${o.desc}</div>
-    </button>`;
-  });
-  html += '</div>';
-  addOptions(html);
-}
-
-window.selectBathroom = async function(id, title) {
-  disableAllOptions();
-  answers.bathroom = id;
-  answers.bathroomLabel = title;
-  addMessage('user', title);
-  await typeDelay();
-  askConsole();
-};
-
-// Q7: Console Type
-async function askConsole() {
-  updateProgress(7);
-  const isRCare = answers.platform === 'rcare';
-  addMessage('ai', "What nurse console type do you need?");
-
-  let opts;
-  if (isRCare) {
-    opts = [
-      { id: 'rcare_cc980', title: 'CC980 Touchscreen (15")', desc: 'Full-featured 15" touchscreen console', price: sellPrice(1875) },
-      { id: 'rcare_cc10', title: 'CC-10 Compact (10")', desc: 'Compact 10" touchscreen console', price: sellPrice(1350) },
-      { id: 'rcare_bcube', title: 'BCube (Small Facility)', desc: 'Built-in server for < 128 beds', price: sellPrice(2600) },
-      { id: 'rcare_rcube', title: 'RCube (Enterprise)', desc: 'Enterprise server for large facilities', price: sellPrice(4500) },
-    ];
-  } else {
-    opts = [
-      { id: 'jeron_7965', title: 'Touchscreen Console (7965)', desc: 'Full touchscreen nurse console', price: sellPrice(1200) },
-      { id: 'jeron_7965b', title: 'Touchscreen w/Bluetooth (7965-B)', desc: 'Console with Bluetooth wireless handset', price: sellPrice(1687.50) },
-      { id: 'jeron_7985', title: 'PC Console Software (7985)', desc: 'Software-based console on PC', price: sellPrice(1500) },
-      { id: 'jeron_7967', title: 'Touchscreen Terminal (7967)', desc: 'Compact touchscreen terminal', price: sellPrice(933) },
-    ];
-  }
-
-  let html = '<div class="options-grid">';
-  opts.forEach(o => {
-    html += `<button class="option-card" onclick="selectConsole('${o.id}','${o.title}')">
-      <div class="option-title">${o.title}</div>
-      <div class="option-desc">${o.desc}</div>
-    </button>`;
-  });
-  html += '</div>';
-  addOptions(html);
-}
-
-window.selectConsole = async function(id, title) {
-  disableAllOptions();
-  answers.consoleType = id;
-  answers.consoleTypeLabel = title;
-  addMessage('user', title);
-  await typeDelay();
-  askConsoleCount();
-};
-
-// Q8: Console Count
-async function askConsoleCount() {
-  updateProgress(8);
-  addMessage('ai', "How many nursing stations/consoles do you need?");
   const html = `
-    <div class="numeric-input-wrap">
-      <input type="number" id="consoleInput" min="1" max="20" placeholder="e.g., 4" value="">
-      <button class="btn btn-primary" onclick="submitConsoles()">Continue</button>
+  <div class="rc-form-card" id="rcForm${configNum}" style="${_formCSS.card}">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);">
+      <h3 style="font-size:var(--text-lg);font-weight:700;color:var(--color-text);margin:0;">Room Configuration ${configNum} of 3</h3>
+      <span style="font-size:var(--text-xs);color:var(--color-text-muted);background:var(--color-surface-offset);padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);">${isRCare ? 'RCare G4' : 'Jeron'}</span>
     </div>
-    <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);">Typically 1 per nursing unit/floor (1–20)</div>
+
+    <div style="${_formCSS.row}">
+      <div>
+        <label style="${_formCSS.label}">Room Name</label>
+        <input type="text" id="rcName${configNum}" placeholder="e.g., Standard Patient Room" style="${_formCSS.input}">
+      </div>
+      <div>
+        <label style="${_formCSS.label}">Quantity (rooms of this type)</label>
+        <input type="number" id="rcQty${configNum}" min="1" max="500" placeholder="e.g., 60" style="${_formCSS.input}">
+      </div>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Patient Bed Setup</div>
+    <label style="${_formCSS.label}">Beds per Room</label>
+    <div style="${_formCSS.btnGroup}" id="rcBeds${configNum}">
+      ${[1,2,3,4,5].map(n => `<button type="button" style="${_formCSS.btnOpt}" onclick="window._selectBtnGroup('rcBeds${configNum}',${n},this)">${n}</button>`).join('')}
+    </div>
+
+    <div style="margin-top:var(--space-4);">
+      <label style="${_formCSS.label}">Bed Accessories (per bed)</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+        <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+          <input type="checkbox" name="rc_acc" value="pull_cord" style="display:none;"> <span>&#9634;</span> Pull Cord</label>
+        <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+          <input type="checkbox" name="rc_acc" value="pressure_pad" style="display:none;"> <span>&#9634;</span> Pressure Pad Sensor</label>
+        <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+          <input type="checkbox" name="rc_acc" value="pillow_speaker" style="display:none;"> <span>&#9634;</span> Pillow Speaker</label>
+        <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+          <input type="checkbox" name="rc_acc" value="two_way_audio" style="display:none;"> <span>&#9634;</span> Two-Way Audio</label>
+      </div>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Bathroom Configuration</div>
+    <label style="${_formCSS.label}">Bathrooms per Room</label>
+    <div style="${_formCSS.btnGroup}" id="rcBath${configNum}">
+      <button type="button" style="${_formCSS.btnOpt}" onclick="window._selectBtnGroup('rcBath${configNum}',1,this)">1</button>
+      <button type="button" style="${_formCSS.btnOpt}" onclick="window._selectBtnGroup('rcBath${configNum}',2,this)">2</button>
+    </div>
+    <div style="margin-top:var(--space-3);">
+      <label style="${_formCSS.label}">Pull Cord Layout</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=rcPull${configNum}]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="rcPull${configNum}" value="single" style="display:none;" checked> <span>&#9673;</span> Single shared pull cord (between toilet/shower, reachable from both)</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=rcPull${configNum}]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="rcPull${configNum}" value="separate" style="display:none;"> <span>&#9675;</span> Two separate pull cords (one toilet, one shower)</label>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Room Sensors & Integrations</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      ${sensorOpts}
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Display & Communication</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="rc_disp" value="tv" style="display:none;"> <span>&#9634;</span> In-Room TV Integration</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="rc_disp" value="ai_assist" style="display:none;"> <span>&#9634;</span> AI Virtual Assistant (Alexa)</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="rc_disp" value="tablet" style="display:none;"> <span>&#9634;</span> Care Coordination Tablet</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="rc_disp" value="infotainment" style="display:none;"> <span>&#9634;</span> Bedside Infotainment Display</label>
+    </div>
+
+    <div style="margin-top:var(--space-6);display:flex;gap:var(--space-3);">
+      <button class="btn btn-primary" onclick="window.saveRoomConfig(${configNum})">Save Room Configuration</button>
+    </div>
+  </div>
   `;
   addOptions(html);
-  setTimeout(() => document.getElementById('consoleInput')?.focus(), 300);
+  setTimeout(() => document.getElementById(`rcName${configNum}`)?.focus(), 300);
 }
 
-window.submitConsoles = async function() {
-  const val = parseInt(document.getElementById('consoleInput')?.value);
-  if (!val || val < 1) { alert('Please enter a valid number.'); return; }
-  disableAllOptions();
-  answers.consoleCount = val;
-  addMessage('user', `${val} console(s)`);
-  await typeDelay();
-  askDomeLights();
-};
-
-// Q9: Dome Lights
-async function askDomeLights() {
-  updateProgress(9);
-  addMessage('ai', "Do you need corridor dome/zone lights?");
-  const opts = [
-    { id: 'dome_1per', title: 'Yes — 1 per room', desc: 'Individual dome light above each room' },
-    { id: 'dome_2per', title: 'Yes — 1 per 2 rooms', desc: 'Shared zone light per pair of rooms' },
-    { id: 'dome_no', title: 'No', desc: 'No corridor lights needed' },
-  ];
-  let html = '<div class="options-grid">';
-  opts.forEach(o => {
-    html += `<button class="option-card" onclick="selectDome('${o.id}','${o.title}')">
-      <div class="option-title">${o.title}</div>
-      <div class="option-desc">${o.desc}</div>
-    </button>`;
+// Button group helper
+window._btnGroupValues = {};
+window._selectBtnGroup = function(groupId, value, btn) {
+  window._btnGroupValues[groupId] = value;
+  const container = document.getElementById(groupId);
+  container.querySelectorAll('button').forEach(b => {
+    b.style.borderColor = 'var(--color-border)';
+    b.style.background = 'var(--color-surface-2)';
+    b.style.color = 'var(--color-text)';
   });
-  html += '</div>';
-  addOptions(html);
-}
-
-window.selectDome = async function(id, title) {
-  disableAllOptions();
-  answers.domeLights = id;
-  answers.domeLightsLabel = title;
-  addMessage('user', title);
-  await typeDelay();
-  askWirelessAlerting();
+  btn.style.borderColor = 'var(--color-primary)';
+  btn.style.background = 'var(--color-primary-highlight)';
+  btn.style.color = 'var(--color-primary)';
 };
 
-// Q10: Wireless Alerting
-async function askWirelessAlerting() {
-  updateProgress(10);
-  const isRCare = answers.platform === 'rcare';
-  addMessage('ai', "What wireless alerting do you need?");
+window.saveRoomConfig = async function(configNum) {
+  const form = document.getElementById(`rcForm${configNum}`);
+  const name = document.getElementById(`rcName${configNum}`)?.value.trim();
+  const qty = parseInt(document.getElementById(`rcQty${configNum}`)?.value);
+  if (!name) { alert('Please enter a room name.'); return; }
+  if (!qty || qty < 1) { alert('Please enter a valid room quantity.'); return; }
 
-  let opts;
-  if (isRCare) {
-    opts = [
-      { id: 'rcare_rphone', title: 'RPhone Mobile', desc: 'Locked smartphone for nursing staff', price: sellPrice(340) },
-      { id: 'rcare_pager', title: 'Pager Integration', desc: 'Integration with existing pager system', price: sellPrice(225) },
-      { id: 'rcare_email', title: 'Email/Text Alerts', desc: 'Included with system at no extra cost', price: 0 },
-      { id: 'wireless_none', title: 'None', desc: 'No wireless alerting needed', price: 0 },
-    ];
+  const bedsPerRoom = window._btnGroupValues[`rcBeds${configNum}`] || 1;
+  const bathsPerRoom = window._btnGroupValues[`rcBath${configNum}`] || 1;
+  const pullLayout = form.querySelector(`input[name="rcPull${configNum}"]:checked`)?.value || 'single';
+
+  const accessories = Array.from(form.querySelectorAll('input[name="rc_acc"]:checked')).map(c => c.value);
+  const sensors = Array.from(form.querySelectorAll('input[name="rc_sensor"]:checked')).map(c => c.value);
+  const displays = Array.from(form.querySelectorAll('input[name="rc_disp"]:checked')).map(c => c.value);
+
+  const config = { name, qty, bedsPerRoom, bathsPerRoom, pullLayout, accessories, sensors, displays };
+  answers.roomConfigs.push(config);
+
+  disableAllOptions();
+
+  // Show summary
+  const accLabels = accessories.length ? accessories.join(', ') : 'None';
+  const sensorLabels = sensors.length ? sensors.join(', ') : 'None';
+  const dispLabels = displays.length ? displays.join(', ') : 'None';
+  addMessage('user', `<strong>${name}</strong> — ${qty} rooms, ${bedsPerRoom} bed(s)/room, ${bathsPerRoom} bath(s)<br>
+    <span style="font-size:var(--text-xs);color:var(--color-text-muted);">Accessories: ${accLabels} | Sensors: ${sensorLabels} | Display: ${dispLabels}</span>`);
+
+  await typeDelay(600);
+
+  // Check if user wants to add more
+  const totalConfigured = answers.roomConfigs.reduce((s, c) => s + c.qty, 0);
+  if (answers.roomConfigs.length < 3) {
+    addMessage('ai', `Room configuration ${configNum} saved. You've configured <strong>${totalConfigured}</strong> of <strong>${answers.beds}</strong> total rooms so far. Would you like to add another room configuration?`);
+    const html = `<div style="display:flex;gap:var(--space-3);flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="window.addAnotherRoom()">Add Room Configuration ${configNum + 1}</button>
+      <button class="btn btn-secondary" onclick="window.doneWithRooms()">No, continue</button>
+    </div>`;
+    addOptions(html);
   } else {
-    opts = [
-      { id: 'jeron_sip', title: 'SIP Phone Integration', desc: 'Integrate with SIP/VoIP phone system', price: sellPrice(1875) },
-      { id: 'jeron_paging', title: 'Pocket Paging', desc: 'Traditional pager alerts for staff', price: sellPrice(375) },
-      { id: 'jeron_android', title: 'Android Notification', desc: 'Push alerts to Android devices', price: sellPrice(4500) },
-      { id: 'wireless_none', title: 'None', desc: 'No wireless alerting needed', price: 0 },
-    ];
+    addMessage('ai', `All 3 room configurations saved (${totalConfigured} rooms configured).`);
+    await typeDelay(400);
+    validateAndContinueRooms();
   }
+};
 
-  let html = '<div class="options-grid">';
-  opts.forEach(o => {
-    html += `<button class="option-card" onclick="selectWireless('${o.id}','${o.title}')">
-      <div class="option-title">${o.title}</div>
-      <div class="option-desc">${o.desc}</div>
-    </button>`;
-  });
-  html += '</div>';
+window.addAnotherRoom = async function() {
+  disableAllOptions();
+  addMessage('user', 'Add another room configuration');
+  await typeDelay(400);
+  showRoomConfigForm(answers.roomConfigs.length + 1);
+};
+
+window.doneWithRooms = async function() {
+  disableAllOptions();
+  addMessage('user', 'Continue');
+  await typeDelay(400);
+  validateAndContinueRooms();
+};
+
+async function validateAndContinueRooms() {
+  const totalConfigured = answers.roomConfigs.reduce((s, c) => s + c.qty, 0);
+  if (totalConfigured !== answers.beds) {
+    addMessage('ai', `<strong>Note:</strong> Your room configurations total <strong>${totalConfigured}</strong> rooms, but you specified <strong>${answers.beds}</strong> beds earlier. Would you like to adjust, or continue with the configured rooms?`);
+    answers.beds = totalConfigured; // Auto-adjust
+    const html = `<div style="display:flex;gap:var(--space-3);flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="window.continueAfterRoomValidation()">Continue with ${totalConfigured} rooms</button>
+    </div>`;
+    addOptions(html);
+  } else {
+    askNurseStations();
+  }
+}
+
+window.continueAfterRoomValidation = async function() {
+  disableAllOptions();
+  addMessage('user', `Continue with ${answers.beds} rooms`);
+  await typeDelay(400);
+  askNurseStations();
+};
+
+
+// ---- Q6: Nurses Stations ----
+answers.nurseStations = [];
+
+async function askNurseStations() {
+  updateProgress(6);
+  addMessage('ai', "Now let's configure your nurses stations. How many nursing stations does your facility need?");
+  await typeDelay(400);
+  showNurseStationForm(1);
+}
+
+function showNurseStationForm(stationNum) {
+  const isRCare = answers.platform === 'rcare';
+
+  const consoleOpts = isRCare ? `
+    <button type="button" class="option-card" style="padding:var(--space-3);text-align:left;" data-console="rcare_cc980" onclick="window._selectConsoleCard('nsConsole${stationNum}','rcare_cc980',this)">
+      <div class="option-title" style="font-size:var(--text-sm);">CC980 Touchscreen (15")</div>
+      <div class="option-desc" style="font-size:var(--text-xs);">Full-featured 15" touchscreen console</div>
+    </button>
+    <button type="button" class="option-card" style="padding:var(--space-3);text-align:left;" data-console="rcare_cc10" onclick="window._selectConsoleCard('nsConsole${stationNum}','rcare_cc10',this)">
+      <div class="option-title" style="font-size:var(--text-sm);">CC-10 Compact (10")</div>
+      <div class="option-desc" style="font-size:var(--text-xs);">Compact 10" touchscreen console</div>
+    </button>
+  ` : `
+    <button type="button" class="option-card" style="padding:var(--space-3);text-align:left;" data-console="jeron_7965" onclick="window._selectConsoleCard('nsConsole${stationNum}','jeron_7965',this)">
+      <div class="option-title" style="font-size:var(--text-sm);">Touchscreen Console (7965)</div>
+      <div class="option-desc" style="font-size:var(--text-xs);">Full touchscreen nurse console</div>
+    </button>
+    <button type="button" class="option-card" style="padding:var(--space-3);text-align:left;" data-console="jeron_7965b" onclick="window._selectConsoleCard('nsConsole${stationNum}','jeron_7965b',this)">
+      <div class="option-title" style="font-size:var(--text-sm);">Touchscreen w/Bluetooth (7965-B)</div>
+      <div class="option-desc" style="font-size:var(--text-xs);">Console with Bluetooth wireless handset</div>
+    </button>
+    <button type="button" class="option-card" style="padding:var(--space-3);text-align:left;" data-console="jeron_7985" onclick="window._selectConsoleCard('nsConsole${stationNum}','jeron_7985',this)">
+      <div class="option-title" style="font-size:var(--text-sm);">PC Console Software (7985)</div>
+      <div class="option-desc" style="font-size:var(--text-xs);">Software-based console on PC</div>
+    </button>
+    <button type="button" class="option-card" style="padding:var(--space-3);text-align:left;" data-console="jeron_7967" onclick="window._selectConsoleCard('nsConsole${stationNum}','jeron_7967',this)">
+      <div class="option-title" style="font-size:var(--text-sm);">Touchscreen Terminal (7967)</div>
+      <div class="option-desc" style="font-size:var(--text-xs);">Compact touchscreen terminal</div>
+    </button>
+  `;
+
+  const hwOpts = isRCare ? `
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="ns_hw" value="secondary_display" style="display:none;"> <span>&#9634;</span> Secondary/Annunciator Display</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="ns_hw" value="staff_assign_display" style="display:none;"> <span>&#9634;</span> Staff Assignment Display</label>
+  ` : `
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="ns_hw" value="secondary_display" style="display:none;"> <span>&#9634;</span> Secondary/Annunciator Display</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="ns_hw" value="bt_handset" style="display:none;"> <span>&#9634;</span> Bluetooth Wireless Handset</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="ns_hw" value="duty_terminal" style="display:none;"> <span>&#9634;</span> Duty Station Terminal</label>
+    <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+      <input type="checkbox" name="ns_hw" value="staff_assign_display" style="display:none;"> <span>&#9634;</span> Staff Assignment Display</label>
+  `;
+
+  const html = `
+  <div class="rc-form-card" id="nsForm${stationNum}" style="${_formCSS.card}">
+    <h3 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--space-4);">Nurses Station ${stationNum}</h3>
+
+    <div style="${_formCSS.row}">
+      <div>
+        <label style="${_formCSS.label}">Station Name</label>
+        <input type="text" id="nsName${stationNum}" placeholder="e.g., 2nd Floor Main" style="${_formCSS.input}">
+      </div>
+      <div>
+        <label style="${_formCSS.label}">Console Count</label>
+        <input type="number" id="nsCount${stationNum}" min="1" max="10" value="1" style="${_formCSS.input}">
+      </div>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Console Type</div>
+    <div id="nsConsole${stationNum}" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      ${consoleOpts}
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Additional Hardware</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      ${hwOpts}
+    </div>
+
+    <div style="margin-top:var(--space-6);display:flex;gap:var(--space-3);">
+      <button class="btn btn-primary" onclick="window.saveNurseStation(${stationNum})">Save Station</button>
+      <button class="btn btn-secondary" onclick="window.doneWithStations()">Done with Stations</button>
+    </div>
+  </div>
+  `;
   addOptions(html);
 }
 
-window.selectWireless = async function(id, title) {
-  disableAllOptions();
-  answers.wireless = id;
-  answers.wirelessLabel = title;
-  addMessage('user', title);
-  await typeDelay();
-  askIntegrations();
+window._consoleValues = {};
+window._selectConsoleCard = function(groupId, value, btn) {
+  window._consoleValues[groupId] = value;
+  const container = document.getElementById(groupId);
+  container.querySelectorAll('.option-card').forEach(c => {
+    c.style.borderColor = 'var(--color-border)';
+    c.style.background = '';
+  });
+  btn.style.borderColor = 'var(--color-primary)';
+  btn.style.background = 'var(--color-primary-highlight)';
 };
 
-// Q11: Integrations (multi-select)
+window.saveNurseStation = async function(stationNum) {
+  const form = document.getElementById(`nsForm${stationNum}`);
+  const name = document.getElementById(`nsName${stationNum}`)?.value.trim() || `Station ${stationNum}`;
+  const count = parseInt(document.getElementById(`nsCount${stationNum}`)?.value) || 1;
+  const consoleType = window._consoleValues[`nsConsole${stationNum}`] || '';
+  if (!consoleType) { alert('Please select a console type.'); return; }
+
+  const hardware = Array.from(form.querySelectorAll('input[name="ns_hw"]:checked')).map(c => c.value);
+
+  answers.nurseStations.push({ name, count, consoleType, hardware });
+  disableAllOptions();
+  addMessage('user', `<strong>${name}</strong> — ${count} console(s), ${consoleType.replace(/_/g,' ')}`);
+  await typeDelay(400);
+
+  addMessage('ai', `Station ${stationNum} saved. Add another station or continue?`);
+  const html = `<div style="display:flex;gap:var(--space-3);">
+    <button class="btn btn-primary" onclick="window.addAnotherStation()">Add Station ${stationNum + 1}</button>
+    <button class="btn btn-secondary" onclick="window.doneWithStations()">Continue</button>
+  </div>`;
+  addOptions(html);
+};
+
+window.addAnotherStation = async function() {
+  disableAllOptions();
+  addMessage('user', 'Add another station');
+  await typeDelay(400);
+  showNurseStationForm(answers.nurseStations.length + 1);
+};
+
+window.doneWithStations = async function() {
+  disableAllOptions();
+  if (answers.nurseStations.length === 0) {
+    // Need at least one
+    addMessage('ai', 'You need at least one nurses station. Please configure one.');
+    await typeDelay(400);
+    showNurseStationForm(1);
+    return;
+  }
+  addMessage('user', 'Continue');
+  await typeDelay(400);
+  askHallwayConfig();
+};
+
+
+// ---- Q7: Hallway Configuration ----
+async function askHallwayConfig() {
+  updateProgress(7);
+  addMessage('ai', "Let's configure your hallway indicators and displays.");
+  await typeDelay(400);
+
+  const html = `
+  <div class="rc-form-card" id="hallForm" style="${_formCSS.card}">
+    <h3 style="font-size:var(--text-lg);font-weight:700;margin-bottom:var(--space-4);">Hallway Configuration</h3>
+
+    <div style="${_formCSS.sectionTitle}">Nurse Call LED Corridor Indicators</div>
+    <label style="${_formCSS.label}">LED Type</label>
+    <div>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=hall_led_type]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="hall_led_type" value="single" style="display:none;" checked> <span>&#9673;</span> Single-color dome (standard)</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=hall_led_type]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="hall_led_type" value="prism" style="display:none;"> <span>&#9675;</span> Multi-color Prism dome (priority by color)</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=hall_led_type]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="hall_led_type" value="prism_tone" style="display:none;"> <span>&#9675;</span> Prism dome with audible tone</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=hall_led_type]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="hall_led_type" value="none" style="display:none;"> <span>&#9675;</span> None</label>
+    </div>
+
+    <div style="margin-top:var(--space-3);">
+      <label style="${_formCSS.label}">Placement</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=hall_placement]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="hall_placement" value="per_room" style="display:none;" checked> <span>&#9673;</span> One per room</label>
+      <label style="${_formCSS.radio}" onclick="this.querySelector('input').checked=true;document.querySelectorAll('input[name=hall_placement]').forEach(r=>{r.closest('label').style.borderColor=r.checked?'var(--color-primary)':'var(--color-border)';r.closest('label').style.background=r.checked?'var(--color-primary-highlight)':'var(--color-surface-2)';})">
+        <input type="radio" name="hall_placement" value="per_2rooms" style="display:none;"> <span>&#9675;</span> One per two rooms (shared)</label>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Zone & Directional Indicators</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="zone_lights" style="display:none;"> <span>&#9634;</span> Zone indicator lights</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="directional" style="display:none;"> <span>&#9634;</span> Directional arrow indicators</label>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">Audio & Visual Displays</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="audio_annunciator" style="display:none;"> <span>&#9634;</span> Hallway audio annunciator</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="digital_display" style="display:none;"> <span>&#9634;</span> Digital hallway display</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="master_display" style="display:none;"> <span>&#9634;</span> Master display panel</label>
+    </div>
+
+    <div style="${_formCSS.sectionTitle}">External Room Indicators</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2);">
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="room_led" style="display:none;"> <span>&#9634;</span> Room-number LED panel</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="status_display" style="display:none;"> <span>&#9634;</span> Patient status display</label>
+      <label style="${_formCSS.checkbox}" onclick="this.querySelector('input').checked=!this.querySelector('input').checked;this.style.borderColor=this.querySelector('input').checked?'var(--color-primary)':'var(--color-border)';this.style.background=this.querySelector('input').checked?'var(--color-primary-highlight)':'var(--color-surface-2)';">
+        <input type="checkbox" name="hall_opt" value="rgb_strip" style="display:none;"> <span>&#9634;</span> Multi-color room LED strip</label>
+    </div>
+
+    <div style="margin-top:var(--space-6);">
+      <button class="btn btn-primary" onclick="window.saveHallwayConfig()">Continue</button>
+    </div>
+  </div>
+  `;
+  addOptions(html);
+}
+
+window.saveHallwayConfig = async function() {
+  const form = document.getElementById('hallForm');
+  const ledType = form.querySelector('input[name="hall_led_type"]:checked')?.value || 'none';
+  const placement = form.querySelector('input[name="hall_placement"]:checked')?.value || 'per_room';
+  const options = Array.from(form.querySelectorAll('input[name="hall_opt"]:checked')).map(c => c.value);
+
+  answers.hallway = { ledType, placement, options };
+  disableAllOptions();
+
+  const summary = [ledType !== 'none' ? `LED: ${ledType} (${placement})` : 'No corridor LEDs'];
+  if (options.length) summary.push(options.join(', '));
+  addMessage('user', summary.join(' | '));
+  await typeDelay();
+  askSoftwareIntegrations();
+};
+
+
+// ---- Q8: Software & Integrations ----
 let selectedIntegrations = [];
 
-async function askIntegrations() {
-  updateProgress(11);
+async function askSoftwareIntegrations() {
+  updateProgress(8);
   const isRCare = answers.platform === 'rcare';
-  addMessage('ai', "Do you need any additional integrations? <em>(Select all that apply, then click Continue)</em>");
+  addMessage('ai', "Select any software and integration add-ons for your system. <em>(Select all that apply, then click Continue)</em>");
 
   let opts;
   if (isRCare) {
     opts = [
-      { id: 'int_ehr', title: 'EHR/ADT Integration', price: sellPrice(1500) },
-      { id: 'int_rtls', title: 'RTLS Staff Locating', price: sellPrice(1500) },
-      { id: 'int_reporting', title: 'Reporting & Analytics', price: 0, note: 'Included' },
-      { id: 'int_wander', title: 'Wander Management', price: sellPrice(1875) },
+      { id: 'int_ehr', title: 'PointClickCare Integration' },
+      { id: 'int_wander', title: 'Wander Management Integration' },
+      { id: 'int_mcube', title: 'RCare Mobile (MCube)' },
+      { id: 'int_vcube', title: 'Voice-to-Voice (VCube)' },
+      { id: 'int_pager', title: 'Pager Integration' },
+      { id: 'int_rphone', title: 'RPhone Mobile Integration' },
+      { id: 'int_activity', title: 'Activity Monitoring & Reporting' },
     ];
   } else {
     opts = [
-      { id: 'int_ehr', title: 'EHR/ADT Integration', price: sellPrice(1125) },
-      { id: 'int_rtls', title: 'RTLS Staff Locating', price: sellPrice(750) },
-      { id: 'int_reporting', title: 'Reporting & Analytics', price: sellPrice(1125) },
-      { id: 'int_barcode', title: 'Barcode Staff Management', price: sellPrice(375) },
+      { id: 'int_ehr', title: 'EHR/ADT Integration' },
+      { id: 'int_sip', title: 'SIP Phone Integration' },
+      { id: 'int_paging', title: 'Pocket Paging' },
+      { id: 'int_staff', title: 'Staff Assignment Software' },
+      { id: 'int_rtls', title: 'RTLS Integration' },
+      { id: 'int_barcode', title: 'Barcode Staff Management' },
+      { id: 'int_reporting', title: 'EIS Logging/Reporting' },
+      { id: 'int_pc_console', title: 'PC Console Software' },
+      { id: 'int_mapview', title: 'PC Console MapView' },
+      { id: 'int_android', title: 'Android Push Notifications' },
+      { id: 'int_voice_pa', title: 'Automated Voice PA' },
     ];
   }
 
@@ -683,13 +958,13 @@ window.submitIntegrations = async function() {
   askInstallation();
 };
 
-// Q12: Installation
+// Q9: Installation
 async function askInstallation() {
-  updateProgress(12);
+  updateProgress(9);
   addMessage('ai', "What about installation support?");
   const opts = [
-    { id: 'professional', title: 'NexusCT Professional Installation', desc: 'On-site installation by NexusCT technicians', price: 150 },
-    { id: 'turnkey', title: 'NexusCT Full Turnkey', desc: 'Installation + commissioning + staff training', price: 250 },
+    { id: 'professional', title: 'NexusCT Professional Installation', desc: 'On-site installation by NexusCT technicians' },
+    { id: 'turnkey', title: 'NexusCT Full Turnkey', desc: 'Installation + commissioning + staff training' },
   ];
   let html = '<div class="options-grid">';
   opts.forEach(o => {
@@ -711,9 +986,10 @@ window.selectInstall = async function(id, title) {
   askLeadCapture();
 };
 
-// Q13: Lead Capture
+
+// Q10: Lead Capture
 async function askLeadCapture() {
-  updateProgress(13);
+  updateProgress(10);
   addMessage('ai', "Almost done! To generate your personalized system estimate, please provide your contact information.");
   const html = `
     <div class="lead-form">
@@ -757,7 +1033,6 @@ window.submitLeadForm = async function() {
   const notes = document.getElementById('leadNotes')?.value.trim();
   const errorEl = document.getElementById('leadError');
 
-  // Validation
   const missing = [];
   if (!name) missing.push('Full Name');
   if (!email) missing.push('Email Address');
@@ -769,8 +1044,6 @@ window.submitLeadForm = async function() {
     errorEl.style.display = 'block';
     return;
   }
-
-  // Basic email check
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errorEl.textContent = 'Please enter a valid email address.';
     errorEl.style.display = 'block';
@@ -793,6 +1066,7 @@ window.submitLeadForm = async function() {
   showDesigning();
 };
 
+
 // ---- System Design Engine ----
 function showDesigning() {
   document.getElementById('chatView').style.display = 'none';
@@ -802,9 +1076,10 @@ function showDesigning() {
 
   const subtexts = [
     'Analyzing facility requirements and optimizing component selection',
-    'Calculating infrastructure needs based on bed count',
-    'Selecting patient stations and accessories',
-    'Configuring console and networking components',
+    'Processing room configurations',
+    'Calculating infrastructure needs',
+    'Configuring nurses stations',
+    'Selecting hallway indicators and displays',
     'Searching for facility imagery',
     'Applying NexusCT preferred pricing',
     'Calculating financing options',
@@ -814,17 +1089,12 @@ function showDesigning() {
   const subEl = document.getElementById('designingSubtext');
   const interval = setInterval(() => {
     idx++;
-    if (idx < subtexts.length) {
-      subEl.textContent = subtexts[idx];
-    }
+    if (idx < subtexts.length) subEl.textContent = subtexts[idx];
   }, 600);
 
-  // Fetch facility image in background
   facilityImageData = null;
   const facilityName = answers.leadFacility || '';
-  if (facilityName) {
-    fetchFacilityImage(facilityName).catch(() => {});
-  }
+  if (facilityName) fetchFacilityImage(facilityName).catch(() => {});
 
   setTimeout(() => {
     clearInterval(interval);
@@ -841,9 +1111,7 @@ async function fetchFacilityImage(facilityName) {
     const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
     if (!res.ok) return;
     const data = await res.json();
-    if (data.base64) {
-      facilityImageData = data.base64;
-    }
+    if (data.base64) facilityImageData = data.base64;
   } catch (e) {
     console.warn('Facility image fetch failed:', e);
   }
@@ -853,200 +1121,172 @@ function buildSystemDesign() {
   const beds = answers.beds;
   const isRCare = answers.platform === 'rcare';
   const isJeron = !isRCare;
-  const bom = []; // { category, partNo, name, qty, dealerCost, sellPrice }
+  const bom = [];
 
   // ---- INFRASTRUCTURE ----
   if (isJeron) {
-    // Room controllers
-    const useDome = answers.domeLights === 'dome_1per';
-    const useSharedDome = answers.domeLights === 'dome_2per';
-    if (useDome) {
-      bom.push({ cat: 'Infrastructure', pn: '7953-T', name: JERON_PARTS['7953-T'].name, qty: beds, cost: JERON_PARTS['7953-T'].cost });
-    } else {
-      bom.push({ cat: 'Infrastructure', pn: '7950', name: JERON_PARTS['7950'].name, qty: beds, cost: JERON_PARTS['7950'].cost });
-    }
-
+    // Room controllers (1 per room)
+    bom.push({ cat: 'Infrastructure', pn: '7950', name: JERON_PARTS['7950'].name, qty: beds, cost: JERON_PARTS['7950'].cost });
     // Gateways (1 per 8 rooms)
     const gwCount = Math.ceil(beds / 8);
     bom.push({ cat: 'Infrastructure', pn: '7993', name: JERON_PARTS['7993'].name, qty: gwCount, cost: JERON_PARTS['7993'].cost });
-
     // Switches (1 per 8 gateways)
     const swCount = Math.ceil(gwCount / 8);
     bom.push({ cat: 'Infrastructure', pn: '7991', name: JERON_PARTS['7991'].name, qty: swCount, cost: JERON_PARTS['7991'].cost });
-
-    // Cabinets (1 per switch)
     bom.push({ cat: 'Infrastructure', pn: '7989', name: JERON_PARTS['7989'].name, qty: swCount, cost: JERON_PARTS['7989'].cost });
-
     // Console controllers
-    bom.push({ cat: 'Infrastructure', pn: '7960', name: JERON_PARTS['7960'].name, qty: answers.consoleCount, cost: JERON_PARTS['7960'].cost });
-
-    // Admin software
+    const totalConsoles = answers.nurseStations.reduce((s, ns) => s + ns.count, 0);
+    bom.push({ cat: 'Infrastructure', pn: '7960', name: JERON_PARTS['7960'].name, qty: totalConsoles, cost: JERON_PARTS['7960'].cost });
     bom.push({ cat: 'Software', pn: '7990', name: JERON_PARTS['7990'].name, qty: 1, cost: JERON_PARTS['7990'].cost });
-
-    // LAN Bridge (if >1 switch)
-    if (swCount > 1) {
-      bom.push({ cat: 'Software', pn: '7984', name: JERON_PARTS['7984'].name, qty: 1, cost: JERON_PARTS['7984'].cost });
-    }
-
-    // ---- PATIENT STATIONS ----
-    const stationMap = {
-      'standard': '7920',
-      'enhanced': '7923',
-      'enhanced_dual': '7924',
-      'behavioral': '7920-PC',
-    };
-    const stPn = stationMap[answers.stationType] || '7920';
-    bom.push({ cat: 'Patient Stations', pn: stPn, name: JERON_PARTS[stPn].name, qty: beds, cost: JERON_PARTS[stPn].cost });
-
-    // Pillow speakers & call cords (1 per bed)
-    bom.push({ cat: 'Accessories', pn: '7901', name: JERON_PARTS['7901'].name, qty: beds, cost: JERON_PARTS['7901'].cost });
-    bom.push({ cat: 'Accessories', pn: '7910', name: JERON_PARTS['7910'].name, qty: beds, cost: JERON_PARTS['7910'].cost });
-
-    // Bathroom stations
-    if (answers.bathroom === 'bath_1') {
-      bom.push({ cat: 'Patient Stations', pn: '7932', name: JERON_PARTS['7932'].name, qty: beds, cost: JERON_PARTS['7932'].cost });
-    } else if (answers.bathroom === 'bath_2') {
-      bom.push({ cat: 'Patient Stations', pn: '7932', name: JERON_PARTS['7932'].name, qty: beds, cost: JERON_PARTS['7932'].cost });
-      bom.push({ cat: 'Patient Stations', pn: '7958', name: JERON_PARTS['7958'].name, qty: beds, cost: JERON_PARTS['7958'].cost });
-    }
-
-    // Dome/zone lights (if not using dome room controllers)
-    if (useSharedDome) {
-      const domeCount = Math.ceil(beds / 2);
-      bom.push({ cat: 'Dome/Zone Lights', pn: '7973', name: JERON_PARTS['7973'].name, qty: domeCount, cost: JERON_PARTS['7973'].cost });
-    }
-
-    // Consoles
-    const consoleMap = {
-      'jeron_7965': '7965',
-      'jeron_7965b': '7965-B',
-      'jeron_7985': '7985',
-      'jeron_7967': '7967-M',
-    };
-    const cPn = consoleMap[answers.consoleType] || '7965';
-    if (cPn === '7985') {
-      bom.push({ cat: 'Consoles', pn: '7985', name: JERON_PARTS['7985'].name, qty: answers.consoleCount, cost: JERON_PARTS['7985'].cost });
-    } else {
-      bom.push({ cat: 'Consoles', pn: cPn, name: JERON_PARTS[cPn].name, qty: answers.consoleCount, cost: JERON_PARTS[cPn].cost });
-    }
-
-    // Wireless alerting
-    if (answers.wireless === 'jeron_sip') {
-      bom.push({ cat: 'Software', pn: '7978', name: JERON_PARTS['7978'].name, qty: 1, cost: JERON_PARTS['7978'].cost });
-    } else if (answers.wireless === 'jeron_paging') {
-      bom.push({ cat: 'Software', pn: '7979', name: JERON_PARTS['7979'].name, qty: 1, cost: JERON_PARTS['7979'].cost });
-    } else if (answers.wireless === 'jeron_android') {
-      bom.push({ cat: 'Software', pn: '7987', name: JERON_PARTS['7987'].name, qty: 1, cost: JERON_PARTS['7987'].cost });
-    }
-
-    // Integrations
-    if (answers.integrations.includes('int_ehr')) {
-      bom.push({ cat: 'Software', pn: '7977', name: JERON_PARTS['7977'].name, qty: 1, cost: JERON_PARTS['7977'].cost });
-    }
-    if (answers.integrations.includes('int_rtls')) {
-      bom.push({ cat: 'Software', pn: '7981', name: JERON_PARTS['7981'].name, qty: 1, cost: JERON_PARTS['7981'].cost });
-    }
-    if (answers.integrations.includes('int_reporting')) {
-      bom.push({ cat: 'Software', pn: '7983', name: JERON_PARTS['7983'].name, qty: 1, cost: JERON_PARTS['7983'].cost });
-    }
-    if (answers.integrations.includes('int_barcode')) {
-      bom.push({ cat: 'Software', pn: '7982', name: JERON_PARTS['7982'].name, qty: 1, cost: JERON_PARTS['7982'].cost });
-    }
-
+    if (swCount > 1) bom.push({ cat: 'Software', pn: '7984', name: JERON_PARTS['7984'].name, qty: 1, cost: JERON_PARTS['7984'].cost });
   } else {
-    // ---- RCare ----
-    // Server
+    // RCare infrastructure
     if (beds <= 128) {
       bom.push({ cat: 'Infrastructure', pn: 'BCube', name: RCARE_PARTS['BCube'].name, qty: 1, cost: RCARE_PARTS['BCube'].cost });
     } else {
       bom.push({ cat: 'Infrastructure', pn: 'RCube', name: RCARE_PARTS['RCube'].name, qty: 1, cost: RCARE_PARTS['RCube'].cost });
     }
-
-    // Master Receiver
     bom.push({ cat: 'Infrastructure', pn: 'MR-500-G4', name: RCARE_PARTS['MR-500-G4'].name, qty: 1, cost: RCARE_PARTS['MR-500-G4'].cost });
-
-    // Locators (1 per 18 rooms)
     const locCount = Math.max(1, Math.ceil(beds / 18));
     bom.push({ cat: 'Infrastructure', pn: 'LT-490-G4', name: RCARE_PARTS['LT-490-G4'].name, qty: locCount, cost: RCARE_PARTS['LT-490-G4'].cost });
-
-    // Repeaters (1 per 35 rooms)
     const repCount = Math.max(1, Math.ceil(beds / 35));
     bom.push({ cat: 'Infrastructure', pn: 'RP-990-G4', name: RCARE_PARTS['RP-990-G4'].name, qty: repCount, cost: RCARE_PARTS['RP-990-G4'].cost });
+  }
 
-    // Pendants (1.2x bed count for spares)
-    const pendantQty = Math.ceil(beds * 1.2);
-    bom.push({ cat: 'Resident Devices', pn: 'Pretty-G4', name: RCARE_PARTS['Pretty-G4'].name, qty: pendantQty, cost: RCARE_PARTS['Pretty-G4'].cost });
+  // ---- ROOM CONFIGURATIONS ----
+  answers.roomConfigs.forEach(rc => {
+    const totalBeds = rc.qty * rc.bedsPerRoom;
+    const totalRooms = rc.qty;
 
-    // Station type extras
-    if (answers.stationType === 'rcare_pendant_pull' || answers.stationType === 'rcare_full') {
-      bom.push({ cat: 'Resident Devices', pn: 'BP-7RWR', name: RCARE_PARTS['BP-7RWR'].name, qty: beds, cost: RCARE_PARTS['BP-7RWR'].cost });
-    }
-    if (answers.stationType === 'rcare_pendant_bed' || answers.stationType === 'rcare_full') {
-      bom.push({ cat: 'Resident Devices', pn: 'JR-14', name: RCARE_PARTS['JR-14'].name, qty: beds, cost: RCARE_PARTS['JR-14'].cost });
-    }
+    if (isJeron) {
+      // Patient stations (1 per bed)
+      const hasTwoWay = rc.accessories.includes('two_way_audio');
+      const stPn = hasTwoWay ? '7923' : '7920';
+      bom.push({ cat: `Patient Stations (${rc.name})`, pn: stPn, name: JERON_PARTS[stPn].name, qty: totalBeds, cost: JERON_PARTS[stPn].cost });
 
-    // Bathroom
-    if (answers.bathroom === 'bath_1') {
-      bom.push({ cat: 'Resident Devices', pn: 'BP-7RWR', name: RCARE_PARTS['BP-7RWR'].name + ' (Bathroom)', qty: beds, cost: RCARE_PARTS['BP-7RWR'].cost });
-    } else if (answers.bathroom === 'bath_2') {
-      bom.push({ cat: 'Resident Devices', pn: 'BP-7RWR', name: RCARE_PARTS['BP-7RWR'].name + ' (Bath+Shower)', qty: beds * 2, cost: RCARE_PARTS['BP-7RWR'].cost });
-    }
+      if (rc.accessories.includes('pull_cord')) bom.push({ cat: `Accessories (${rc.name})`, pn: '7910', name: JERON_PARTS['7910'].name, qty: totalBeds, cost: JERON_PARTS['7910'].cost });
+      if (rc.accessories.includes('pillow_speaker')) bom.push({ cat: `Accessories (${rc.name})`, pn: '7901', name: JERON_PARTS['7901'].name, qty: totalBeds, cost: JERON_PARTS['7901'].cost });
+      if (rc.accessories.includes('pressure_pad')) bom.push({ cat: `Accessories (${rc.name})`, pn: 'PP-SENSOR', name: JERON_PARTS['PP-SENSOR'].name, qty: totalBeds, cost: JERON_PARTS['PP-SENSOR'].cost });
 
-    // Dome lights
-    if (answers.domeLights === 'dome_1per') {
-      bom.push({ cat: 'Communication', pn: 'Dome-LED', name: RCARE_PARTS['Dome-LED'].name, qty: beds, cost: RCARE_PARTS['Dome-LED'].cost });
-    } else if (answers.domeLights === 'dome_2per') {
-      bom.push({ cat: 'Communication', pn: 'Dome-LED', name: RCARE_PARTS['Dome-LED'].name, qty: Math.ceil(beds / 2), cost: RCARE_PARTS['Dome-LED'].cost });
-    }
+      // Bathrooms
+      const totalPullCords = rc.pullLayout === 'separate' ? totalRooms * rc.bathsPerRoom * 2 : totalRooms * rc.bathsPerRoom;
+      if (totalPullCords > 0) bom.push({ cat: `Bathroom (${rc.name})`, pn: '7932', name: JERON_PARTS['7932'].name, qty: totalPullCords, cost: JERON_PARTS['7932'].cost });
 
-    // Console
-    const rConsoleMap = {
-      'rcare_cc980': 'CC980',
-      'rcare_cc10': 'CC-10',
-      'rcare_bcube': 'BCube',
-      'rcare_rcube': 'RCube',
-    };
-    const rConsole = rConsoleMap[answers.consoleType];
-    if (rConsole && rConsole !== 'BCube' && rConsole !== 'RCube') {
-      bom.push({ cat: 'Nurse Stations', pn: rConsole, name: RCARE_PARTS[rConsole].name, qty: answers.consoleCount, cost: RCARE_PARTS[rConsole].cost });
-    }
+      // Room sensors
+      if (rc.sensors.includes('staff_assign')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: '7912-STA', name: JERON_PARTS['7912-STA'].name, qty: totalRooms, cost: JERON_PARTS['7912-STA'].cost });
+      if (rc.sensors.includes('code_blue')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: '7930', name: JERON_PARTS['7930'].name + ' (Code Blue)', qty: totalRooms, cost: JERON_PARTS['7930'].cost });
+      if (rc.sensors.includes('door_monitor')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: '7950-DB', name: JERON_PARTS['7950-DB'].name, qty: totalRooms, cost: JERON_PARTS['7950-DB'].cost });
+      if (rc.sensors.includes('bed_exit')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: '7950-BE', name: JERON_PARTS['7950-BE'].name, qty: totalBeds, cost: JERON_PARTS['7950-BE'].cost });
 
-    // Wireless
-    if (answers.wireless === 'rcare_rphone') {
-      bom.push({ cat: 'Communication', pn: 'RPhone', name: RCARE_PARTS['RPhone'].name, qty: answers.consoleCount * 2, cost: RCARE_PARTS['RPhone'].cost });
-    } else if (answers.wireless === 'rcare_pager') {
-      bom.push({ cat: 'Communication', pn: 'Pager-Int', name: RCARE_PARTS['Pager-Int'].name, qty: 1, cost: RCARE_PARTS['Pager-Int'].cost });
-    }
+      // Display/communication
+      if (rc.displays.includes('tv')) bom.push({ cat: `Display (${rc.name})`, pn: 'TV-INT', name: JERON_PARTS['TV-INT'].name, qty: totalRooms, cost: JERON_PARTS['TV-INT'].cost });
+      if (rc.displays.includes('ai_assist')) bom.push({ cat: `Display (${rc.name})`, pn: 'AI-ASST', name: JERON_PARTS['AI-ASST'].name, qty: totalRooms, cost: JERON_PARTS['AI-ASST'].cost });
+      if (rc.displays.includes('tablet')) bom.push({ cat: `Display (${rc.name})`, pn: 'TAB-CC', name: JERON_PARTS['TAB-CC'].name, qty: totalRooms, cost: JERON_PARTS['TAB-CC'].cost });
+      if (rc.displays.includes('infotainment')) bom.push({ cat: `Display (${rc.name})`, pn: 'DIS-INFO', name: JERON_PARTS['DIS-INFO'].name, qty: totalRooms, cost: JERON_PARTS['DIS-INFO'].cost });
 
-    // Integrations
-    if (answers.integrations.includes('int_ehr')) {
-      bom.push({ cat: 'Software/Integration', pn: 'PCC-Int', name: RCARE_PARTS['PCC-Int'].name, qty: 1, cost: RCARE_PARTS['PCC-Int'].cost });
+    } else {
+      // RCare room equipment
+      const pendantQty = Math.ceil(totalBeds * 1.2);
+      bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'Pretty-G4', name: RCARE_PARTS['Pretty-G4'].name, qty: pendantQty, cost: RCARE_PARTS['Pretty-G4'].cost });
+      if (rc.accessories.includes('pull_cord')) bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'BP-7RWR', name: RCARE_PARTS['BP-7RWR'].name, qty: totalBeds, cost: RCARE_PARTS['BP-7RWR'].cost });
+      if (rc.accessories.includes('pillow_speaker')) bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'JR-14', name: RCARE_PARTS['JR-14'].name + ' (Bedside)', qty: totalBeds, cost: RCARE_PARTS['JR-14'].cost });
+      if (rc.accessories.includes('pressure_pad')) bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'RC-PP', name: RCARE_PARTS['RC-PP'].name, qty: totalBeds, cost: RCARE_PARTS['RC-PP'].cost });
+
+      // Bathrooms
+      const totalPullCords = rc.pullLayout === 'separate' ? totalRooms * rc.bathsPerRoom * 2 : totalRooms * rc.bathsPerRoom;
+      if (totalPullCords > 0) bom.push({ cat: `Bathroom (${rc.name})`, pn: 'BP-7RWR', name: RCARE_PARTS['BP-7RWR'].name + ' (Bath)', qty: totalPullCords, cost: RCARE_PARTS['BP-7RWR'].cost });
+
+      // Sensors
+      if (rc.sensors.includes('door_window')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: 'WD-3', name: RCARE_PARTS['WD-3'].name, qty: totalRooms, cost: RCARE_PARTS['WD-3'].cost });
+      if (rc.sensors.includes('activity')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: 'MS-6', name: RCARE_PARTS['MS-6'].name, qty: totalRooms, cost: RCARE_PARTS['MS-6'].cost });
+      if (rc.sensors.includes('bed_chair')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: 'RC-BCA9', name: RCARE_PARTS['RC-BCA9'].name, qty: totalBeds, cost: RCARE_PARTS['RC-BCA9'].cost });
+      if (rc.sensors.includes('universal_tx')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: 'UT-RE3', name: RCARE_PARTS['UT-RE3'].name, qty: totalRooms, cost: RCARE_PARTS['UT-RE3'].cost });
+      if (rc.sensors.includes('wander_tx')) bom.push({ cat: `Room Sensors (${rc.name})`, pn: 'RC-WTC', name: RCARE_PARTS['RC-WTC'].name, qty: totalBeds, cost: RCARE_PARTS['RC-WTC'].cost });
+
+      // Display
+      if (rc.displays.includes('tv')) bom.push({ cat: `Display (${rc.name})`, pn: 'RC-TV', name: RCARE_PARTS['RC-TV'].name, qty: totalRooms, cost: RCARE_PARTS['RC-TV'].cost });
+      if (rc.displays.includes('ai_assist')) bom.push({ cat: `Display (${rc.name})`, pn: 'RC-AI', name: RCARE_PARTS['RC-AI'].name, qty: totalRooms, cost: RCARE_PARTS['RC-AI'].cost });
+      if (rc.displays.includes('tablet')) bom.push({ cat: `Display (${rc.name})`, pn: 'RC-TAB', name: RCARE_PARTS['RC-TAB'].name, qty: totalRooms, cost: RCARE_PARTS['RC-TAB'].cost });
+      if (rc.displays.includes('infotainment')) bom.push({ cat: `Display (${rc.name})`, pn: 'RC-INFO', name: RCARE_PARTS['RC-INFO'].name, qty: totalRooms, cost: RCARE_PARTS['RC-INFO'].cost });
     }
-    if (answers.integrations.includes('int_wander')) {
-      bom.push({ cat: 'Software/Integration', pn: 'Wander-Int', name: RCARE_PARTS['Wander-Int'].name, qty: 1, cost: RCARE_PARTS['Wander-Int'].cost });
+  });
+
+  // ---- NURSES STATIONS ----
+  answers.nurseStations.forEach(ns => {
+    if (isJeron) {
+      const cMap = { 'jeron_7965':'7965', 'jeron_7965b':'7965-B', 'jeron_7985':'7985', 'jeron_7967':'7967-M' };
+      const cPn = cMap[ns.consoleType] || '7965';
+      bom.push({ cat: `Nurse Station (${ns.name})`, pn: cPn, name: JERON_PARTS[cPn].name, qty: ns.count, cost: JERON_PARTS[cPn].cost });
+      if (ns.hardware.includes('secondary_display')) bom.push({ cat: `Nurse Station (${ns.name})`, pn: '7967-DIS', name: JERON_PARTS['7967-DIS'].name, qty: ns.count, cost: JERON_PARTS['7967-DIS'].cost });
+      if (ns.hardware.includes('bt_handset')) bom.push({ cat: `Nurse Station (${ns.name})`, pn: '7965-B', name: 'Bluetooth Handset Add-on', qty: ns.count, cost: 487.50 });
+      if (ns.hardware.includes('duty_terminal')) bom.push({ cat: `Nurse Station (${ns.name})`, pn: '7967-S', name: JERON_PARTS['7967-S'].name, qty: ns.count, cost: JERON_PARTS['7967-S'].cost });
+      if (ns.hardware.includes('staff_assign_display')) bom.push({ cat: `Nurse Station (${ns.name})`, pn: '7912-STA', name: JERON_PARTS['7912-STA'].name, qty: ns.count, cost: JERON_PARTS['7912-STA'].cost });
+    } else {
+      const rMap = { 'rcare_cc980':'CC980', 'rcare_cc10':'CC-10' };
+      const rPn = rMap[ns.consoleType] || 'CC980';
+      bom.push({ cat: `Nurse Station (${ns.name})`, pn: rPn, name: RCARE_PARTS[rPn].name, qty: ns.count, cost: RCARE_PARTS[rPn].cost });
+      if (ns.hardware.includes('secondary_display')) bom.push({ cat: `Nurse Station (${ns.name})`, pn: 'CC-10', name: 'Secondary Display Console', qty: ns.count, cost: RCARE_PARTS['CC-10'].cost });
+      if (ns.hardware.includes('staff_assign_display')) bom.push({ cat: `Nurse Station (${ns.name})`, pn: 'RK-77', name: 'Staff Assignment Keypad', qty: ns.count, cost: RCARE_PARTS['RK-77'].cost });
     }
-    if (answers.integrations.includes('int_rtls')) {
-      bom.push({ cat: 'Software/Integration', pn: 'MCube', name: RCARE_PARTS['MCube'].name, qty: 1, cost: RCARE_PARTS['MCube'].cost });
+  });
+
+  // ---- HALLWAY ----
+  const hall = answers.hallway || {};
+  if (hall.ledType && hall.ledType !== 'none') {
+    const domeQty = hall.placement === 'per_2rooms' ? Math.ceil(beds / 2) : beds;
+    if (isJeron) {
+      const domePn = hall.ledType === 'prism_tone' ? '7973-T' : hall.ledType === 'prism' ? '7973' : '7953';
+      const domeName = hall.ledType === 'prism_tone' ? JERON_PARTS['7973-T'].name : hall.ledType === 'prism' ? JERON_PARTS['7973'].name : 'Standard Dome Light';
+      const domeCost = hall.ledType === 'prism_tone' ? JERON_PARTS['7973-T'].cost : hall.ledType === 'prism' ? JERON_PARTS['7973'].cost : 180;
+      bom.push({ cat: 'Hallway Indicators', pn: domePn, name: domeName, qty: domeQty, cost: domeCost });
+    } else {
+      bom.push({ cat: 'Hallway Indicators', pn: 'Dome-LED', name: RCARE_PARTS['Dome-LED'].name, qty: domeQty, cost: RCARE_PARTS['Dome-LED'].cost });
     }
   }
 
-  // Calculate totals
-  let equipDealerTotal = 0;
-  let equipSellTotal = 0;
+  const hallOpts = hall.options || [];
+  if (hallOpts.includes('zone_lights')) bom.push({ cat: 'Hallway Indicators', pn: isJeron?'7973':'Dome-LED', name: 'Zone Indicator Light', qty: Math.ceil(beds / 15), cost: isJeron?312:180 });
+  if (hallOpts.includes('audio_annunciator')) bom.push({ cat: 'Hallway Displays', pn: isJeron?'7970-PA':'RC-HAUD', name: isJeron?JERON_PARTS['7970-PA'].name:RCARE_PARTS['RC-HAUD'].name, qty: Math.ceil(beds/30), cost: isJeron?JERON_PARTS['7970-PA'].cost:RCARE_PARTS['RC-HAUD'].cost });
+  if (hallOpts.includes('digital_display')) bom.push({ cat: 'Hallway Displays', pn: isJeron?'7973-D':'RC-HDIS', name: isJeron?JERON_PARTS['7973-D'].name:RCARE_PARTS['RC-HDIS'].name, qty: Math.ceil(beds/30), cost: isJeron?JERON_PARTS['7973-D'].cost:RCARE_PARTS['RC-HDIS'].cost });
+  if (hallOpts.includes('master_display')) bom.push({ cat: 'Hallway Displays', pn: isJeron?'7973-M':'RC-MDIS', name: isJeron?JERON_PARTS['7973-M'].name:RCARE_PARTS['RC-MDIS'].name, qty: 1, cost: isJeron?JERON_PARTS['7973-M'].cost:RCARE_PARTS['RC-MDIS'].cost });
+  if (hallOpts.includes('room_led')) bom.push({ cat: 'Room Indicators', pn: isJeron?'7973-RM':'RC-RMPN', name: isJeron?JERON_PARTS['7973-RM'].name:RCARE_PARTS['RC-RMPN'].name, qty: beds, cost: isJeron?JERON_PARTS['7973-RM'].cost:RCARE_PARTS['RC-RMPN'].cost });
+  if (hallOpts.includes('status_display')) bom.push({ cat: 'Room Indicators', pn: isJeron?'7973-ST':'RC-STPN', name: isJeron?JERON_PARTS['7973-ST'].name:RCARE_PARTS['RC-STPN'].name, qty: beds, cost: isJeron?JERON_PARTS['7973-ST'].cost:RCARE_PARTS['RC-STPN'].cost });
+  if (hallOpts.includes('rgb_strip')) bom.push({ cat: 'Room Indicators', pn: isJeron?'7973-RGB':'RC-RGB', name: isJeron?JERON_PARTS['7973-RGB'].name:RCARE_PARTS['RC-RGB'].name, qty: beds, cost: isJeron?JERON_PARTS['7973-RGB'].cost:RCARE_PARTS['RC-RGB'].cost });
+
+  // ---- SOFTWARE/INTEGRATIONS ----
+  const ints = answers.integrations || [];
+  if (isJeron) {
+    if (ints.includes('int_ehr')) bom.push({ cat: 'Software', pn: '7977', name: JERON_PARTS['7977'].name, qty: 1, cost: JERON_PARTS['7977'].cost });
+    if (ints.includes('int_sip')) bom.push({ cat: 'Software', pn: '7978', name: JERON_PARTS['7978'].name, qty: 1, cost: JERON_PARTS['7978'].cost });
+    if (ints.includes('int_paging')) bom.push({ cat: 'Software', pn: '7979', name: JERON_PARTS['7979'].name, qty: 1, cost: JERON_PARTS['7979'].cost });
+    if (ints.includes('int_staff')) bom.push({ cat: 'Software', pn: '7980', name: JERON_PARTS['7980'].name, qty: 1, cost: JERON_PARTS['7980'].cost });
+    if (ints.includes('int_rtls')) bom.push({ cat: 'Software', pn: '7981', name: JERON_PARTS['7981'].name, qty: 1, cost: JERON_PARTS['7981'].cost });
+    if (ints.includes('int_barcode')) bom.push({ cat: 'Software', pn: '7982', name: JERON_PARTS['7982'].name, qty: 1, cost: JERON_PARTS['7982'].cost });
+    if (ints.includes('int_reporting')) bom.push({ cat: 'Software', pn: '7983', name: JERON_PARTS['7983'].name, qty: 1, cost: JERON_PARTS['7983'].cost });
+    if (ints.includes('int_pc_console')) bom.push({ cat: 'Software', pn: '7985', name: JERON_PARTS['7985'].name, qty: 1, cost: JERON_PARTS['7985'].cost });
+    if (ints.includes('int_mapview')) bom.push({ cat: 'Software', pn: '7986', name: JERON_PARTS['7986'].name, qty: 1, cost: JERON_PARTS['7986'].cost });
+    if (ints.includes('int_android')) bom.push({ cat: 'Software', pn: '7987', name: JERON_PARTS['7987'].name, qty: 1, cost: JERON_PARTS['7987'].cost });
+    if (ints.includes('int_voice_pa')) bom.push({ cat: 'Software', pn: '7970', name: JERON_PARTS['7970'].name, qty: 1, cost: JERON_PARTS['7970'].cost });
+  } else {
+    if (ints.includes('int_ehr')) bom.push({ cat: 'Software', pn: 'PCC-Int', name: RCARE_PARTS['PCC-Int'].name, qty: 1, cost: RCARE_PARTS['PCC-Int'].cost });
+    if (ints.includes('int_wander')) bom.push({ cat: 'Software', pn: 'Wander-Int', name: RCARE_PARTS['Wander-Int'].name, qty: 1, cost: RCARE_PARTS['Wander-Int'].cost });
+    if (ints.includes('int_mcube')) bom.push({ cat: 'Software', pn: 'MCube', name: RCARE_PARTS['MCube'].name, qty: 1, cost: RCARE_PARTS['MCube'].cost });
+    if (ints.includes('int_vcube')) bom.push({ cat: 'Software', pn: 'VCube', name: RCARE_PARTS['VCube'].name, qty: 1, cost: RCARE_PARTS['VCube'].cost });
+    if (ints.includes('int_pager')) bom.push({ cat: 'Software', pn: 'Pager-Int', name: RCARE_PARTS['Pager-Int'].name, qty: 1, cost: RCARE_PARTS['Pager-Int'].cost });
+    if (ints.includes('int_rphone')) bom.push({ cat: 'Software', pn: 'RPhone', name: RCARE_PARTS['RPhone'].name, qty: answers.nurseStations.reduce((s,ns)=>s+ns.count,0)*2, cost: RCARE_PARTS['RPhone'].cost });
+    if (ints.includes('int_activity')) bom.push({ cat: 'Software', pn: 'RC-ACT', name: RCARE_PARTS['RC-ACT'].name, qty: 1, cost: RCARE_PARTS['RC-ACT'].cost });
+  }
+
+  // ---- TOTALS ----
+  let equipDealerTotal = 0, equipSellTotal = 0;
   const bomWithPricing = bom.map(item => {
     const lineDealer = item.cost * item.qty;
     const lineSell = sellPrice(item.cost) * item.qty;
     equipDealerTotal += lineDealer;
     equipSellTotal += lineSell;
-    return {
-      ...item,
-      lineDealer,
-      lineSell,
-      unitSell: sellPrice(item.cost),
-    };
+    return { ...item, lineDealer, lineSell, unitSell: sellPrice(item.cost) };
   });
 
-  // Installation
   let installCost = 0;
   if (answers.installation === 'professional') installCost = 150 * beds;
   if (answers.installation === 'turnkey') installCost = 250 * beds;
@@ -1054,24 +1294,20 @@ function buildSystemDesign() {
   const grandTotal = equipSellTotal + installCost;
   const marginTotal = equipSellTotal - equipDealerTotal;
 
-  // Financing options (based on mid-range estimate)
-  const midTotal = grandTotal;
   const financing = {
     apr: FINANCE_APR,
     terms: [
-      { months: 36, monthly: calcMonthlyPayment(midTotal, FINANCE_APR, 36) },
-      { months: 48, monthly: calcMonthlyPayment(midTotal, FINANCE_APR, 48) },
-      { months: 60, monthly: calcMonthlyPayment(midTotal, FINANCE_APR, 60) },
+      { months: 36, monthly: calcMonthlyPayment(grandTotal, FINANCE_APR, 36) },
+      { months: 48, monthly: calcMonthlyPayment(grandTotal, FINANCE_APR, 48) },
+      { months: 60, monthly: calcMonthlyPayment(grandTotal, FINANCE_APR, 60) },
     ],
   };
 
-  // NCaaS (Nurse Call as a Service) — equipment + maintenance + monitoring
-  const ncaasMonthly = (midTotal * NCAAS_MARKUP) / NCAAS_TERM;
-  const ncaasPerBed = ncaasMonthly / beds;
+  const ncaasMonthly = (grandTotal * NCAAS_MARKUP) / NCAAS_TERM;
   const ncaas = {
     termMonths: NCAAS_TERM,
     monthly: ncaasMonthly,
-    perBed: ncaasPerBed,
+    perBed: ncaasMonthly / beds,
     includes: [
       'All system equipment and components',
       'Professional installation and commissioning',
@@ -1082,19 +1318,9 @@ function buildSystemDesign() {
     ],
   };
 
-  return {
-    bom: bomWithPricing,
-    equipDealerTotal,
-    equipSellTotal,
-    installCost,
-    grandTotal,
-    marginTotal,
-    financing,
-    ncaas,
-    facilityImage: facilityImageData,
-    answers,
-  };
+  return { bom: bomWithPricing, equipDealerTotal, equipSellTotal, installCost, grandTotal, marginTotal, financing, ncaas, facilityImage: facilityImageData, answers };
 }
+
 
 // ---- Render Quote ----
 function renderQuote(result) {
@@ -1104,36 +1330,54 @@ function renderQuote(result) {
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const intLabels = a.integrationsLabels && a.integrationsLabels.length > 0 ? a.integrationsLabels.join(', ') : 'None';
-
-  // Calculate +/- 30% range
   const rangeLow = Math.round(result.grandTotal * 0.70);
   const rangeHigh = Math.round(result.grandTotal * 1.30);
 
-  // Build system summary grouped by category (no prices, no part numbers)
+  // Build system summary grouped by category
   const categories = {};
   result.bom.forEach(item => {
     if (!categories[item.cat]) categories[item.cat] = [];
     categories[item.cat].push(item);
   });
-
   let summaryHtml = '';
   for (const [cat, items] of Object.entries(categories)) {
-    summaryHtml += `<div class="summary-category">
-      <h3 class="summary-cat-title">${cat}</h3>
-      <ul class="summary-list">`;
-    items.forEach(item => {
-      summaryHtml += `<li>${item.name} <span class="summary-qty">\u00d7${item.qty}</span></li>`;
-    });
+    summaryHtml += `<div class="summary-category"><h3 class="summary-cat-title">${cat}</h3><ul class="summary-list">`;
+    items.forEach(item => { summaryHtml += `<li>${item.name} <span class="summary-qty">\u00d7${item.qty}</span></li>`; });
     summaryHtml += '</ul></div>';
   }
 
   // Facility image
   const facilityImgHtml = result.facilityImage
-    ? `<div class="facility-image-wrap">
-         <img src="${result.facilityImage}" alt="${a.leadFacility || 'Facility'}" class="facility-image" />
-         <div class="facility-image-label">${a.leadFacility || ''}</div>
-       </div>`
+    ? `<div class="facility-image-wrap"><img src="${result.facilityImage}" alt="${a.leadFacility || 'Facility'}" class="facility-image" /><div class="facility-image-label">${a.leadFacility || ''}</div></div>`
     : '';
+
+  // Room configs summary
+  let roomConfigHtml = '';
+  (a.roomConfigs || []).forEach((rc, i) => {
+    roomConfigHtml += `<div style="background:var(--color-surface-offset);padding:var(--space-3);border-radius:var(--radius-md);margin-bottom:var(--space-3);">
+      <strong>${rc.name}</strong> — ${rc.qty} rooms, ${rc.bedsPerRoom} bed(s)/room, ${rc.bathsPerRoom} bath(s)
+      <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);">
+        Accessories: ${rc.accessories.length ? rc.accessories.join(', ') : 'None'} |
+        Sensors: ${rc.sensors.length ? rc.sensors.join(', ') : 'None'} |
+        Display: ${rc.displays.length ? rc.displays.join(', ') : 'None'}
+      </div>
+    </div>`;
+  });
+
+  // Nurse stations summary
+  let nsHtml = '';
+  (a.nurseStations || []).forEach(ns => {
+    nsHtml += `<div style="background:var(--color-surface-offset);padding:var(--space-3);border-radius:var(--radius-md);margin-bottom:var(--space-2);">
+      <strong>${ns.name}</strong> — ${ns.count} console(s), ${ns.consoleType.replace(/_/g,' ')}
+      ${ns.hardware.length ? `<div style="font-size:var(--text-xs);color:var(--color-text-muted);">Add-ons: ${ns.hardware.join(', ')}</div>` : ''}
+    </div>`;
+  });
+
+  // Hallway summary
+  const h = a.hallway || {};
+  const hallSummary = h.ledType && h.ledType !== 'none'
+    ? `LED: ${h.ledType} (${h.placement})${h.options && h.options.length ? ' | ' + h.options.join(', ') : ''}`
+    : 'No corridor LEDs' + (h.options && h.options.length ? ' | ' + h.options.join(', ') : '');
 
   // Financing
   const fin = result.financing;
@@ -1160,10 +1404,7 @@ function renderQuote(result) {
   const ncBedHigh = (nc.perBed * 1.30).toFixed(2);
   let ncIncludes = '';
   nc.includes.forEach(item => {
-    ncIncludes += `<li>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-      ${item}
-    </li>`;
+    ncIncludes += `<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ${item}</li>`;
   });
 
   qv.innerHTML = `
@@ -1181,90 +1422,70 @@ function renderQuote(result) {
       </div>
     </div>
     <div class="quote-body">
-      <!-- Facility Profile -->
       <div class="quote-section">
-        <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg>
-          Facility Profile
-        </h2>
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg> Facility Profile</h2>
         <div class="facility-grid">
           <div class="facility-item"><div class="label">Facility Type</div><div class="value">${a.facilityTypeLabel}</div></div>
-          <div class="facility-item"><div class="label">Beds/Rooms</div><div class="value">${a.beds}</div></div>
+          <div class="facility-item"><div class="label">Total Beds</div><div class="value">${a.beds}</div></div>
           <div class="facility-item"><div class="label">Project Type</div><div class="value">${a.constructionTypeLabel}</div></div>
           <div class="facility-item"><div class="label">Platform</div><div class="value">${a.platformLabel}</div></div>
-          <div class="facility-item"><div class="label">Patient Station</div><div class="value">${a.stationTypeLabel}</div></div>
-          <div class="facility-item"><div class="label">Bathroom Stations</div><div class="value">${a.bathroomLabel}</div></div>
-          <div class="facility-item"><div class="label">Console Type</div><div class="value">${a.consoleTypeLabel}</div></div>
-          <div class="facility-item"><div class="label">Consoles</div><div class="value">${a.consoleCount}</div></div>
-          <div class="facility-item"><div class="label">Dome Lights</div><div class="value">${a.domeLightsLabel}</div></div>
-          <div class="facility-item"><div class="label">Wireless Alerting</div><div class="value">${a.wirelessLabel}</div></div>
-          <div class="facility-item"><div class="label">Integrations</div><div class="value">${intLabels}</div></div>
           <div class="facility-item"><div class="label">Installation</div><div class="value">${a.installationLabel}</div></div>
+          <div class="facility-item"><div class="label">Integrations</div><div class="value">${intLabels}</div></div>
         </div>
       </div>
 
-      <!-- System Components -->
       <div class="quote-section">
-        <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
-          System Components
-        </h2>
-        <div class="system-summary">
-          ${summaryHtml}
-        </div>
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg> Room Configurations</h2>
+        ${roomConfigHtml}
       </div>
 
-      <!-- Estimated Investment -->
       <div class="quote-section">
-        <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          Estimated Investment
-        </h2>
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Nurses Stations</h2>
+        ${nsHtml}
+      </div>
+
+      <div class="quote-section">
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Hallway Configuration</h2>
+        <p style="color:var(--color-text-muted);">${hallSummary}</p>
+      </div>
+
+      <div class="quote-section">
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg> System Components</h2>
+        <div class="system-summary">${summaryHtml}</div>
+      </div>
+
+      <div class="quote-section">
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Estimated Investment</h2>
         <div class="estimate-box">
           <div class="estimate-range">
             <div class="estimate-low">${fmt(rangeLow)}</div>
             <div class="estimate-dash">\u2014</div>
             <div class="estimate-high">${fmt(rangeHigh)}</div>
           </div>
-          <p class="estimate-note">This estimate is based on the specifications above. Final pricing will be determined after an on-site survey and detailed engineering review by NexusCT. Actual costs may vary based on facility layout, cabling requirements, and site-specific conditions.</p>
+          <p class="estimate-note">This estimate is based on the specifications above. Final pricing will be determined after an on-site survey and detailed engineering review by NexusCT.</p>
         </div>
       </div>
 
-      <!-- Financing Options -->
       <div class="quote-section">
-        <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Financing Options
-        </h2>
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Financing Options</h2>
         <p class="section-subtitle">Spread your investment over time with flexible financing at ${(fin.apr * 100).toFixed(1)}% APR.</p>
-        <div class="financing-cards">
-          ${finCardsHtml}
-        </div>
-        <p class="financing-disclaimer">Financing subject to credit approval. Rates and terms may vary. Estimated payments shown are based on the investment range above.</p>
+        <div class="financing-cards">${finCardsHtml}</div>
+        <p class="financing-disclaimer">Financing subject to credit approval. Rates and terms may vary.</p>
       </div>
 
-      <!-- NCaaS -->
       <div class="quote-section">
-        <h2>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4z"/><path d="M2 10h20"/><path d="M12 14v4"/><path d="M8 14v4"/><path d="M16 14v4"/></svg>
-          Nurse Call as a Service (NCaaS)
-        </h2>
-        <p class="section-subtitle">Eliminate capital expenditure entirely. Get a fully managed nurse call system as a monthly operating expense.</p>
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H4z"/><path d="M2 10h20"/></svg> Nurse Call as a Service (NCaaS)</h2>
+        <p class="section-subtitle">Eliminate capital expenditure entirely with a monthly operating expense.</p>
         <div class="ncaas-box">
           <div class="ncaas-pricing">
             <div class="ncaas-amount">${fmtWhole(ncMonthLow)} \u2014 ${fmtWhole(ncMonthHigh)}<span>/mo</span></div>
             <div class="ncaas-perbed">$${ncBedLow} \u2014 $${ncBedHigh} per bed/month</div>
             <div class="ncaas-term">${nc.termMonths}-month service agreement</div>
           </div>
-          <div class="ncaas-includes">
-            <h4>Everything Included:</h4>
-            <ul>${ncIncludes}</ul>
-          </div>
+          <div class="ncaas-includes"><h4>Everything Included:</h4><ul>${ncIncludes}</ul></div>
         </div>
-        <p class="financing-disclaimer">NCaaS pricing is estimated and subject to final site survey. Agreement terms and conditions apply. CapEx-to-OpEx conversion simplifies budgeting and includes full lifecycle management.</p>
       </div>
 
-      <!-- Terms -->
       <div class="quote-section" style="margin-top:var(--space-6);">
         <div style="background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4);font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.7;">
           <strong style="color:var(--color-text);">Disclaimer</strong><br>
@@ -1274,13 +1495,12 @@ function renderQuote(result) {
         </div>
       </div>
 
-      <!-- Actions -->
       <div class="quote-actions">
         <button class="btn btn-primary" onclick="downloadPDF()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download Estimate PDF
         </button>
-        <a class="btn btn-success" href="mailto:jmazza@nexusct.com?subject=Nurse Call Estimate \u2014 ${encodeURIComponent(a.leadFacility || a.facilityTypeLabel)} \u2014 ${a.beds} Beds&body=${encodeURIComponent('Name: ' + (a.leadName || '') + '\nEmail: ' + (a.leadEmail || '') + '\nPhone: ' + (a.leadPhone || '') + '\nFacility: ' + (a.leadFacility || '') + (a.leadNotes ? '\nNotes: ' + a.leadNotes : '') + '\n\nI\'d like to discuss a nurse call system for our ' + a.beds + '-bed ' + a.facilityTypeLabel + ' facility.\n\nEstimated range: ' + fmt(rangeLow) + ' \u2014 ' + fmt(rangeHigh) + '\n\nPlease contact me to schedule a site survey.\n\nGenerated by NexusCT System Designer.')}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+        <a class="btn btn-success" href="mailto:jmazza@nexusct.com?subject=Nurse Call Estimate \u2014 ${encodeURIComponent(a.leadFacility || a.facilityTypeLabel)} \u2014 ${a.beds} Beds&body=${encodeURIComponent('Name: ' + (a.leadName || '') + '\nFacility: ' + (a.leadFacility || '') + '\nBeds: ' + a.beds + '\n\nPlease contact me to schedule a site survey.\n\nGenerated by NexusCT System Designer.')}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           Request Site Survey
         </a>
@@ -1292,16 +1512,19 @@ function renderQuote(result) {
     </div>
   `;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // Store result globally for PDF
   window._quoteResult = result;
 }
+
 
 // ---- Start Over ----
 window.startOver = function() {
   answers = {};
+  answers.roomConfigs = [];
+  answers.nurseStations = [];
   currentStep = 0;
   selectedIntegrations = [];
+  window._btnGroupValues = {};
+  window._consoleValues = {};
   document.getElementById('quoteView').style.display = 'none';
   document.getElementById('quoteView').innerHTML = '';
   document.getElementById('chatView').style.display = 'flex';
@@ -1310,6 +1533,7 @@ window.startOver = function() {
   updateProgress(0);
   startConversation();
 };
+
 
 // ---- PDF Generation ----
 window.downloadPDF = function() {
@@ -1330,11 +1554,7 @@ window.downloadPDF = function() {
     doc.text('NexusCT | Nexus Communications Technology | (847) 796-5585 | info@nxsct.com | Schaumburg, IL', pw / 2, ph - 8, { align: 'center' });
   }
 
-  // ==========================================
-  // PAGE 1: COVER PAGE
-  // ==========================================
-
-  // Full-width dark header
+  // PAGE 1: COVER
   doc.setFillColor(26, 26, 46);
   doc.rect(0, 0, pw, 50, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1345,7 +1565,6 @@ window.downloadPDF = function() {
   doc.setFont('helvetica', 'normal');
   doc.text('Nexus Communications Technology', 14, 32);
   doc.text('(847) 796-5585  |  info@nxsct.com  |  Schaumburg, IL', 14, 40);
-
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   doc.text('SYSTEM ESTIMATE', pw - 14, 22, { align: 'right' });
@@ -1355,27 +1574,15 @@ window.downloadPDF = function() {
   doc.text(`Ref #${refNo}`, pw - 14, 40, { align: 'right' });
 
   let yPos = 65;
-
-  // Facility image (if available)
   if (result.facilityImage) {
-    try {
-      const imgWidth = pw - 28;
-      const imgHeight = 60;
-      doc.addImage(result.facilityImage, 'JPEG', 14, yPos, imgWidth, imgHeight);
-      yPos += imgHeight + 8;
-    } catch (e) {
-      console.warn('Could not add facility image to PDF:', e);
-    }
+    try { doc.addImage(result.facilityImage, 'JPEG', 14, yPos, pw - 28, 60); yPos += 68; } catch (e) {}
   }
 
-  // Prepared For
   if (a.leadName || a.leadFacility) {
     doc.setTextColor(0, 86, 179);
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.text('Prepared For', 14, yPos);
-    yPos += 8;
-
+    doc.text('Prepared For', 14, yPos); yPos += 8;
     doc.setTextColor(60, 60, 60);
     doc.setFontSize(10);
     if (a.leadFacility) { doc.setFont('helvetica', 'bold'); doc.text(a.leadFacility, 14, yPos); yPos += 6; }
@@ -1387,7 +1594,7 @@ window.downloadPDF = function() {
     yPos += 5;
   }
 
-  // Investment Range box on cover
+  // Investment range box
   doc.setFillColor(26, 26, 46);
   doc.roundedRect(14, yPos, pw - 28, 30, 3, 3, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1401,15 +1608,10 @@ window.downloadPDF = function() {
   doc.setFontSize(8);
   doc.setTextColor(180, 180, 200);
   doc.text('Including equipment + installation | Final pricing after site survey', 20, yPos + 20);
-
   addFooter();
 
-  // ==========================================
-  // PAGE 2: FACILITY PROFILE + SYSTEM COMPONENTS
-  // ==========================================
+  // PAGE 2: Components
   doc.addPage();
-
-  // Header bar
   doc.setFillColor(26, 26, 46);
   doc.rect(0, 0, pw, 18, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1420,43 +1622,6 @@ window.downloadPDF = function() {
   doc.text(`Ref #${refNo}`, pw - 14, 12, { align: 'right' });
 
   yPos = 28;
-
-  // Facility Profile
-  doc.setTextColor(0, 86, 179);
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Facility Profile', 14, yPos);
-  yPos += 7;
-
-  doc.setTextColor(60, 60, 60);
-  doc.setFontSize(9);
-  doc.setFont('helvetica', 'normal');
-
-  const infoItems = [
-    ['Facility Type', a.facilityTypeLabel],
-    ['Beds/Rooms', String(a.beds)],
-    ['Project Type', a.constructionTypeLabel],
-    ['Platform', a.platformLabel],
-    ['Patient Station', a.stationTypeLabel],
-    ['Bathroom Stations', a.bathroomLabel],
-    ['Console Type', a.consoleTypeLabel],
-    ['Console Count', String(a.consoleCount)],
-    ['Dome Lights', a.domeLightsLabel],
-    ['Wireless Alerting', a.wirelessLabel],
-    ['Installation', a.installationLabel],
-  ];
-
-  infoItems.forEach(([label, value]) => {
-    doc.setFont('helvetica', 'bold');
-    doc.text(label + ':', 14, yPos);
-    doc.setFont('helvetica', 'normal');
-    doc.text(value || '', 55, yPos);
-    yPos += 5;
-  });
-
-  yPos += 5;
-
-  // System Components table
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
@@ -1469,12 +1634,9 @@ window.downloadPDF = function() {
     if (!categories[item.cat]) categories[item.cat] = [];
     categories[item.cat].push(item);
   });
-
   for (const [cat, items] of Object.entries(categories)) {
     tableData.push([{ content: cat, colSpan: 2, styles: { fontStyle: 'bold', fillColor: [227, 239, 252], textColor: [0, 86, 179], fontSize: 8 } }]);
-    items.forEach(item => {
-      tableData.push([item.name, String(item.qty)]);
-    });
+    items.forEach(item => { tableData.push([item.name, String(item.qty)]); });
   }
 
   doc.autoTable({
@@ -1484,20 +1646,13 @@ window.downloadPDF = function() {
     theme: 'grid',
     headStyles: { fillColor: [0, 86, 179], textColor: 255, fontStyle: 'bold', fontSize: 8 },
     bodyStyles: { fontSize: 8 },
-    columnStyles: {
-      0: { cellWidth: 140 },
-      1: { halign: 'center', cellWidth: 25 },
-    },
+    columnStyles: { 0: { cellWidth: 140 }, 1: { halign: 'center', cellWidth: 25 } },
     margin: { left: 14, right: 14 },
     didDrawPage: function() { addFooter(); }
   });
 
-  // ==========================================
-  // PAGE 3: FINANCING + NCaaS
-  // ==========================================
+  // PAGE 3: Financing + NCaaS
   doc.addPage();
-
-  // Header bar
   doc.setFillColor(26, 26, 46);
   doc.rect(0, 0, pw, 18, 'F');
   doc.setTextColor(255, 255, 255);
@@ -1508,35 +1663,16 @@ window.downloadPDF = function() {
   doc.text(`Ref #${refNo}`, pw - 14, 12, { align: 'right' });
 
   yPos = 28;
-
-  // Investment box again
-  doc.setFillColor(26, 26, 46);
-  doc.roundedRect(14, yPos, pw - 28, 28, 3, 3, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Estimated Investment', 20, yPos + 10);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(74, 222, 128);
-  doc.text(`${fmt(rangeLow)}  \u2014  ${fmt(rangeHigh)}`, pw - 20, yPos + 19, { align: 'right' });
-  doc.setFontSize(8);
-  doc.setTextColor(180, 180, 200);
-  doc.text('Including equipment + installation', 20, yPos + 18);
-
-  yPos += 40;
-
-  // Financing Options
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.text('Financing Options', 14, yPos);
-  yPos += 4;
+  yPos += 7;
   doc.setTextColor(80, 80, 80);
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Spread your investment over time with flexible financing at ${(result.financing.apr * 100).toFixed(1)}% APR.`, 14, yPos + 3);
-  yPos += 6;
+  doc.text(`Flexible financing at ${(result.financing.apr * 100).toFixed(1)}% APR.`, 14, yPos);
+  yPos += 4;
 
   const finTableData = result.financing.terms.map(t => {
     const low = Math.round(t.monthly * 0.70);
@@ -1552,86 +1688,44 @@ window.downloadPDF = function() {
     theme: 'striped',
     headStyles: { fillColor: [0, 86, 179], textColor: 255, fontStyle: 'bold', fontSize: 9 },
     bodyStyles: { fontSize: 9 },
-    columnStyles: {
-      0: { cellWidth: 60 },
-      1: { halign: 'right' },
-    },
     margin: { left: 14, right: 14 },
   });
 
-  yPos = doc.lastAutoTable.finalY + 4;
-  doc.setFontSize(7);
-  doc.setTextColor(120, 120, 120);
-  doc.setFont('helvetica', 'italic');
-  doc.text('Financing subject to credit approval. Rates and terms may vary. Estimated payments based on investment range.', 14, yPos);
+  yPos = doc.lastAutoTable.finalY + 12;
 
-  yPos += 14;
-
-  // NCaaS Section
-  doc.setTextColor(0, 86, 179);
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Nurse Call as a Service (NCaaS)', 14, yPos);
-  yPos += 4;
-  doc.setTextColor(80, 80, 80);
-  doc.setFontSize(8);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Eliminate capital expenditure. Get a fully managed nurse call system as a monthly operating expense.', 14, yPos + 3);
-  yPos += 10;
-
-  // NCaaS pricing box
+  // NCaaS
   const nc = result.ncaas;
   const ncMonthLow = Math.round(nc.monthly * 0.70);
   const ncMonthHigh = Math.round(nc.monthly * 1.30);
   const ncBedLow = (nc.perBed * 0.70).toFixed(2);
   const ncBedHigh = (nc.perBed * 1.30).toFixed(2);
 
+  doc.setTextColor(0, 86, 179);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Nurse Call as a Service (NCaaS)', 14, yPos);
+  yPos += 8;
+
   doc.setFillColor(240, 247, 255);
-  doc.roundedRect(14, yPos, pw - 28, 48, 3, 3, 'F');
+  doc.roundedRect(14, yPos, pw - 28, 40, 3, 3, 'F');
   doc.setDrawColor(0, 86, 179);
   doc.setLineWidth(0.3);
-  doc.roundedRect(14, yPos, pw - 28, 48, 3, 3, 'S');
+  doc.roundedRect(14, yPos, pw - 28, 40, 3, 3, 'S');
 
   doc.setTextColor(0, 86, 179);
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text(`${fmtWhole(ncMonthLow)} \u2014 ${fmtWhole(ncMonthHigh)} /month`, pw / 2, yPos + 14, { align: 'center' });
-
   doc.setFontSize(9);
   doc.setTextColor(80, 80, 80);
   doc.setFont('helvetica', 'normal');
-  doc.text(`$${ncBedLow} \u2014 $${ncBedHigh} per bed/month  |  ${nc.termMonths}-month service agreement`, pw / 2, yPos + 22, { align: 'center' });
-
+  doc.text(`$${ncBedLow} \u2014 $${ncBedHigh} per bed/month  |  ${nc.termMonths}-month agreement`, pw / 2, yPos + 22, { align: 'center' });
   doc.setFontSize(8);
-  doc.setTextColor(60, 60, 60);
-  let includeY = yPos + 30;
-  doc.setFont('helvetica', 'bold');
-  doc.text('Includes:', 20, includeY);
-  doc.setFont('helvetica', 'normal');
-  const includeText = nc.includes.join('  |  ');
-  const splitIncludes = doc.splitTextToSize(includeText, pw - 48);
-  doc.text(splitIncludes, 20, includeY + 5);
-
-  yPos += 60;
-
-  doc.setFontSize(7);
-  doc.setTextColor(120, 120, 120);
-  doc.setFont('helvetica', 'italic');
-  doc.text('NCaaS pricing estimated and subject to final site survey. CapEx-to-OpEx conversion simplifies budgeting with full lifecycle management.', 14, yPos);
-
-  yPos += 14;
-
-  // Terms
-  doc.setFontSize(8);
-  doc.setTextColor(100, 100, 100);
-  doc.setFont('helvetica', 'italic');
-  doc.text('This is a preliminary budget estimate and does not constitute a formal quote or proposal.', 14, yPos);
-  doc.text('Final pricing requires an on-site assessment. 5-year manufacturer warranty included. Tax not included.', 14, yPos + 4);
-  doc.text('Contact NexusCT to schedule your complimentary site survey.', 14, yPos + 8);
+  doc.text('Includes: ' + nc.includes.join('  |  '), 20, yPos + 32, { maxWidth: pw - 40 });
 
   addFooter();
 
-  // Save
+  // Save PDF
   const blob = doc.output('blob');
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -1641,6 +1735,7 @@ window.downloadPDF = function() {
   URL.revokeObjectURL(url);
 };
 
+
 // ---- Save Quote to Backend ----
 async function saveQuote(result) {
   try {
@@ -1648,7 +1743,7 @@ async function saveQuote(result) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        facility_name: result.answers.leadFacility || (result.answers.facilityTypeLabel + ' — ' + result.answers.beds + ' beds'),
+        facility_name: result.answers.leadFacility || (result.answers.facilityTypeLabel + ' \u2014 ' + result.answers.beds + ' beds'),
         facility_type: result.answers.facilityType,
         beds: result.answers.beds,
         platform: result.answers.platformLabel,
@@ -1676,7 +1771,6 @@ async function showAdmin() {
   document.getElementById('progressWrap').style.display = 'none';
   const av = document.getElementById('adminView');
   av.style.display = 'block';
-
   av.innerHTML = `
     <div class="admin-login">
       <h2>Admin Access</h2>
@@ -1691,7 +1785,6 @@ async function showAdmin() {
 window.adminLogin = async function() {
   const pwd = document.getElementById('adminPwd').value;
   if (!pwd) return;
-
   const av = document.getElementById('adminView');
   try {
     const res = await fetch(`${CGI_BIN}/api.py/admin?password=${encodeURIComponent(pwd)}`);
@@ -1709,75 +1802,55 @@ window.adminLogin = async function() {
 function renderAdminQuotes(quotes) {
   const av = document.getElementById('adminView');
   if (quotes.length === 0) {
-    av.innerHTML = `
-      <h1>Saved Quotes</h1>
-      <p style="color:var(--color-text-muted);">No quotes have been generated yet.</p>
-      <button class="btn btn-secondary" style="margin-top:var(--space-4);" onclick="window.location.hash='';window.location.reload();">Back to Designer</button>
-    `;
+    av.innerHTML = `<h1>Saved Quotes</h1><p style="color:var(--color-text-muted);">No quotes have been generated yet.</p><button class="btn btn-secondary" style="margin-top:var(--space-4);" onclick="window.location.hash='';window.location.reload();">Back to Designer</button>`;
     return;
   }
-
   let html = `<h1>Saved Quotes (${quotes.length})</h1>
     <button class="btn btn-secondary" style="margin-bottom:var(--space-4);" onclick="window.location.hash='';window.location.reload();">Back to Designer</button>
     <div class="admin-quotes-list">`;
-
   quotes.forEach(q => {
     const date = new Date(q.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     const hasLead = q.lead_name || q.lead_email || q.lead_phone;
-    const leadHtml = hasLead ? `
-      <div class="admin-lead-info">
-        <strong style="color:var(--color-primary);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.05em;">Lead Contact</strong>
-        <div style="margin-top:var(--space-1);font-size:var(--text-sm);line-height:1.6;">
-          ${q.lead_name ? `<div><strong>Name:</strong> ${q.lead_name}</div>` : ''}
-          ${q.lead_email ? `<div><strong>Email:</strong> <a href="mailto:${q.lead_email}" style="color:var(--color-primary);">${q.lead_email}</a></div>` : ''}
-          ${q.lead_phone ? `<div><strong>Phone:</strong> <a href="tel:${q.lead_phone}" style="color:var(--color-primary);">${q.lead_phone}</a></div>` : ''}
-          ${q.lead_facility ? `<div><strong>Facility:</strong> ${q.lead_facility}</div>` : ''}
-          ${q.lead_notes ? `<div><strong>Notes:</strong> ${q.lead_notes}</div>` : ''}
-        </div>
+    const leadHtml = hasLead ? `<div class="admin-lead-info">
+      <strong style="color:var(--color-primary);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:0.05em;">Lead Contact</strong>
+      <div style="margin-top:var(--space-1);font-size:var(--text-sm);line-height:1.6;">
+        ${q.lead_name ? `<div><strong>Name:</strong> ${q.lead_name}</div>` : ''}
+        ${q.lead_email ? `<div><strong>Email:</strong> <a href="mailto:${q.lead_email}" style="color:var(--color-primary);">${q.lead_email}</a></div>` : ''}
+        ${q.lead_phone ? `<div><strong>Phone:</strong> <a href="tel:${q.lead_phone}" style="color:var(--color-primary);">${q.lead_phone}</a></div>` : ''}
+        ${q.lead_facility ? `<div><strong>Facility:</strong> ${q.lead_facility}</div>` : ''}
+        ${q.lead_notes ? `<div><strong>Notes:</strong> ${q.lead_notes}</div>` : ''}
       </div>
-    ` : '';
-    html += `
-      <div class="admin-quote-card">
-        <h3>${q.facility_name}</h3>
-        ${leadHtml}
-        <div class="meta">
-          <span>Platform: ${q.platform || 'N/A'}</span>
-          <span>Beds: ${q.beds}</span>
-          <span>Type: ${q.facility_type}</span>
-          <span>Date: ${date}</span>
-        </div>
-        <div class="total">${fmt(q.total_price)}</div>
-        <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1);">
-          Equipment: ${fmt(q.equipment_total)} | Installation: ${fmt(q.installation_total)} | Margin: ${fmt(q.margin_total)}
-        </div>
+    </div>` : '';
+    html += `<div class="admin-quote-card">
+      <h3>${q.facility_name}</h3>
+      ${leadHtml}
+      <div class="meta">
+        <span>Platform: ${q.platform || 'N/A'}</span>
+        <span>Beds: ${q.beds}</span>
+        <span>Type: ${q.facility_type}</span>
+        <span>Date: ${date}</span>
       </div>
-    `;
+      <div class="total">${fmt(q.total_price)}</div>
+    </div>`;
   });
-
   html += '</div>';
   av.innerHTML = html;
 }
 
 // ---- Hash routing ----
 window.addEventListener('hashchange', () => {
-  if (window.location.hash === '#admin') {
-    showAdmin();
-  }
+  if (window.location.hash === '#admin') showAdmin();
 });
 
 // ---- Init ----
 document.addEventListener('DOMContentLoaded', () => {
-  // Handle enter key on numeric inputs
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       if (document.activeElement?.id === 'bedInput') window.submitBeds();
-      if (document.activeElement?.id === 'consoleInput') window.submitConsoles();
       if (document.activeElement?.id === 'adminPwd') window.adminLogin();
-      // Lead form: Enter on any field except textarea submits
       const leadFields = ['leadName', 'leadEmail', 'leadPhone', 'leadFacility'];
       if (leadFields.includes(document.activeElement?.id)) window.submitLeadForm();
     }
   });
-
   startConversation();
 });
