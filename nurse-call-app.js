@@ -103,6 +103,13 @@ const JERON_PARTS = {
   "TAB-CC":   { name: "Patient Care Coordination Tablet", cost: 850.00 },
   "DIS-INFO": { name: "Bedside Patient Infotainment Display", cost: 650.00 },
   "PP-SENSOR":{ name: "Pressure Pad Sensor", cost: 165.00 },
+  // Infrastructure Dependencies
+  "7995":  { name: "Power Supply w/Battery Backup", cost: 1065.00 },
+  "9778":  { name: "J-Bus Terminator", cost: 3.00 },
+  "9779":  { name: "J-Bus Splitter", cost: 2.50 },
+  "7969":  { name: "Console Receptacle", cost: 24.00 },
+  "9840":  { name: "Rack Mount Adaptor (Gateway)", cost: 199.50 },
+  "9842":  { name: "Rack Mount Adaptor (Switch)", cost: 199.50 },
 };
 
 const RCARE_PARTS = {
@@ -1122,38 +1129,112 @@ function buildSystemDesign() {
   const isRCare = answers.platform === 'rcare';
   const isJeron = !isRCare;
   const bom = [];
+  const hall = answers.hallway || {};
+  const hallOpts = hall.options || [];
+  const totalConsoles = answers.nurseStations.reduce((s, ns) => s + ns.count, 0);
 
-  // ---- INFRASTRUCTURE ----
+  // ---- JERON INFRASTRUCTURE WITH FULL DEPENDENCY CHAIN ----
   if (isJeron) {
-    // Room controllers (1 per room)
-    bom.push({ cat: 'Infrastructure', pn: '7950', name: JERON_PARTS['7950'].name, qty: beds, cost: JERON_PARTS['7950'].cost });
-    // Gateways (1 per 8 rooms)
+    // Determine room controller part based on hallway LED selection (Rule 11)
+    // Prism/prism_tone domes are BUILT INTO the room controller (7953/7953-T replaces 7950)
+    let rcPn;
+    if (hall.ledType === 'prism_tone') rcPn = '7953-T';
+    else if (hall.ledType === 'prism') rcPn = '7953';
+    else rcPn = '7950';
+    bom.push({ cat: 'Infrastructure', pn: rcPn, name: JERON_PARTS[rcPn].name, qty: beds, cost: JERON_PARTS[rcPn].cost });
+
+    // Gateways: 1 per 8 rooms (Rule 1)
     const gwCount = Math.ceil(beds / 8);
     bom.push({ cat: 'Infrastructure', pn: '7993', name: JERON_PARTS['7993'].name, qty: gwCount, cost: JERON_PARTS['7993'].cost });
-    // Switches (1 per 8 gateways)
+
+    // Power Supply w/Battery Backup: 1 per gateway (Rule 2 — CRITICAL)
+    bom.push({ cat: 'Infrastructure', pn: '7995', name: JERON_PARTS['7995'].name, qty: gwCount, cost: JERON_PARTS['7995'].cost });
+
+    // Switches: 1 per 8 gateways (Rule 3)
     const swCount = Math.ceil(gwCount / 8);
     bom.push({ cat: 'Infrastructure', pn: '7991', name: JERON_PARTS['7991'].name, qty: swCount, cost: JERON_PARTS['7991'].cost });
-    bom.push({ cat: 'Infrastructure', pn: '7989', name: JERON_PARTS['7989'].name, qty: swCount, cost: JERON_PARTS['7989'].cost });
-    // Console controllers
-    const totalConsoles = answers.nurseStations.reduce((s, ns) => s + ns.count, 0);
-    bom.push({ cat: 'Infrastructure', pn: '7960', name: JERON_PARTS['7960'].name, qty: totalConsoles, cost: JERON_PARTS['7960'].cost });
+
+    // Cabinets: 1 per 4 gateways (Rule 4 — holds ~4 gateways + power supplies)
+    const cabCount = Math.ceil(gwCount / 4);
+    bom.push({ cat: 'Infrastructure', pn: '7989', name: JERON_PARTS['7989'].name, qty: cabCount, cost: JERON_PARTS['7989'].cost });
+
+    // J-Bus Terminators: 1 per gateway (Rule 5)
+    bom.push({ cat: 'Infrastructure', pn: '9778', name: JERON_PARTS['9778'].name, qty: gwCount, cost: JERON_PARTS['9778'].cost });
+
+    // J-Bus Splitters: ~1 per 3 rooms to branch daisy chain (Rule 6)
+    const splitterCount = Math.ceil(beds / 3);
+    bom.push({ cat: 'Infrastructure', pn: '9779', name: JERON_PARTS['9779'].name, qty: splitterCount, cost: JERON_PARTS['9779'].cost });
+
+    // Console controllers: choose 7963 (w/zone light) if zone lights selected, else 7960 (Rule 13)
+    const ccPn = hallOpts.includes('zone_lights') ? '7963' : '7960';
+    bom.push({ cat: 'Infrastructure', pn: ccPn, name: JERON_PARTS[ccPn].name, qty: totalConsoles, cost: JERON_PARTS[ccPn].cost });
+
+    // Console Receptacle: 1 per console (Rule 7)
+    bom.push({ cat: 'Infrastructure', pn: '7969', name: JERON_PARTS['7969'].name, qty: totalConsoles, cost: JERON_PARTS['7969'].cost });
+
+    // Rack Mount Adaptors (Rule 8)
+    bom.push({ cat: 'Infrastructure', pn: '9840', name: JERON_PARTS['9840'].name, qty: gwCount, cost: JERON_PARTS['9840'].cost });
+    bom.push({ cat: 'Infrastructure', pn: '9842', name: JERON_PARTS['9842'].name, qty: swCount, cost: JERON_PARTS['9842'].cost });
+
+    // Admin software (1 per system)
     bom.push({ cat: 'Software', pn: '7990', name: JERON_PARTS['7990'].name, qty: 1, cost: JERON_PARTS['7990'].cost });
+    // LAN Bridge: required when multiple switches (Rule 10)
     if (swCount > 1) bom.push({ cat: 'Software', pn: '7984', name: JERON_PARTS['7984'].name, qty: 1, cost: JERON_PARTS['7984'].cost });
+
   } else {
-    // RCare infrastructure
-    if (beds <= 128) {
+    // ---- RCARE INFRASTRUCTURE WITH DEPENDENCY CHAIN ----
+
+    // Count total wireless devices for server sizing (Rule 14)
+    let totalDevices = 0;
+    answers.roomConfigs.forEach(rc => {
+      const totalBeds = rc.qty * rc.bedsPerRoom;
+      const totalRooms = rc.qty;
+      totalDevices += Math.ceil(totalBeds * 1.2); // pendants
+      if (rc.accessories.includes('pull_cord')) totalDevices += totalBeds;
+      if (rc.accessories.includes('pillow_speaker')) totalDevices += totalBeds;
+      if (rc.accessories.includes('pressure_pad')) totalDevices += totalBeds;
+      totalDevices += totalRooms; // wall buttons (UL-1069)
+      rc.sensors.forEach(() => { totalDevices += totalRooms; });
+      rc.displays.forEach(() => { totalDevices += totalRooms; });
+      // bathroom pull cords
+      const bathPulls = rc.pullLayout === 'separate' ? totalRooms * rc.bathsPerRoom * 2 : totalRooms * rc.bathsPerRoom;
+      totalDevices += bathPulls;
+    });
+
+    // Server: BCube up to 128 devices, RCube above (Rule 14)
+    if (totalDevices <= 128) {
       bom.push({ cat: 'Infrastructure', pn: 'BCube', name: RCARE_PARTS['BCube'].name, qty: 1, cost: RCARE_PARTS['BCube'].cost });
     } else {
-      bom.push({ cat: 'Infrastructure', pn: 'RCube', name: RCARE_PARTS['RCube'].name, qty: 1, cost: RCARE_PARTS['RCube'].cost });
+      const serverCount = totalDevices > 500 ? 2 : 1;
+      bom.push({ cat: 'Infrastructure', pn: 'RCube', name: RCARE_PARTS['RCube'].name, qty: serverCount, cost: RCARE_PARTS['RCube'].cost });
     }
-    bom.push({ cat: 'Infrastructure', pn: 'MR-500-G4', name: RCARE_PARTS['MR-500-G4'].name, qty: 1, cost: RCARE_PARTS['MR-500-G4'].cost });
+
     const locCount = Math.max(1, Math.ceil(beds / 18));
     bom.push({ cat: 'Infrastructure', pn: 'LT-490-G4', name: RCARE_PARTS['LT-490-G4'].name, qty: locCount, cost: RCARE_PARTS['LT-490-G4'].cost });
     const repCount = Math.max(1, Math.ceil(beds / 35));
     bom.push({ cat: 'Infrastructure', pn: 'RP-990-G4', name: RCARE_PARTS['RP-990-G4'].name, qty: repCount, cost: RCARE_PARTS['RP-990-G4'].cost });
+
+    // Master Receiver: supports up to 100 locators+repeaters combined (Rule 15)
+    const mrCount = Math.max(1, Math.ceil((locCount + repCount) / 100));
+    bom.push({ cat: 'Infrastructure', pn: 'MR-500-G4', name: RCARE_PARTS['MR-500-G4'].name, qty: mrCount, cost: RCARE_PARTS['MR-500-G4'].cost });
+
+    // Outdoor Enclosures: 1 per 3 repeaters (Rule 17)
+    const encCount = Math.ceil(repCount / 3);
+    if (encCount > 0) bom.push({ cat: 'Infrastructure', pn: 'Outdoor-Enc', name: RCARE_PARTS['Outdoor-Enc'].name, qty: encCount, cost: RCARE_PARTS['Outdoor-Enc'].cost });
+
+    // Help Buttons for common areas: 1 per 30 beds (Rule 18)
+    const helpBtnCount = Math.max(1, Math.ceil(beds / 30));
+    bom.push({ cat: 'Infrastructure', pn: 'Help-Btn', name: RCARE_PARTS['Help-Btn'].name, qty: helpBtnCount, cost: RCARE_PARTS['Help-Btn'].cost });
+
+    // Staff Emergency Pendants: 1 per 10 beds (Rule 20)
+    const staffPendCount = Math.max(1, Math.ceil(beds / 10));
+    bom.push({ cat: 'Infrastructure', pn: 'Staff-Pend', name: RCARE_PARTS['Staff-Pend'].name, qty: staffPendCount, cost: RCARE_PARTS['Staff-Pend'].cost });
   }
 
   // ---- ROOM CONFIGURATIONS ----
+  // Pre-calculate gwCount for Jeron software licensing (need it later)
+  const gwCount = isJeron ? Math.ceil(beds / 8) : 0;
+
   answers.roomConfigs.forEach(rc => {
     const totalBeds = rc.qty * rc.bedsPerRoom;
     const totalRooms = rc.qty;
@@ -1164,7 +1245,10 @@ function buildSystemDesign() {
       const stPn = hasTwoWay ? '7923' : '7920';
       bom.push({ cat: `Patient Stations (${rc.name})`, pn: stPn, name: JERON_PARTS[stPn].name, qty: totalBeds, cost: JERON_PARTS[stPn].cost });
 
-      if (rc.accessories.includes('pull_cord')) bom.push({ cat: `Accessories (${rc.name})`, pn: '7910', name: JERON_PARTS['7910'].name, qty: totalBeds, cost: JERON_PARTS['7910'].cost });
+      // DIN Call Cord: ALWAYS 1 per bed — every patient station needs one to connect (Rule 12)
+      bom.push({ cat: `Accessories (${rc.name})`, pn: '7910', name: JERON_PARTS['7910'].name, qty: totalBeds, cost: JERON_PARTS['7910'].cost });
+
+      if (rc.accessories.includes('pull_cord')) bom.push({ cat: `Accessories (${rc.name})`, pn: '7932', name: JERON_PARTS['7932'].name + ' (Bed Pull Cord)', qty: totalBeds, cost: JERON_PARTS['7932'].cost });
       if (rc.accessories.includes('pillow_speaker')) bom.push({ cat: `Accessories (${rc.name})`, pn: '7901', name: JERON_PARTS['7901'].name, qty: totalBeds, cost: JERON_PARTS['7901'].cost });
       if (rc.accessories.includes('pressure_pad')) bom.push({ cat: `Accessories (${rc.name})`, pn: 'PP-SENSOR', name: JERON_PARTS['PP-SENSOR'].name, qty: totalBeds, cost: JERON_PARTS['PP-SENSOR'].cost });
 
@@ -1188,6 +1272,10 @@ function buildSystemDesign() {
       // RCare room equipment
       const pendantQty = Math.ceil(totalBeds * 1.2);
       bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'Pretty-G4', name: RCARE_PARTS['Pretty-G4'].name, qty: pendantQty, cost: RCARE_PARTS['Pretty-G4'].cost });
+
+      // Wall Push Button: 1 per room for UL-1069 compliance (Rule 16)
+      bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'WM-8', name: RCARE_PARTS['WM-8'].name, qty: totalRooms, cost: RCARE_PARTS['WM-8'].cost });
+
       if (rc.accessories.includes('pull_cord')) bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'BP-7RWR', name: RCARE_PARTS['BP-7RWR'].name, qty: totalBeds, cost: RCARE_PARTS['BP-7RWR'].cost });
       if (rc.accessories.includes('pillow_speaker')) bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'JR-14', name: RCARE_PARTS['JR-14'].name + ' (Bedside)', qty: totalBeds, cost: RCARE_PARTS['JR-14'].cost });
       if (rc.accessories.includes('pressure_pad')) bom.push({ cat: `Resident Devices (${rc.name})`, pn: 'RC-PP', name: RCARE_PARTS['RC-PP'].name, qty: totalBeds, cost: RCARE_PARTS['RC-PP'].cost });
@@ -1230,21 +1318,31 @@ function buildSystemDesign() {
     }
   });
 
+  // ---- RCare Wander Management — Remote Keypads (Rule 19) ----
+  if (isRCare) {
+    const wInts = answers.integrations || [];
+    if (wInts.includes('int_wander')) {
+      const keypadCount = Math.max(1, Math.ceil(beds / 20));
+      bom.push({ cat: 'Wander Management', pn: 'RK-77', name: RCARE_PARTS['RK-77'].name, qty: keypadCount, cost: RCARE_PARTS['RK-77'].cost });
+    }
+  }
+
   // ---- HALLWAY ----
-  const hall = answers.hallway || {};
   if (hall.ledType && hall.ledType !== 'none') {
     const domeQty = hall.placement === 'per_2rooms' ? Math.ceil(beds / 2) : beds;
     if (isJeron) {
-      const domePn = hall.ledType === 'prism_tone' ? '7973-T' : hall.ledType === 'prism' ? '7973' : '7953';
-      const domeName = hall.ledType === 'prism_tone' ? JERON_PARTS['7973-T'].name : hall.ledType === 'prism' ? JERON_PARTS['7973'].name : 'Standard Dome Light';
-      const domeCost = hall.ledType === 'prism_tone' ? JERON_PARTS['7973-T'].cost : hall.ledType === 'prism' ? JERON_PARTS['7973'].cost : 180;
-      bom.push({ cat: 'Hallway Indicators', pn: domePn, name: domeName, qty: domeQty, cost: domeCost });
+      // Rule 11: For prism/prism_tone, the dome is built into the room controller (7953/7953-T)
+      // so we only add SEPARATE dome lights for 'single' (standard) LED type
+      if (hall.ledType === 'single') {
+        // Standard dome — added as separate items (not built into room controller)
+        bom.push({ cat: 'Hallway Indicators', pn: '7953', name: 'Standard Dome Light', qty: domeQty, cost: 180 });
+      }
+      // For 'prism' and 'prism_tone', the dome is already part of the room controller above — no separate line
     } else {
       bom.push({ cat: 'Hallway Indicators', pn: 'Dome-LED', name: RCARE_PARTS['Dome-LED'].name, qty: domeQty, cost: RCARE_PARTS['Dome-LED'].cost });
     }
   }
 
-  const hallOpts = hall.options || [];
   if (hallOpts.includes('zone_lights')) bom.push({ cat: 'Hallway Indicators', pn: isJeron?'7973':'Dome-LED', name: 'Zone Indicator Light', qty: Math.ceil(beds / 15), cost: isJeron?312:180 });
   if (hallOpts.includes('audio_annunciator')) bom.push({ cat: 'Hallway Displays', pn: isJeron?'7970-PA':'RC-HAUD', name: isJeron?JERON_PARTS['7970-PA'].name:RCARE_PARTS['RC-HAUD'].name, qty: Math.ceil(beds/30), cost: isJeron?JERON_PARTS['7970-PA'].cost:RCARE_PARTS['RC-HAUD'].cost });
   if (hallOpts.includes('digital_display')) bom.push({ cat: 'Hallway Displays', pn: isJeron?'7973-D':'RC-HDIS', name: isJeron?JERON_PARTS['7973-D'].name:RCARE_PARTS['RC-HDIS'].name, qty: Math.ceil(beds/30), cost: isJeron?JERON_PARTS['7973-D'].cost:RCARE_PARTS['RC-HDIS'].cost });
@@ -1256,24 +1354,23 @@ function buildSystemDesign() {
   // ---- SOFTWARE/INTEGRATIONS ----
   const ints = answers.integrations || [];
   if (isJeron) {
-    if (ints.includes('int_ehr')) bom.push({ cat: 'Software', pn: '7977', name: JERON_PARTS['7977'].name, qty: 1, cost: JERON_PARTS['7977'].cost });
-    if (ints.includes('int_sip')) bom.push({ cat: 'Software', pn: '7978', name: JERON_PARTS['7978'].name, qty: 1, cost: JERON_PARTS['7978'].cost });
-    if (ints.includes('int_paging')) bom.push({ cat: 'Software', pn: '7979', name: JERON_PARTS['7979'].name, qty: 1, cost: JERON_PARTS['7979'].cost });
-    if (ints.includes('int_staff')) bom.push({ cat: 'Software', pn: '7980', name: JERON_PARTS['7980'].name, qty: 1, cost: JERON_PARTS['7980'].cost });
-    if (ints.includes('int_rtls')) bom.push({ cat: 'Software', pn: '7981', name: JERON_PARTS['7981'].name, qty: 1, cost: JERON_PARTS['7981'].cost });
-    if (ints.includes('int_barcode')) bom.push({ cat: 'Software', pn: '7982', name: JERON_PARTS['7982'].name, qty: 1, cost: JERON_PARTS['7982'].cost });
-    if (ints.includes('int_reporting')) bom.push({ cat: 'Software', pn: '7983', name: JERON_PARTS['7983'].name, qty: 1, cost: JERON_PARTS['7983'].cost });
+    // Rule 9: Per-gateway licenses — each gateway needs its own license
+    const perGwParts = { 'int_ehr':'7977', 'int_sip':'7978', 'int_paging':'7979', 'int_staff':'7980',
+                         'int_rtls':'7981', 'int_barcode':'7982', 'int_reporting':'7983', 'int_voice_pa':'7970' };
+    for (const [intId, pn] of Object.entries(perGwParts)) {
+      if (ints.includes(intId)) bom.push({ cat: 'Software', pn, name: JERON_PARTS[pn].name, qty: gwCount, cost: JERON_PARTS[pn].cost });
+    }
+    // Per-system licenses (Rule 9 exceptions)
     if (ints.includes('int_pc_console')) bom.push({ cat: 'Software', pn: '7985', name: JERON_PARTS['7985'].name, qty: 1, cost: JERON_PARTS['7985'].cost });
     if (ints.includes('int_mapview')) bom.push({ cat: 'Software', pn: '7986', name: JERON_PARTS['7986'].name, qty: 1, cost: JERON_PARTS['7986'].cost });
     if (ints.includes('int_android')) bom.push({ cat: 'Software', pn: '7987', name: JERON_PARTS['7987'].name, qty: 1, cost: JERON_PARTS['7987'].cost });
-    if (ints.includes('int_voice_pa')) bom.push({ cat: 'Software', pn: '7970', name: JERON_PARTS['7970'].name, qty: 1, cost: JERON_PARTS['7970'].cost });
   } else {
     if (ints.includes('int_ehr')) bom.push({ cat: 'Software', pn: 'PCC-Int', name: RCARE_PARTS['PCC-Int'].name, qty: 1, cost: RCARE_PARTS['PCC-Int'].cost });
     if (ints.includes('int_wander')) bom.push({ cat: 'Software', pn: 'Wander-Int', name: RCARE_PARTS['Wander-Int'].name, qty: 1, cost: RCARE_PARTS['Wander-Int'].cost });
     if (ints.includes('int_mcube')) bom.push({ cat: 'Software', pn: 'MCube', name: RCARE_PARTS['MCube'].name, qty: 1, cost: RCARE_PARTS['MCube'].cost });
     if (ints.includes('int_vcube')) bom.push({ cat: 'Software', pn: 'VCube', name: RCARE_PARTS['VCube'].name, qty: 1, cost: RCARE_PARTS['VCube'].cost });
     if (ints.includes('int_pager')) bom.push({ cat: 'Software', pn: 'Pager-Int', name: RCARE_PARTS['Pager-Int'].name, qty: 1, cost: RCARE_PARTS['Pager-Int'].cost });
-    if (ints.includes('int_rphone')) bom.push({ cat: 'Software', pn: 'RPhone', name: RCARE_PARTS['RPhone'].name, qty: answers.nurseStations.reduce((s,ns)=>s+ns.count,0)*2, cost: RCARE_PARTS['RPhone'].cost });
+    if (ints.includes('int_rphone')) bom.push({ cat: 'Software', pn: 'RPhone', name: RCARE_PARTS['RPhone'].name, qty: totalConsoles * 2, cost: RCARE_PARTS['RPhone'].cost });
     if (ints.includes('int_activity')) bom.push({ cat: 'Software', pn: 'RC-ACT', name: RCARE_PARTS['RC-ACT'].name, qty: 1, cost: RCARE_PARTS['RC-ACT'].cost });
   }
 
