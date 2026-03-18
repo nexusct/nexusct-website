@@ -327,7 +327,9 @@
     const searchLoc  = encodeURIComponent((f.city || '') + ' ' + (f.state || ''));
     const googleUrl   = `https://www.google.com/search?q=${searchName}+${searchLoc}`;
     const linkedinUrl  = org.linkedin || `https://www.linkedin.com/search/results/companies/?keywords=${searchName}`;
-    const apolloUrl    = `https://app.apollo.io/#/search?q=${searchName}&organizationLocations[]=${searchLoc}`;
+    const stateNames = {'IL':'Illinois','WI':'Wisconsin','IN':'Indiana','MI':'Michigan','IA':'Iowa'};
+    const apolloState = encodeURIComponent((stateNames[f.state] || 'Illinois') + ', United States');
+    const apolloUrl    = `https://app.apollo.io/#/companies?q=${searchName}&organizationIndustryTagIds[]=healthcare&organizationLocations[]=${apolloState}`;
 
     // Enrichment badge
     const enrichBadge = f.apollo_enriched 
@@ -532,7 +534,7 @@
           <a href="${org.linkedin || 'https://www.linkedin.com/search/results/companies/?keywords=' + sName}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-linkedin" title="LinkedIn" onclick="event.stopPropagation()">
             <svg viewBox="0 0 24 24" width="11" height="11" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.123 2.062 2.062 0 0 1 0 4.123zM6.893 20.452H3.58V9h3.413v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           </a>
-          <a href="https://app.apollo.io/#/search?q=${sName}&organizationLocations[]=${sLoc}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-apollo" title="Apollo.io" onclick="event.stopPropagation()">
+          <a href="https://app.apollo.io/#/companies?q=${sName}&organizationIndustryTagIds[]=healthcare&organizationLocations[]=${encodeURIComponent((({'IL':'Illinois','WI':'Wisconsin','IN':'Indiana','MI':'Michigan','IA':'Iowa'})[f.state] || 'Illinois') + ', United States')}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-apollo" title="Apollo.io" onclick="event.stopPropagation()">
             <svg viewBox="0 0 24 24" width="11" height="11" fill="none"><circle cx="12" cy="12" r="10" stroke="#6C2BD9" stroke-width="2"/><path d="M12 5l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" fill="#6C2BD9"/></svg>
           </a>
         </div>
