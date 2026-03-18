@@ -42,8 +42,8 @@
   --content-wide: 1200px;
 
   /* Fonts */
-  --font-display: 'Inter', 'Helvetica Neue', sans-serif;
-  --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+  --font-display: 'DM Sans', 'Helvetica Neue', sans-serif;
+  --font-body: 'DM Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* ========================================
@@ -1150,7 +1150,7 @@
   width: 100%;
   padding: var(--space-3) var(--space-4);
   font-size: var(--text-base);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-bg);
