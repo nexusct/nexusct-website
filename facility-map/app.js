@@ -8,7 +8,7 @@
 
   /* ── Constants ─────────────────────────────────────────── */
   const SCHAUMBURG = [42.0334, -88.0834];
-  const RADIUS_MILES = 100;
+  const RADIUS_MILES = 125;
   const MILES_TO_METERS = 1609.344;
 
   const TYPE_COLORS = {
@@ -38,9 +38,9 @@
   /* ── State ─────────────────────────────────────────────── */
   const filters = {
     types: new Set(Object.keys(TYPE_COLORS)),
-    maxDistance: 100,
+    maxDistance: 125,
     minRating: 0,
-    states: new Set(['IL', 'IN', 'WI', 'MI', '']),
+    states: new Set(['IL', 'IN', 'WI', 'MI', 'IA', '']),
     relevance: new Set(['High', 'Medium']),
     search: '',
   };
@@ -54,7 +54,7 @@
   function initMap() {
     mapInstance = L.map('map', {
       center: SCHAUMBURG,
-      zoom: 9,
+      zoom: 8,
       zoomControl: true,
       preferCanvas: true,
     });
@@ -464,7 +464,7 @@
     const distLabel = document.getElementById('distanceLabel');
 
     function updateSliderStyle(val) {
-      const pct = val / 100 * 100;
+      const pct = val / 125 * 100;
       slider.style.background = `linear-gradient(to right, #00b4d8 ${pct}%, rgba(255,255,255,0.1) ${pct}%)`;
       distLabel.textContent = `0 – ${val} mi`;
     }
@@ -474,7 +474,7 @@
       updateSliderStyle(slider.value);
       applyFilters();
     });
-    updateSliderStyle(100);
+    updateSliderStyle(125);
 
     // ── Star filter ──
     document.getElementById('starFilter').querySelectorAll('.star-btn').forEach(btn => {
@@ -532,9 +532,9 @@
       typeContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = true; });
 
       // Distance
-      slider.value = 100;
-      filters.maxDistance = 100;
-      updateSliderStyle(100);
+      slider.value = 125;
+      filters.maxDistance = 125;
+      updateSliderStyle(125);
 
       // Rating
       filters.minRating = 0;
@@ -543,7 +543,7 @@
       document.getElementById('ratingLabel').textContent = 'Any';
 
       // States
-      filters.states = new Set(['IL', 'IN', 'WI', 'MI', '']);
+      filters.states = new Set(['IL', 'IN', 'WI', 'MI', 'IA', '']);
       document.querySelectorAll('[data-state]').forEach(cb => { cb.checked = true; });
 
       // Relevance
