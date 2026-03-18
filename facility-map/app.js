@@ -327,9 +327,6 @@
     const searchLoc  = encodeURIComponent((f.city || '') + ' ' + (f.state || ''));
     const googleUrl   = `https://www.google.com/search?q=${searchName}+${searchLoc}`;
     const linkedinUrl  = org.linkedin || `https://www.linkedin.com/search/results/companies/?keywords=${searchName}`;
-    const stateNames = {'IL':'Illinois','WI':'Wisconsin','IN':'Indiana','MI':'Michigan','IA':'Iowa'};
-    const apolloState = encodeURIComponent((stateNames[f.state] || 'Illinois') + ', United States');
-    const apolloUrl    = `https://app.apollo.io/#/companies?q=${searchName}&organizationIndustryTagIds[]=healthcare&organizationLocations[]=${apolloState}`;
 
     // Enrichment badge
     const enrichBadge = f.apollo_enriched 
@@ -367,13 +364,7 @@
           </svg>
           LinkedIn
         </a>
-        <a href="${apolloUrl}" target="_blank" rel="noopener noreferrer" class="popup-search-btn popup-search-apollo" title="Search on Apollo.io">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="#6C2BD9" stroke-width="2"/>
-            <path d="M12 5l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" fill="#6C2BD9"/>
-          </svg>
-          Apollo
-        </a>
+
       </div>
     </div>`;
   }
@@ -516,6 +507,63 @@
         extraInfo = `<div class="facility-item-extra">${parts.join(' · ')}</div>`;
       }
 
+      // Org links row (website, LinkedIn, phone from Apollo data)
+      let orgLinksHtml = '';
+      const orgLinkItems = [];
+      if (f.website) {
+        const wDomain = f.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/.*$/, '');
+        orgLinkItems.push(`<a href="${escHtml(f.website)}" target="_blank" rel="noopener noreferrer" class="list-org-link list-org-web" title="Website" onclick="event.stopPropagation()">
+          <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M2 7h10M7 2C5.5 4 5 5.5 5 7s.5 3 2 5M7 2c1.5 2 2 3.5 2 5s-.5 3-2 5" stroke="currentColor" stroke-width="1.2"/></svg>
+          ${escHtml(wDomain)}
+        </a>`);
+      }
+      if (org.linkedin) {
+        orgLinkItems.push(`<a href="${escHtml(org.linkedin)}" target="_blank" rel="noopener noreferrer" class="list-org-link list-org-li" title="Company LinkedIn" onclick="event.stopPropagation()">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.123 2.062 2.062 0 0 1 0 4.123zM6.893 20.452H3.58V9h3.413v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>`);
+      }
+      if (f.phone) {
+        orgLinkItems.push(`<a href="tel:${escHtml(f.phone)}" class="list-org-link list-org-phone" title="Phone" onclick="event.stopPropagation()">
+          <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M4.5 2.5h2l1 2.5-1.5 1a6.5 6.5 0 003 3l1-1.5 2.5 1v2A1 1 0 0111.5 11.5 10 10 0 012.5 2.5 1 1 0 014.5 2.5z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          ${escHtml(f.phone)}
+        </a>`);
+      }
+      if (orgLinkItems.length) {
+        orgLinksHtml = `<div class="list-org-links" onclick="event.stopPropagation()">${orgLinkItems.join('')}</div>`;
+      }
+
+      // Contacts section for list items
+      let contactsListHtml = '';
+      const contacts = f.apollo_contacts || [];
+      if (contacts.length > 0) {
+        const contactItems = contacts.slice(0, 3).map(c => {
+          let cLinks = '';
+          if (c.email) cLinks += `<a href="mailto:${escHtml(c.email)}" class="list-contact-link" title="Email ${escHtml(c.name)}" onclick="event.stopPropagation()">${escHtml(c.email)}</a>`;
+          if (c.linkedin) cLinks += `<a href="${escHtml(c.linkedin)}" target="_blank" rel="noopener noreferrer" class="list-contact-link list-contact-li" title="${escHtml(c.name)} on LinkedIn" onclick="event.stopPropagation()">LinkedIn</a>`;
+          return `<div class="list-contact-card">
+            <span class="list-contact-name">${escHtml(c.name)}</span>
+            <span class="list-contact-title">${escHtml(c.title)}</span>
+            ${cLinks ? `<div class="list-contact-links">${cLinks}</div>` : ''}
+          </div>`;
+        }).join('');
+        contactsListHtml = `<div class="list-contacts-section" onclick="event.stopPropagation()">
+          <div class="list-contacts-header">Contacts</div>
+          ${contactItems}
+          ${contacts.length > 3 ? `<div class="list-contacts-more">+${contacts.length - 3} more</div>` : ''}
+        </div>`;
+      }
+
+      // Google search link
+      const googleLink = `<a href="https://www.google.com/search?q=${sName}+${sLoc}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-google" title="Search Google" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09A6.97 6.97 0 0 1 5.48 12c0-.72.13-1.43.36-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.4l3.56-2.76.01-.55z" fill="#FBBC05"/><path d="M12 4.75c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.09 14.97 0 12 0 7.7 0 3.99 2.47 2.18 6.07l3.66 2.84c.87-2.6 3.3-4.16 6.16-4.16z" fill="#EA4335"/></svg>
+        Google
+      </a>`;
+      const linkedinSearchLink = `<a href="https://www.linkedin.com/search/results/companies/?keywords=${sName}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-linkedin" title="Search LinkedIn" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.123 2.062 2.062 0 0 1 0 4.123zM6.893 20.452H3.58V9h3.413v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>`;
+
       return `<div class="facility-item${hasContacts ? ' has-contacts' : ''}" data-idx="${origIdx}" role="button" tabindex="0">
         <div class="facility-item-top">
           <span class="facility-item-name">${escHtml(f.name)}</span>
@@ -527,16 +575,11 @@
           ${apolloIndicator}
         </div>
         ${extraInfo}
+        ${orgLinksHtml}
+        ${contactsListHtml}
         <div class="facility-item-links">
-          <a href="https://www.google.com/search?q=${sName}+${sLoc}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-google" title="Google" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09A6.97 6.97 0 0 1 5.48 12c0-.72.13-1.43.36-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.4l3.56-2.76.01-.55z" fill="#FBBC05"/><path d="M12 4.75c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.09 14.97 0 12 0 7.7 0 3.99 2.47 2.18 6.07l3.66 2.84c.87-2.6 3.3-4.16 6.16-4.16z" fill="#EA4335"/></svg>
-          </a>
-          <a href="${org.linkedin || 'https://www.linkedin.com/search/results/companies/?keywords=' + sName}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-linkedin" title="LinkedIn" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.123 2.062 2.062 0 0 1 0 4.123zM6.893 20.452H3.58V9h3.413v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-          </a>
-          <a href="https://app.apollo.io/#/companies?q=${sName}&organizationIndustryTagIds[]=healthcare&organizationLocations[]=${encodeURIComponent((({'IL':'Illinois','WI':'Wisconsin','IN':'Indiana','MI':'Michigan','IA':'Iowa'})[f.state] || 'Illinois') + ', United States')}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-apollo" title="Apollo.io" onclick="event.stopPropagation()">
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="none"><circle cx="12" cy="12" r="10" stroke="#6C2BD9" stroke-width="2"/><path d="M12 5l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" fill="#6C2BD9"/></svg>
-          </a>
+          ${googleLink}
+          ${linkedinSearchLink}
         </div>
       </div>`;
     }).join('');
