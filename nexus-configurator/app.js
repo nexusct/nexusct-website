@@ -202,6 +202,96 @@ const TEMPLATES = {
   multi_site: { sqft: 100000, floors: 4, drops: 400, cableType: 'cat6a', apModelIndex: 7, indoorCameras: 50, outdoorCameras: 20, indoorCameraModel: 6, outdoorCameraModel: 2, doors: 30, readerModel: 3, internetTier: 'edi_1000', secondaryWan: 'coax_performance', tertiaryWan: 'tmobile_grow', sdwanEnabled: true, usePromoPricing: false },
 };
 
+
+// ---- Competitor Network Pricing Data ----
+const COMPETITOR_NETWORK = {
+  meraki: {
+    name: "Cisco Meraki",
+    ap: { model: "MR57", price: 1878 },
+    switch24: { model: "MS130-24", price: 1200 },
+    switch48: { model: "MS130-48", price: 2200 },
+    gateway: { model: "MX68", price: 795 },
+    license: {
+      enterprise1yr: 112,
+      enterprise5yr: 420,
+      advanced5yr: 811,
+      perAP: true,
+      switchLicense1yr: 150,
+      switchLicense5yr: 560,
+      gatewayLicense1yr: 250,
+      gatewayLicense5yr: 990
+    },
+    notes: "Hardware non-functional without active license. License required per device."
+  },
+  aruba: {
+    name: "HPE Aruba",
+    ap: { model: "AP-535", price: 1450 },
+    switch24: { model: "CX 6200F-24G", price: 1100 },
+    switch48: { model: "CX 6200F-48G", price: 2000 },
+    gateway: { model: "9004 Gateway", price: 1200 },
+    license: {
+      centralFoundation1yr: 150,
+      centralFoundation5yr: 705,
+      centralAdvanced1yr: 300,
+      centralAdvanced5yr: 975,
+      switchFoundation1yr: 200,
+      switchFoundation5yr: 940,
+      gatewayLicense1yr: 200,
+      gatewayLicense5yr: 940
+    },
+    notes: "Aruba Central subscription required for cloud management."
+  }
+};
+
+const NETWORK_SLA_PACKAGES = {
+  bronze: {
+    name: "Bronze",
+    color: "#cd7f32",
+    perDeviceMonth: 15,
+    features: [
+      "Business hours NOC monitoring (8am–6pm M–F)",
+      "48-hour on-site response",
+      "Annual network health assessment",
+      "Firmware updates included",
+      "Remote troubleshooting",
+      "Hardware depot repair coverage"
+    ]
+  },
+  silver: {
+    name: "Silver",
+    color: "#C0C0C0",
+    perDeviceMonth: 27,
+    popular: true,
+    features: [
+      "Extended NOC monitoring (7am–10pm, 7 days)",
+      "24-hour on-site response",
+      "Semi-annual network assessment",
+      "Firmware + configuration management",
+      "24/7 remote monitoring & auto-alerts",
+      "Hardware advance replacement",
+      "Quarterly performance reports",
+      "VPN & firewall rule management"
+    ]
+  },
+  gold: {
+    name: "Gold",
+    color: "#FFD700",
+    perDeviceMonth: 40,
+    features: [
+      "24/7/365 priority NOC monitoring",
+      "4-hour emergency on-site response",
+      "Quarterly network assessments",
+      "Full configuration & change management",
+      "Proactive monitoring with auto-remediation",
+      "Next-business-day hardware replacement",
+      "Monthly performance reports",
+      "Unlimited configuration changes",
+      "Dedicated network engineer",
+      "Annual network design review & optimization"
+    ]
+  }
+};
+
 // ===== STATE =====
 let state = {
   internetTier: 'cb_standard',
@@ -407,6 +497,8 @@ function render() {
   renderWhatIf(c);
   renderClientView(c);
   renderBandwidthAdvisor();
+  renderNetworkCompetitorComparison(c);
+  renderNetworkSLA(c);
   updateHash();
 }
 
@@ -804,6 +896,192 @@ function renderBandwidthAdvisor() {
     showToast('Applied: ' + recommended.customerLabel);
   });
 }
+
+
+// ===== COMPETITOR COMPARISON (Network) =====
+function renderNetworkCompetitorComparison(c) {
+  let el = document.getElementById('networkCompetitorSection');
+  if (!el) {
+    // Create the section in the DOM
+    const parent = document.querySelector('.results-panel') || document.querySelector('#main-content') || document.body;
+    if (!parent) return;
+    el = document.createElement('div');
+    el.id = 'networkCompetitorSection';
+    el.className = 'panel competitor-panel';
+    parent.appendChild(el);
+  }
+  
+  const apCount = c.apCount;
+  const switchCount = c.totalSwitchCount;
+  const termYears = 5;
+  
+  // UniFi TCO (5-year)
+  const unifiHardware = c.totalHardware;
+  const unifiLicensing5yr = 0; // $0 licensing!
+  const unifi5yrTCO = unifiHardware;
+  
+  // Meraki TCO (5-year)
+  const m = COMPETITOR_NETWORK.meraki;
+  const merakiAPCost = apCount * m.ap.price;
+  const merakiSwitchCost = switchCount * m.switch48.price;
+  const merakiGWCost = m.gateway.price;
+  const merakiHardware = merakiAPCost + merakiSwitchCost + merakiGWCost;
+  const merakiLicensing5yr = (apCount * m.license.enterprise5yr) + (switchCount * m.license.switchLicense5yr) + m.license.gatewayLicense5yr;
+  const meraki5yrTCO = merakiHardware + merakiLicensing5yr;
+  const merakiPctMore = Math.round(((meraki5yrTCO - unifi5yrTCO) / unifi5yrTCO) * 100);
+  
+  // Aruba TCO (5-year)
+  const a = COMPETITOR_NETWORK.aruba;
+  const arubaAPCost = apCount * a.ap.price;
+  const arubaSwitchCost = switchCount * a.switch48.price;
+  const arubaGWCost = a.gateway.price;
+  const arubaHardware = arubaAPCost + arubaSwitchCost + arubaGWCost;
+  const arubaLicensing5yr = (apCount * a.license.centralFoundation5yr) + (switchCount * a.license.switchFoundation5yr) + a.license.gatewayLicense5yr;
+  const aruba5yrTCO = arubaHardware + arubaLicensing5yr;
+  const arubaPctMore = Math.round(((aruba5yrTCO - unifi5yrTCO) / unifi5yrTCO) * 100);
+  
+  el.innerHTML = `
+    <div class="panel-header">
+      <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg> 5-Year TCO Comparison</h2>
+    </div>
+    <div class="panel-body">
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px;">Compare total cost of ownership over 5 years including hardware and mandatory licensing.</p>
+      <div class="competitor-table-wrap">
+        <table class="competitor-table" style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr><th>Vendor</th><th>Hardware</th><th>5-Year Licensing</th><th>5-Year TCO</th><th>vs UniFi</th></tr>
+          </thead>
+          <tbody>
+            <tr style="background:rgba(74,222,128,0.08);">
+              <td><strong>UniFi (NexusCT)</strong><br><span style="color:#4ade80;font-size:11px;">✓ $0 licensing forever</span></td>
+              <td>${fmt(Math.round(unifiHardware))}</td>
+              <td style="color:#4ade80;font-weight:700;">$0</td>
+              <td><strong>${fmt(Math.round(unifi5yrTCO))}</strong></td>
+              <td style="color:#4ade80;">Baseline</td>
+            </tr>
+            <tr>
+              <td><strong>Cisco Meraki</strong><br><span style="color:#f87171;font-size:11px;">⚠ License required — hardware disabled without it</span></td>
+              <td>${fmt(Math.round(merakiHardware))}</td>
+              <td style="color:#f87171;font-weight:700;">${fmt(Math.round(merakiLicensing5yr))}</td>
+              <td>${fmt(Math.round(meraki5yrTCO))}</td>
+              <td style="color:#f87171;font-weight:700;">+${merakiPctMore}%</td>
+            </tr>
+            <tr>
+              <td><strong>HPE Aruba</strong><br><span style="color:#f87171;font-size:11px;">⚠ Aruba Central subscription required</span></td>
+              <td>${fmt(Math.round(arubaHardware))}</td>
+              <td style="color:#f87171;font-weight:700;">${fmt(Math.round(arubaLicensing5yr))}</td>
+              <td>${fmt(Math.round(aruba5yrTCO))}</td>
+              <td style="color:#f87171;font-weight:700;">+${arubaPctMore}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:12px 16px;margin-top:12px;display:flex;align-items:flex-start;gap:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 010 4H8"/><path d="M12 18V6"/></svg>
+        <div style="font-size:12px;">
+          <strong style="color:#4ade80;">Save up to ${fmt(Math.round(meraki5yrTCO - unifi5yrTCO))} over 5 years vs Cisco Meraki</strong>
+          <p style="color:var(--muted);margin-top:4px;">UniFi equipment is fully functional with no licensing fees — ever. Meraki hardware becomes a paperweight when the license expires. Aruba requires Central subscriptions for cloud management features.</p>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Store for combined quote
+  if (!window._combinedQuotes) window._combinedQuotes = {};
+  window._combinedQuotes.network = {
+    type: 'Network Infrastructure',
+    platform: 'UniFi',
+    facility: '',
+    total: c.contractValue,
+    rangeLow: Math.round(c.customerMonthlyFee * c.termMonths * 0.95),
+    rangeHigh: Math.round(c.customerMonthlyFee * c.termMonths * 1.05),
+    monthlyFee: c.customerMonthlyFee,
+    devices: c.allDeviceCount
+  };
+  renderCombinedQuoteButtonNetwork();
+}
+
+// ===== NETWORK SLA PACKAGES =====
+function renderNetworkSLA(c) {
+  let el = document.getElementById('networkSLASection');
+  if (!el) {
+    const parent = document.querySelector('.results-panel') || document.querySelector('#main-content') || document.body;
+    if (!parent) return;
+    el = document.createElement('div');
+    el.id = 'networkSLASection';
+    el.className = 'panel sla-panel';
+    parent.appendChild(el);
+  }
+  
+  const devices = c.allDeviceCount;
+  let cards = '';
+  for (const [key, pkg] of Object.entries(NETWORK_SLA_PACKAGES)) {
+    const monthly = pkg.perDeviceMonth * devices;
+    const annual = monthly * 12;
+    const features = pkg.features.map(f => `<li style="display:flex;align-items:flex-start;gap:6px;margin-bottom:4px;font-size:12px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${pkg.color}" stroke-width="2.5" style="flex-shrink:0;margin-top:2px;"><polyline points="20 6 9 17 4 12"/></svg>${f}</li>`).join('');
+    cards += `<div style="flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;position:relative;${pkg.popular ? 'border-color:' + pkg.color + ';box-shadow:0 0 0 1px ' + pkg.color + ';' : ''}">
+      ${pkg.popular ? '<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:' + pkg.color + ';color:#000;font-size:10px;font-weight:700;padding:2px 10px;border-radius:10px;">MOST POPULAR</div>' : ''}
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-size:18px;font-weight:700;color:${pkg.color};">${pkg.name}</div>
+        <div style="font-size:24px;font-weight:800;margin:4px 0;">${fmtDec(monthly)}<span style="font-size:13px;font-weight:400;">/mo</span></div>
+        <div style="font-size:11px;color:var(--muted);">$${pkg.perDeviceMonth}/device × ${devices} devices</div>
+        <div style="font-size:11px;color:var(--muted);">${fmt(Math.round(annual))}/year</div>
+      </div>
+      <ul style="list-style:none;padding:0;margin:0;">${features}</ul>
+      <div style="text-align:center;margin-top:12px;font-size:10px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;">10% below industry average</div>
+    </div>`;
+  }
+  
+  el.innerHTML = `
+    <div class="panel-header">
+      <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Managed Service Plans</h2>
+    </div>
+    <div class="panel-body">
+      <p style="color:var(--muted);font-size:13px;margin-bottom:16px;">Protect your network investment with ongoing expert support — priced 10% below industry average.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">${cards}</div>
+    </div>
+  `;
+}
+
+// Combined quote button for network page
+function renderCombinedQuoteButtonNetwork() {
+  const existing = document.getElementById('combinedQuoteBtnNet');
+  if (existing) existing.remove();
+  
+  const quotes = window._combinedQuotes || {};
+  const count = Object.keys(quotes).length;
+  if (count === 0) return;
+  
+  const btn = document.createElement('div');
+  btn.id = 'combinedQuoteBtnNet';
+  btn.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;';
+  btn.innerHTML = `<button onclick="showCombinedQuoteNet()" style="display:flex;align-items:center;gap:8px;padding:12px 20px;background:var(--accent,#0070f3);color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,0.3);transition:transform 0.15s;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h4"/></svg>
+    Combined Quote (${count})
+  </button>`;
+  document.body.appendChild(btn);
+}
+
+window.showCombinedQuoteNet = function() {
+  const quotes = window._combinedQuotes || {};
+  if (Object.keys(quotes).length === 0) return;
+  
+  let rows = '', totalLow = 0, totalHigh = 0;
+  for (const [key, q] of Object.entries(quotes)) {
+    totalLow += q.rangeLow; totalHigh += q.rangeHigh;
+    rows += `<tr><td><strong>${q.type}</strong></td><td>${fmtWhole(q.rangeLow)} — ${fmtWhole(q.rangeHigh)}</td></tr>`;
+  }
+  
+  const modal = document.createElement('div');
+  modal.id = 'combinedQuoteModalNet';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `<div style="background:var(--surface,#fff);border-radius:12px;padding:24px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,0.25);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h2 style="margin:0;">Combined System Quote</h2><button onclick="document.getElementById('combinedQuoteModalNet').remove()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--text,#333);">&times;</button></div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;"><thead><tr><th style="text-align:left;padding:8px;border-bottom:2px solid var(--border,#ddd);">System</th><th style="text-align:right;padding:8px;border-bottom:2px solid var(--border,#ddd);">Range</th></tr></thead><tbody>${rows}</tbody><tfoot><tr style="font-weight:700;font-size:18px;"><td style="padding:12px 8px;border-top:2px solid var(--border,#ddd);">Combined Total</td><td style="text-align:right;padding:12px 8px;border-top:2px solid var(--border,#ddd);">${fmtWhole(totalLow)} — ${fmtWhole(totalHigh)}</td></tr></tfoot></table>
+    <button onclick="window.open('mailto:jmazza@nexusct.com?subject=Combined System Quote&body=Requesting combined proposal for ${Object.values(quotes).map(q=>q.type).join(' + ')}','_blank')" style="width:100%;padding:12px;background:var(--accent,#0070f3);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Request Combined Proposal</button>
+  </div>`;
+  document.body.appendChild(modal);
+};
 
 // ===== FEATURE 2: SCENARIOS =====
 function saveScenario() {

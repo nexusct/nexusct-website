@@ -159,6 +159,93 @@ const RCARE_PARTS = {
   "RC-ACT":   { name: "Activity Monitoring & Reporting License", cost: 500 },
 };
 
+
+// ---- Competitor Pricing Data (Nurse Call) ----
+const COMPETITOR_NURSE_CALL = {
+  rauland: {
+    name: "Rauland Responder (AMETEK)",
+    perBedEquipment: 3200,
+    installPerBed: 400,
+    annualSoftwareFee: 85, // per bed/year
+    annualMaintenanceFee: 120, // per bed/year
+    softwareFeeLabel: "$85/bed/year",
+    maintenanceFeeLabel: "$120/bed/year",
+    notes: "Requires annual software licensing + maintenance contract"
+  },
+  westcom: {
+    name: "Hillrom Versacare (Westcom)",
+    perBedEquipment: 2800,
+    installPerBed: 350,
+    annualSoftwareFee: 75,
+    annualMaintenanceFee: 100,
+    softwareFeeLabel: "$75/bed/year",
+    maintenanceFeeLabel: "$100/bed/year",
+    notes: "Requires annual software licensing + maintenance contract"
+  },
+  ge: {
+    name: "GE Healthcare Nurse Call",
+    perBedEquipment: 3500,
+    installPerBed: 450,
+    annualSoftwareFee: 95,
+    annualMaintenanceFee: 140,
+    softwareFeeLabel: "$95/bed/year",
+    maintenanceFeeLabel: "$140/bed/year",
+    notes: "Requires annual software licensing + maintenance contract"
+  }
+};
+
+// ---- SLA Managed Service Packages ----
+// Priced 10% below market average
+// Market average: Bronze ~$100/user/mo, Silver ~$150/user/mo, Gold ~$200/user/mo
+const SLA_PACKAGES = {
+  bronze: {
+    name: "Bronze",
+    color: "#cd7f32",
+    perBedMonth: 45, // 10% below market avg for basic nurse call support
+    features: [
+      "Business hours phone support (8am–6pm M–F)",
+      "48-hour on-site response time",
+      "Annual preventive maintenance inspection",
+      "Software updates included",
+      "Remote system monitoring",
+      "Parts coverage (depot repair)"
+    ]
+  },
+  silver: {
+    name: "Silver",
+    color: "#C0C0C0",
+    perBedMonth: 68, // 10% below market avg
+    popular: true,
+    features: [
+      "Extended hours support (7am–10pm, 7 days)",
+      "24-hour on-site response time",
+      "Semi-annual preventive maintenance",
+      "Software updates + firmware upgrades",
+      "24/7 remote monitoring & diagnostics",
+      "Parts + labor coverage",
+      "Quarterly system health reports",
+      "Staff training refresher (annual)"
+    ]
+  },
+  gold: {
+    name: "Gold",
+    color: "#FFD700",
+    perBedMonth: 90, // 10% below market avg
+    features: [
+      "24/7/365 priority phone & email support",
+      "4-hour emergency on-site response",
+      "Quarterly preventive maintenance",
+      "All software, firmware & feature updates",
+      "24/7 proactive monitoring with auto-alerts",
+      "Full parts + labor + loaner equipment",
+      "Monthly system health reports",
+      "Unlimited staff training sessions",
+      "Dedicated account manager",
+      "Annual technology review & upgrade planning"
+    ]
+  }
+};
+
 const MARGIN = 0.25;
 function sellPrice(cost) { return cost / (1 - MARGIN); }
 function fmt(n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -1419,6 +1506,96 @@ function buildSystemDesign() {
 }
 
 
+
+// ---- Competitor Comparison Builder ----
+function buildCompetitorTable(result, a) {
+  const beds = a.beds;
+  const nexusEquipTotal = result.equipSellTotal;
+  const nexusInstall = result.installCost;
+  const nexusTotal = result.grandTotal;
+  const nexusPerBed = nexusTotal / beds;
+  
+  let rows = '';
+  // NexusCT row (highlighted)
+  rows += `<tr class="competitor-row competitor-row--nexus">
+    <td><strong>NexusCT (${a.platformLabel})</strong><br><span class="comp-note" style="color:#4ade80;">✓ $0 recurring software fees</span></td>
+    <td>${fmt(nexusEquipTotal)}</td>
+    <td>${fmt(nexusInstall)}</td>
+    <td><strong style="color:#4ade80;">$0/year</strong></td>
+    <td><strong style="color:#4ade80;">$0/year</strong></td>
+    <td>${fmt(nexusPerBed)}</td>
+    <td><strong>${fmt(nexusTotal)}</strong><br><span class="comp-note" style="color:#4ade80;">+ $0 ongoing fees</span></td>
+  </tr>`;
+  
+  for (const [key, comp] of Object.entries(COMPETITOR_NURSE_CALL)) {
+    const equipTotal = comp.perBedEquipment * beds;
+    const installTotal = comp.installPerBed * beds;
+    const yearOneCost = equipTotal + installTotal;
+    const perBed = yearOneCost / beds;
+    const annualSoftware = comp.annualSoftwareFee * beds;
+    const annualMaint = comp.annualMaintenanceFee * beds;
+    const fiveYearRecurring = (annualSoftware + annualMaint) * 5;
+    const fiveYearTotal = yearOneCost + fiveYearRecurring;
+    const pctMore = Math.round(((fiveYearTotal - nexusTotal) / nexusTotal) * 100);
+    
+    rows += `<tr class="competitor-row competitor-row--other">
+      <td><strong>${comp.name}</strong><br><span class="comp-note" style="color:#f87171;">⚠ Recurring fees required</span></td>
+      <td>${fmt(equipTotal)}</td>
+      <td>${fmt(installTotal)}</td>
+      <td style="color:#f87171;"><strong>${fmt(annualSoftware)}/yr</strong></td>
+      <td style="color:#f87171;"><strong>${fmt(annualMaint)}/yr</strong></td>
+      <td>${fmt(perBed)}</td>
+      <td>${fmt(fiveYearTotal)}<br><span class="comp-note" style="color:#f87171;">${pctMore}% more over 5 years</span></td>
+    </tr>`;
+  }
+  
+  return `<div class="competitor-table-wrap">
+    <table class="competitor-table">
+      <thead>
+        <tr>
+          <th>Solution</th>
+          <th>Equipment</th>
+          <th>Installation</th>
+          <th>Annual Software</th>
+          <th>Annual Maint.</th>
+          <th>Per Bed</th>
+          <th>5-Year TCO</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>
+  <div class="competitor-savings-callout">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 010 4H8"/><path d="M12 18V6"/></svg>
+    <div>
+      <strong>$0 Recurring Software Fees</strong>
+      <p>Both Jeron and RCare include all software at no recurring cost — no annual licensing, no per-bed software subscriptions. Competitors charge ${fmt(COMPETITOR_NURSE_CALL.rauland.annualSoftwareFee)}/bed/year or more in mandatory software fees alone.</p>
+    </div>
+  </div>`;
+}
+
+function buildSLACards(beds) {
+  let cards = '';
+  for (const [key, pkg] of Object.entries(SLA_PACKAGES)) {
+    const monthlyTotal = pkg.perBedMonth * beds;
+    const annualTotal = monthlyTotal * 12;
+    const features = pkg.features.map(f => 
+      `<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${pkg.color}" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> ${f}</li>`
+    ).join('');
+    
+    cards += `<div class="sla-card${pkg.popular ? ' sla-card--popular' : ''}">
+      ${pkg.popular ? '<div class="sla-badge" style="background:' + pkg.color + ';">Most Popular</div>' : ''}
+      <div class="sla-tier" style="color:${pkg.color};">${pkg.name}</div>
+      <div class="sla-price">${fmtWhole(monthlyTotal)}<span>/mo</span></div>
+      <div class="sla-perbed">$${pkg.perBedMonth}/bed/month</div>
+      <div class="sla-annual">${fmt(annualTotal)}/year</div>
+      <ul class="sla-features">${features}</ul>
+      <div class="sla-note">10% below industry average</div>
+    </div>`;
+  }
+  return `<div class="sla-cards">${cards}</div>`;
+}
+
 // ---- Render Quote ----
 function renderQuote(result) {
   const qv = document.getElementById('quoteView');
@@ -1583,6 +1760,19 @@ function renderQuote(result) {
         </div>
       </div>
 
+
+      <div class="quote-section competitor-comparison-section">
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg> How We Compare</h2>
+        <p class="section-subtitle">See how NexusCT's ${a.platformLabel} solution compares to leading competitors.</p>
+        ${buildCompetitorTable(result, a)}
+      </div>
+
+      <div class="quote-section sla-packages-section">
+        <h2><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Managed Service &amp; Support Plans</h2>
+        <p class="section-subtitle">Protect your investment with ongoing expert support — priced below industry average.</p>
+        ${buildSLACards(a.beds)}
+      </div>
+
       <div class="quote-section" style="margin-top:var(--space-6);">
         <div style="background:var(--color-surface-offset);border-radius:var(--radius-lg);padding:var(--space-4);font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.7;">
           <strong style="color:var(--color-text);">Disclaimer</strong><br>
@@ -1610,8 +1800,143 @@ function renderQuote(result) {
   `;
   window.scrollTo({ top: 0, behavior: 'smooth' });
   window._quoteResult = result;
+  
+  // Store for combined quote builder
+  if (!window._combinedQuotes) window._combinedQuotes = {};
+  window._combinedQuotes.nurseCall = {
+    type: 'Nurse Call System',
+    platform: result.answers.platformLabel,
+    facility: result.answers.leadFacility || result.answers.facilityTypeLabel,
+    beds: result.answers.beds,
+    total: result.grandTotal,
+    rangeLow: Math.round(result.grandTotal * 0.70),
+    rangeHigh: Math.round(result.grandTotal * 1.30),
+    monthly: result.ncaas.monthly,
+    slaSelected: null
+  };
+  renderCombinedQuoteButton();
 }
 
+
+
+// ---- Combined Quote Builder ----
+function renderCombinedQuoteButton() {
+  // Remove existing if present
+  const existing = document.getElementById('combinedQuoteBtn');
+  if (existing) existing.remove();
+  
+  const quotes = window._combinedQuotes || {};
+  const count = Object.keys(quotes).length;
+  if (count === 0) return;
+  
+  const btn = document.createElement('div');
+  btn.id = 'combinedQuoteBtn';
+  btn.className = 'combined-quote-float';
+  btn.innerHTML = `
+    <button class="btn btn-primary" onclick="showCombinedQuote()" style="display:flex;align-items:center;gap:8px;padding:12px 20px;font-size:var(--text-sm);border-radius:var(--radius-full);box-shadow:0 4px 24px rgba(0,0,0,0.3);">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h4"/></svg>
+      Combined Quote (${count} system${count > 1 ? 's' : ''})
+    </button>
+  `;
+  document.body.appendChild(btn);
+}
+
+window.showCombinedQuote = function() {
+  const quotes = window._combinedQuotes || {};
+  if (Object.keys(quotes).length === 0) { alert('No quotes generated yet. Complete at least one configurator first.'); return; }
+  
+  let systemRows = '';
+  let grandTotalLow = 0, grandTotalHigh = 0;
+  
+  for (const [key, q] of Object.entries(quotes)) {
+    grandTotalLow += q.rangeLow;
+    grandTotalHigh += q.rangeHigh;
+    systemRows += `<tr>
+      <td><strong>${q.type}</strong>${q.platform ? '<br><span style="font-size:var(--text-xs);color:var(--color-text-muted);">' + q.platform + '</span>' : ''}</td>
+      <td>${q.facility || '—'}</td>
+      <td style="text-align:right;">${fmtWhole(q.rangeLow)} — ${fmtWhole(q.rangeHigh)}</td>
+    </tr>`;
+  }
+  
+  // SLA add-on row
+  let slaHtml = '';
+  const beds = quotes.nurseCall ? quotes.nurseCall.beds : (quotes.network ? 25 : 0);
+  if (beds > 0) {
+    slaHtml = `<div style="margin-top:var(--space-4);">
+      <h3 style="margin-bottom:var(--space-2);">Add Managed Service Plan</h3>
+      <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;">
+        <button class="btn btn-secondary btn-sm combined-sla-btn" data-tier="none" onclick="setCombinedSLA('none')">No SLA</button>
+        <button class="btn btn-secondary btn-sm combined-sla-btn" data-tier="bronze" onclick="setCombinedSLA('bronze')">Bronze — ${fmtWhole(SLA_PACKAGES.bronze.perBedMonth * beds)}/mo</button>
+        <button class="btn btn-secondary btn-sm combined-sla-btn" data-tier="silver" onclick="setCombinedSLA('silver')">Silver — ${fmtWhole(SLA_PACKAGES.silver.perBedMonth * beds)}/mo</button>
+        <button class="btn btn-secondary btn-sm combined-sla-btn" data-tier="gold" onclick="setCombinedSLA('gold')">Gold — ${fmtWhole(SLA_PACKAGES.gold.perBedMonth * beds)}/mo</button>
+      </div>
+      <div id="combinedSLADetail" style="margin-top:var(--space-2);font-size:var(--text-xs);color:var(--color-text-muted);"></div>
+    </div>`;
+  }
+  
+  const modal = document.createElement('div');
+  modal.id = 'combinedQuoteModal';
+  modal.className = 'combined-modal-overlay';
+  modal.innerHTML = `
+    <div class="combined-modal">
+      <div class="combined-modal-header">
+        <h2>Combined System Quote</h2>
+        <button onclick="document.getElementById('combinedQuoteModal').remove();" style="background:none;border:none;color:var(--color-text);font-size:24px;cursor:pointer;">&times;</button>
+      </div>
+      <div class="combined-modal-body">
+        <table class="competitor-table" style="margin-bottom:var(--space-4);">
+          <thead><tr><th>System</th><th>Details</th><th style="text-align:right;">Estimated Range</th></tr></thead>
+          <tbody>${systemRows}</tbody>
+          <tfoot><tr style="font-weight:700;font-size:var(--text-lg);"><td colspan="2">Combined Total</td><td style="text-align:right;" id="combinedGrandTotal">${fmtWhole(grandTotalLow)} — ${fmtWhole(grandTotalHigh)}</td></tr></tfoot>
+        </table>
+        ${slaHtml}
+        <div style="margin-top:var(--space-4);display:flex;gap:var(--space-2);flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="emailCombinedQuote()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Request Combined Proposal
+          </button>
+          <button class="btn btn-secondary" onclick="document.getElementById('combinedQuoteModal').remove();">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+};
+
+window.setCombinedSLA = function(tier) {
+  document.querySelectorAll('.combined-sla-btn').forEach(b => b.classList.remove('btn-primary'));
+  document.querySelectorAll('.combined-sla-btn').forEach(b => b.classList.add('btn-secondary'));
+  const activeBtn = document.querySelector(`.combined-sla-btn[data-tier="${tier}"]`);
+  if (activeBtn) { activeBtn.classList.remove('btn-secondary'); activeBtn.classList.add('btn-primary'); }
+  
+  const detail = document.getElementById('combinedSLADetail');
+  const totalEl = document.getElementById('combinedGrandTotal');
+  const quotes = window._combinedQuotes || {};
+  let grandTotalLow = 0, grandTotalHigh = 0;
+  for (const q of Object.values(quotes)) { grandTotalLow += q.rangeLow; grandTotalHigh += q.rangeHigh; }
+  
+  if (tier === 'none' || !SLA_PACKAGES[tier]) {
+    if (detail) detail.textContent = '';
+    if (totalEl) totalEl.textContent = fmtWhole(grandTotalLow) + ' — ' + fmtWhole(grandTotalHigh);
+    return;
+  }
+  
+  const beds = quotes.nurseCall ? quotes.nurseCall.beds : 25;
+  const pkg = SLA_PACKAGES[tier];
+  const annualSLA = pkg.perBedMonth * beds * 12;
+  if (detail) detail.textContent = `${pkg.name} plan: $${pkg.perBedMonth}/bed/mo × ${beds} beds = ${fmtWhole(annualSLA)}/year — includes: ${pkg.features.slice(0,3).join(', ')}...`;
+  if (totalEl) totalEl.innerHTML = fmtWhole(grandTotalLow) + ' — ' + fmtWhole(grandTotalHigh) + `<br><span style="font-size:var(--text-sm);color:${pkg.color};">+ ${pkg.name} SLA: ${fmtWhole(pkg.perBedMonth * beds)}/mo</span>`;
+};
+
+window.emailCombinedQuote = function() {
+  const quotes = window._combinedQuotes || {};
+  let body = 'Combined System Quote Request:\n\n';
+  for (const q of Object.values(quotes)) {
+    body += `${q.type} (${q.platform || ''})\n  Estimated: ${fmtWhole(q.rangeLow)} — ${fmtWhole(q.rangeHigh)}\n\n`;
+  }
+  body += '\nPlease contact me to discuss a combined proposal.\n';
+  window.open('mailto:jmazza@nexusct.com?subject=Combined System Quote Request&body=' + encodeURIComponent(body), '_blank');
+};
 
 // ---- Start Over ----
 window.startOver = function() {

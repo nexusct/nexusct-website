@@ -1540,3 +1540,48 @@ input[type="range"]::-moz-range-thumb {
 body.client-view .internal-only {
   display: none !important;
 }
+
+
+/* === Competitor Comparison & SLA === */
+.competitor-panel, .sla-panel {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.competitor-panel .panel-header, .sla-panel .panel-header {
+  padding: 16px 20px 0;
+}
+.competitor-panel .panel-header h2, .sla-panel .panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.competitor-panel .panel-body, .sla-panel .panel-body {
+  padding: 12px 20px 20px;
+}
+.competitor-table-wrap { overflow-x: auto; }
+.competitor-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.competitor-table th {
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--border);
+  color: var(--muted);
+}
+.competitor-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+@media(max-width:768px) {
+  .competitor-table { font-size: 11px; }
+  .competitor-table th, .competitor-table td { padding: 6px; }
+}
