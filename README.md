@@ -272,10 +272,12 @@ The CGI-bin scripts need a Python-capable server if quote storage and facility i
 
 ## Contact
 
+- **Address**: 1171 Tower Rd, Schaumburg, IL 60173
 - **Phone**: (847) 796-5585
 - **Email**: info@nxsct.com
 - **Location**: Schaumburg, IL
 - **Support Portal**: [nexusct.simprosuite.com/customer](https://nexusct.simprosuite.com/customer)
+- **Facebook**: [facebook.com/nexuscommtech](https://www.facebook.com/nexuscommtech/)
 
 ---
 
