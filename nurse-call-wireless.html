@@ -25,6 +25,26 @@
 <body>
 <div class="page-wrapper">
 
+<!-- Utility Bar -->
+<div class="utility-bar">
+  <div class="container">
+    <div class="utility-bar-left">
+      <a href="tel:8477965585"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (847) 796-5585</a>
+      <span class="utility-bar-divider"></span>
+      <a href="mailto:info@nxsct.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> info@nxsct.com</a>
+      <span class="utility-bar-divider"></span>
+      <span class="utility-bar-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Schaumburg, IL</span>
+    </div>
+    <div class="utility-bar-right">
+      <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support</a>
+      <span class="utility-bar-divider"></span>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Login</a>
+      <span class="utility-bar-divider"></span>
+      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Client Portal</a>
+    </div>
+  </div>
+</div>
+
 <!-- Site Header -->
 <header class="site-header">
   <div class="container">
@@ -35,30 +55,127 @@
       <div class="site-logo-text">Nexus<span>CT</span></div>
     </a>
 
-        <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+    <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+      <!-- Products -->
       <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Business <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="nav-dropdown">
-          <a href="unifi360.html" class="dropdown-link">UniFi360<small>UniFi as a Service</small></a>
-          <a href="services.html" class="dropdown-link">All Services<small>ICT, security, smart building</small></a>
-          <a href="nexus-configurator/index.html" class="dropdown-link">Network Configurator<small>Design your network</small></a>
+        <a href="#" class="nav-link">Products <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="mega-menu">
+          <div class="mega-menu-grid mega-menu-grid--5">
+            <div class="mega-menu-group">
+              <h5>Nurse Call</h5>
+              <ul>
+                <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
+                <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
+                <li><a href="ncaas.html">NCaaS</a></li>
+                <li><a href="nurse-call-designer.html">System Designer</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Networking</h5>
+              <ul>
+                <li><a href="unifi360.html">UniFi / Ubiquiti</a></li>
+                <li><a href="nexus-configurator/index.html">Network Configurator</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Security</h5>
+              <ul>
+                <li><a href="services.html">IP CCTV</a></li>
+                <li><a href="services.html">Access Control</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Patient Safety</h5>
+              <ul>
+                <li><a href="rtls.html">RTLS</a></li>
+                <li><a href="patient-safety.html">Wander Management</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Smart Building</h5>
+              <ul>
+                <li><a href="services.html">IoT Integration</a></li>
+                <li><a href="services.html">Energy Management</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- Solutions -->
       <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Healthcare <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="nav-dropdown">
-          <a href="healthcare.html" class="dropdown-link">Healthcare &amp; Life Safety<small>Nurse call, RTLS, patient safety</small></a>
-          <a href="nurse-call-wired.html" class="dropdown-link">Wired Nurse Call<small>Jeron Provider 700/790</small></a>
-          <a href="nurse-call-wireless.html" class="dropdown-link">Wireless Nurse Call<small>RCare G4 Wireless</small></a>
-          <a href="ncaas.html" class="dropdown-link">Nurse Call as-a-Service<small>Subscription-based NCaaS</small></a>
-          <a href="rtls.html" class="dropdown-link">RTLS &amp; Wander Management<small>Real-time location tracking</small></a>
-          <a href="patient-safety.html" class="dropdown-link">Patient Safety &amp; Security<small>Holistic safety solutions</small></a>
-          <a href="nexus360.html" class="dropdown-link">Nexus360 Managed<small>Unified healthcare platform</small></a>
+        <a href="#" class="nav-link">Solutions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="mega-menu">
+          <div class="mega-menu-grid mega-menu-grid--4">
+            <div class="mega-menu-group">
+              <h5>Managed Services</h5>
+              <ul>
+                <li><a href="unifi360.html">UniFi360</a></li>
+                <li><a href="nexus360.html">Nexus360</a></li>
+                <li><a href="ncaas.html">NCaaS</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Infrastructure</h5>
+              <ul>
+                <li><a href="services.html">Structured Cabling</a></li>
+                <li><a href="services.html">Network Design</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Professional Services</h5>
+              <ul>
+                <li><a href="services.html">Site Surveys</a></li>
+                <li><a href="services.html">Project Management</a></li>
+                <li><a href="services.html">Commissioning</a></li>
+              </ul>
+            </div>
+            <div class="mega-menu-group">
+              <h5>Support</h5>
+              <ul>
+                <li><a href="services.html">24/7 NOC</a></li>
+                <li><a href="services.html">Remote Monitoring</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-      <a href="about.html" class="nav-link">About</a>
-      <a href="nurse-call-designer.html" class="nav-link">System Designer</a>
-      <a href="facility-map/index.html" class="nav-link">Facility Map</a>
+
+      <!-- Industries -->
+      <div class="nav-item" data-dropdown>
+        <a href="#" class="nav-link">Industries <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown">
+          <a href="healthcare.html" class="dropdown-link">Healthcare<small>Hospitals, clinics, long-term care</small></a>
+          <a href="services.html" class="dropdown-link">Senior Living<small>Assisted living, memory care</small></a>
+          <a href="services.html" class="dropdown-link">Hospitality<small>Hotels, resorts, conference centers</small></a>
+          <a href="services.html" class="dropdown-link">Commercial Real Estate<small>Office, retail, mixed-use</small></a>
+          <a href="services.html" class="dropdown-link">Education<small>K-12, higher education</small></a>
+          <a href="services.html" class="dropdown-link">Government<small>Municipal, federal</small></a>
+        </div>
+      </div>
+
+      <!-- Partners & Catalog -->
+      <div class="nav-item" data-dropdown>
+        <a href="#" class="nav-link">Partners <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown">
+          <a href="services.html" class="dropdown-link">Technology Partners<small>Cisco, Ubiquiti, Jeron, RCare</small></a>
+          <a href="services.html" class="dropdown-link">Product Catalog<small>Browse all products</small></a>
+          <a href="services.html" class="dropdown-link">Become a Partner<small>Join our partner program</small></a>
+        </div>
+      </div>
+
+      <!-- Resources -->
+      <div class="nav-item" data-dropdown>
+        <a href="#" class="nav-link">Resources <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="nav-dropdown">
+          <a href="about.html" class="dropdown-link">About NexusCT<small>Our story and team</small></a>
+          <a href="services.html" class="dropdown-link">Case Studies<small>Client success stories</small></a>
+          <a href="services.html" class="dropdown-link">Blog<small>News and insights</small></a>
+          <a href="services.html" class="dropdown-link">Documentation<small>Technical resources</small></a>
+        </div>
+      </div>
+
+      <!-- Contact -->
       <a href="contact.html" class="nav-link">Contact</a>
     </nav>
 
@@ -67,10 +184,13 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
       <a href="contact.html" class="btn btn--primary btn--sm header-cta header-cta-desktop">Get a Quote</a>
-      <button class="mobile-toggle" aria-label="Toggle navigation"><span></span></button>
+      <button class="mobile-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
+
+<!-- Mobile Nav Overlay -->
+<div class="nav-overlay" id="navOverlay"></div>
 <main class="page-content">
 
 
@@ -84,7 +204,7 @@
   </div>
 </section>
 
-<section class="section section--surface reveal">
+<section class="section section--alt reveal">
   <div class="container">
     <div class="two-col">
       <div>
@@ -150,7 +270,7 @@
   </div>
 </section>
 
-<section class="section section--surface reveal">
+<section class="section section--alt reveal">
   <div class="container">
     <div class="highlight-box">
       <h4>Exclusive Illinois Distributor</h4>
@@ -233,7 +353,7 @@
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <div class="site-logo-text" style="font-size:var(--text-lg);font-weight:700;">Nexus<span style="color:#58a6ff;">CT</span></div>
+        <div class="site-logo-text">Nexus<span>CT</span></div>
         <p>Connecting Your World, Powering Your Future. Enterprise-grade technology solutions for healthcare, commercial real estate, and hospitality since 2016.</p>
         <div class="footer-contact">
           <a href="tel:8477965585"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (847) 796-5585</a>
@@ -241,34 +361,44 @@
           <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support Portal</a>
         </div>
       </div>
-            <div class="footer-col">
-        <h4>Business</h4>
-        <ul class="footer-links">
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
+          <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
+          <li><a href="ncaas.html">NCaaS</a></li>
           <li><a href="unifi360.html">UniFi360</a></li>
-          <li><a href="services.html">All Services</a></li>
+          <li><a href="rtls.html">RTLS</a></li>
           <li><a href="nexus-configurator/index.html">Network Configurator</a></li>
         </ul>
       </div>
       <div class="footer-col">
-        <h4>Healthcare</h4>
-        <ul class="footer-links">
-          <li><a href="healthcare.html">Healthcare Overview</a></li>
-          <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
-          <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
-          <li><a href="ncaas.html">NCaaS</a></li>
-          <li><a href="rtls.html">RTLS</a></li>
-          <li><a href="patient-safety.html">Patient Safety</a></li>
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="healthcare.html">Healthcare</a></li>
+          <li><a href="services.html">Managed Services</a></li>
+          <li><a href="services.html">Structured Cabling</a></li>
           <li><a href="nexus360.html">Nexus360</a></li>
-          <li><a href="nurse-call-designer.html">System Designer</a></li>
+          <li><a href="patient-safety.html">Patient Safety</a></li>
         </ul>
       </div>
       <div class="footer-col">
         <h4>Company</h4>
-        <ul class="footer-links">
+        <ul>
           <li><a href="about.html">About Us</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li><a href="facility-map/index.html">Facility Map</a></li>
+          <li><a href="services.html">Careers</a></li>
+          <li><a href="services.html">Partners</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
           <li><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a></li>
+          <li><a href="nurse-call-designer.html">System Designer</a></li>
+          <li><a href="services.html">Documentation</a></li>
+          <li><a href="services.html">Privacy Policy</a></li>
+          <li><a href="services.html">Terms of Service</a></li>
         </ul>
       </div>
     </div>
@@ -278,6 +408,9 @@
         <span>BICSI</span>
         <span>AVIXA</span>
       </div>
+    </div>
+    <div style="text-align:center; margin-top: var(--space-4);">
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="font-size: var(--text-xs); color: var(--gray-600);">Created with Perplexity Computer</a>
     </div>
   </div>
 </footer>

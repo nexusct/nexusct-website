@@ -1,10 +1,6 @@
-/* base.css — NexusCT Site Reset */
+/* base.css — NexusCT Reset + Design Tokens (2026 Restyle) */
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   -moz-text-size-adjust: none;
@@ -14,7 +10,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
-  hanging-punctuation: first last;
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -26,49 +22,28 @@ body {
   background-color: var(--color-bg);
 }
 
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-ul[role="list"], ol[role="list"] {
-  list-style: none;
-}
-
-input, button, textarea, select {
-  font: inherit;
-  color: inherit;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  text-wrap: balance;
-  line-height: 1.15;
-}
-
-p, li, figcaption {
-  text-wrap: pretty;
-}
+img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
+ul[role="list"], ol[role="list"] { list-style: none; }
+input, button, textarea, select { font: inherit; color: inherit; }
+h1, h2, h3, h4, h5, h6 { text-wrap: balance; line-height: 1.15; }
+p, li, figcaption { text-wrap: pretty; }
 
 a {
   color: var(--color-primary);
   text-decoration: none;
-  transition: color var(--transition-interactive);
+  transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-a:hover {
-  color: var(--color-primary-hover);
-}
+a:hover { color: var(--color-primary-hover); }
 
 ::selection {
-  background: rgba(0, 86, 179, 0.2);
+  background: rgba(37, 99, 235, 0.15);
   color: var(--color-text);
 }
 
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
-  border-radius: var(--radius-sm);
+  border-radius: 0.25rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -80,25 +55,10 @@ a:hover {
   }
 }
 
-button {
-  cursor: pointer;
-  background: none;
-  border: none;
-}
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
+button { cursor: pointer; background: none; border: none; }
+table { border-collapse: collapse; width: 100%; }
 
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
 }
