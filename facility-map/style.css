@@ -973,6 +973,12 @@ html, body {
   color: var(--text-tertiary);
   margin-top: 1px;
 }
+.tooltip-apollo {
+  font-size: 9.5px;
+  color: var(--brand-cyan);
+  margin-top: 2px;
+  font-weight: 500;
+}
 
 /* Cluster markers */
 .marker-cluster-small,
@@ -1025,6 +1031,156 @@ html, body {
 @keyframes hq-pulse {
   0%, 100% { box-shadow: 0 0 0 4px rgba(0,180,216,0.3), 0 0 0 8px rgba(0,180,216,0.1); }
   50%       { box-shadow: 0 0 0 6px rgba(0,180,216,0.2), 0 0 0 14px rgba(0,180,216,0.05); }
+}
+
+/* ── Apollo Enrichment Styles ────────────────────────────────── */
+.apollo-stats .stat-card {
+  border-color: rgba(108,43,217,0.2);
+}
+.apollo-stats .stat-number {
+  color: #a78bfa;
+}
+
+/* Apollo badges */
+.apollo-badge {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+.apollo-rich {
+  background: rgba(0,180,216,0.15);
+  color: #00b4d8;
+}
+.apollo-partial {
+  background: rgba(108,43,217,0.15);
+  color: #a78bfa;
+}
+.apollo-searched {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-tertiary);
+}
+
+/* Popup contacts */
+.popup-contacts {
+  margin-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 8px;
+}
+.popup-contacts-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.popup-contacts-header svg {
+  color: var(--brand-cyan);
+}
+.contact-count {
+  background: rgba(0,180,216,0.15);
+  color: var(--brand-cyan);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: auto;
+}
+.contact-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+  margin-bottom: 4px;
+}
+.contact-card:last-child { margin-bottom: 0; }
+.contact-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+.contact-title {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+  font-family: var(--font-sans);
+}
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.contact-link {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--brand-cyan);
+  text-decoration: none;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(0,180,216,0.08);
+  transition: background 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+.contact-link:hover {
+  background: rgba(0,180,216,0.18);
+  text-decoration: none;
+}
+.contact-linkedin {
+  color: #0A66C2;
+  background: rgba(10,102,194,0.08);
+}
+.contact-linkedin:hover {
+  background: rgba(10,102,194,0.18);
+}
+.contact-hint {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+  font-family: var(--font-sans);
+  padding: 2px 0;
+}
+
+/* List Apollo badges */
+.list-apollo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  margin-left: auto;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.list-apollo-badge.rich {
+  color: var(--brand-cyan);
+  background: rgba(0,180,216,0.1);
+}
+.list-apollo-badge.partial {
+  color: #a78bfa;
+  background: rgba(108,43,217,0.1);
+}
+
+/* List item extra info */
+.facility-item-extra {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  padding: 2px 0 0 0;
+}
+
+.facility-item.has-contacts {
+  border-left: 2px solid var(--brand-cyan);
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */

@@ -167,6 +167,18 @@
               </label>
             </div>
           </div>
+
+          <!-- Apollo.io Filter -->
+          <div class="filter-group">
+            <div class="filter-group-label">Apollo.io Data</div>
+            <div class="state-filters">
+              <label class="checkbox-label">
+                <input type="checkbox" id="apolloOnlyToggle" />
+                <span class="checkbox-custom"></span>
+                <span>Only with Apollo data</span>
+              </label>
+            </div>
+          </div>
         </div>
 
         <!-- ── STATISTICS ── -->
@@ -177,12 +189,30 @@
 
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-number" id="statVisible">1,075</div>
+              <div class="stat-number" id="statVisible">1,337</div>
               <div class="stat-label">Shown</div>
             </div>
             <div class="stat-card">
               <div class="stat-number" id="statAvgDist">—</div>
               <div class="stat-label">Avg Distance</div>
+            </div>
+          </div>
+
+          <div class="section-header" style="margin-top:12px">
+            <span class="section-title">Apollo.io Intelligence</span>
+          </div>
+          <div class="stats-grid apollo-stats">
+            <div class="stat-card">
+              <div class="stat-number" id="statApolloEnriched">0</div>
+              <div class="stat-label">Enriched</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="statWithContacts">0</div>
+              <div class="stat-label">With Contacts</div>
+            </div>
+            <div class="stat-card" style="grid-column:1/-1">
+              <div class="stat-number" id="statTotalContacts">0</div>
+              <div class="stat-label">Total Contacts Found</div>
             </div>
           </div>
 

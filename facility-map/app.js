@@ -1,6 +1,7 @@
 /* ════════════════════════════════════════════════════════════
    NexusCT — Facility Map App
    Leaflet + MarkerCluster interactive map
+   with Apollo.io enrichment data
    ════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -43,10 +44,11 @@
     states: new Set(['IL', 'IN', 'WI', 'MI', 'IA', '']),
     relevance: new Set(['High', 'Medium']),
     search: '',
+    apolloOnly: false,
   };
 
   let visibleFacilities = [];
-  let markerMap = new Map(); // facility index → Leaflet marker
+  let markerMap = new Map();
   let clusterGroup;
   let mapInstance;
 
@@ -59,14 +61,12 @@
       preferCanvas: true,
     });
 
-    // Dark tile layer — CartoDB Dark Matter
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a>',
       subdomains: 'abcd',
       maxZoom: 19,
     }).addTo(mapInstance);
 
-    // 100-mile radius circle
     L.circle(SCHAUMBURG, {
       radius: RADIUS_MILES * MILES_TO_METERS,
       color: '#00b4d8',
@@ -77,7 +77,6 @@
       interactive: false,
     }).addTo(mapInstance);
 
-    // HQ marker
     const hqIcon = L.divIcon({
       html: '<div class="hq-marker"><div class="hq-pulse"></div></div>',
       className: '',
@@ -93,7 +92,6 @@
         offset: [0, -14],
       });
 
-    // MarkerCluster group
     clusterGroup = L.markerClusterGroup({
       maxClusterRadius: 50,
       spiderfyOnMaxZoom: true,
@@ -128,13 +126,15 @@
   /* ── Marker creation ───────────────────────────────────── */
   function makeMarker(facility, idx) {
     const color = TYPE_COLORS[facility.type] || '#9ba3b8';
+    const hasApollo = facility.apollo_enriched && (facility.apollo_contacts || facility.apollo_org);
+    
     const icon = L.divIcon({
       html: `<div style="
         width:12px;height:12px;
         background:${color};
-        border:2px solid rgba(255,255,255,0.85);
+        border:2px solid ${hasApollo ? '#00b4d8' : 'rgba(255,255,255,0.85)'};
         border-radius:50%;
-        box-shadow:0 1px 4px rgba(0,0,0,0.5);
+        box-shadow:0 1px 4px rgba(0,0,0,0.5)${hasApollo ? ',0 0 6px rgba(0,180,216,0.4)' : ''};
       "></div>`,
       className: '',
       iconSize: [12, 12],
@@ -143,17 +143,16 @@
 
     const marker = L.marker([facility.lat, facility.lon], { icon });
 
-    // Tooltip on hover
     marker.bindTooltip(
       `<div class="tooltip-name">${escHtml(facility.name)}</div>
-       <div class="tooltip-type">${escHtml(facility.type)}</div>`,
+       <div class="tooltip-type">${escHtml(facility.type)}</div>
+       ${hasApollo ? '<div class="tooltip-apollo">Apollo Data Available</div>' : ''}`,
       { direction: 'top', offset: [0, -8], sticky: false }
     );
 
-    // Popup on click
     marker.bindPopup(buildPopup(facility), {
-      maxWidth: 320,
-      minWidth: 260,
+      maxWidth: 360,
+      minWidth: 280,
       closeButton: true,
     });
 
@@ -206,6 +205,7 @@
       </div>`;
     }
 
+    // Meta grid
     const metaItems = [];
     if (f.beds) {
       metaItems.push(`<div class="popup-meta-item">
@@ -225,22 +225,116 @@
         <div class="popup-meta-value popup-stars">${stars}</div>
       </div>`);
     }
+
+    // Apollo org data
+    const org = f.apollo_org || {};
+    if (org.employees) {
+      metaItems.push(`<div class="popup-meta-item">
+        <div class="popup-meta-label">Employees</div>
+        <div class="popup-meta-value">${escHtml(String(org.employees))}</div>
+      </div>`);
+    }
+    if (org.revenue) {
+      metaItems.push(`<div class="popup-meta-item">
+        <div class="popup-meta-label">Revenue</div>
+        <div class="popup-meta-value">${escHtml(org.revenue)}</div>
+      </div>`);
+    }
+    if (org.industry) {
+      metaItems.push(`<div class="popup-meta-item" style="grid-column:1/-1">
+        <div class="popup-meta-label">Industry</div>
+        <div class="popup-meta-value" style="font-family:var(--font-sans);font-size:11px">${escHtml(org.industry)}</div>
+      </div>`);
+    }
     if (f.ownership) {
       metaItems.push(`<div class="popup-meta-item" style="grid-column:1/-1">
         <div class="popup-meta-label">Ownership</div>
         <div class="popup-meta-value" style="font-family:var(--font-sans);font-size:11px">${escHtml(f.ownership)}</div>
       </div>`);
     }
+    if (org.description) {
+      metaItems.push(`<div class="popup-meta-item" style="grid-column:1/-1">
+        <div class="popup-meta-label">About</div>
+        <div class="popup-meta-value" style="font-family:var(--font-sans);font-size:11px;line-height:1.4">${escHtml(org.description)}</div>
+      </div>`);
+    }
 
     const metaGrid = metaItems.length
       ? `<div class="popup-meta-grid">${metaItems.join('')}</div>` : '';
+
+    // Apollo contacts section
+    let contactsHtml = '';
+    const contacts = f.apollo_contacts || [];
+    const people = f.apollo_people || [];
+    
+    if (contacts.length > 0) {
+      const contactCards = contacts.map(c => {
+        let links = '';
+        if (c.email) links += `<a href="mailto:${escHtml(c.email)}" class="contact-link" title="Email">${escHtml(c.email)}</a>`;
+        if (c.linkedin) links += `<a href="${escHtml(c.linkedin)}" target="_blank" rel="noopener noreferrer" class="contact-link contact-linkedin" title="LinkedIn">LinkedIn</a>`;
+        if (c.phone) links += `<a href="tel:${escHtml(c.phone)}" class="contact-link" title="Phone">${escHtml(c.phone)}</a>`;
+        
+        return `<div class="contact-card">
+          <div class="contact-name">${escHtml(c.name)}</div>
+          <div class="contact-title">${escHtml(c.title)}</div>
+          ${links ? `<div class="contact-links">${links}</div>` : ''}
+        </div>`;
+      }).join('');
+
+      contactsHtml = `<div class="popup-contacts">
+        <div class="popup-contacts-header">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M1.5 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+          Key Contacts <span class="contact-count">${contacts.length}</span>
+        </div>
+        ${contactCards}
+      </div>`;
+    } else if (people.length > 0) {
+      // Show obfuscated people as hints
+      const highValue = people.filter(p => p.high_value);
+      if (highValue.length > 0) {
+        const hints = highValue.slice(0, 3).map(p => 
+          `<div class="contact-hint">${escHtml(p.first_name)} — ${escHtml(p.title)}</div>`
+        ).join('');
+        contactsHtml = `<div class="popup-contacts">
+          <div class="popup-contacts-header">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <circle cx="6" cy="4" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M1.5 11c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+            People Found <span class="contact-count">${people.length}</span>
+          </div>
+          ${hints}
+        </div>`;
+      }
+    }
+
+    // Apollo org LinkedIn link
+    let orgLinks = '';
+    if (org.linkedin) {
+      orgLinks += `<a href="${escHtml(org.linkedin)}" target="_blank" rel="noopener noreferrer" class="popup-search-btn popup-search-linkedin" title="Company LinkedIn">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="#0A66C2">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.123 2.062 2.062 0 0 1 0 4.123zM6.893 20.452H3.58V9h3.413v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+        LinkedIn
+      </a>`;
+    }
 
     // Build search URLs
     const searchName = encodeURIComponent(f.name);
     const searchLoc  = encodeURIComponent((f.city || '') + ' ' + (f.state || ''));
     const googleUrl   = `https://www.google.com/search?q=${searchName}+${searchLoc}`;
-    const linkedinUrl  = `https://www.linkedin.com/search/results/companies/?keywords=${searchName}`;
+    const linkedinUrl  = org.linkedin || `https://www.linkedin.com/search/results/companies/?keywords=${searchName}`;
     const apolloUrl    = `https://app.apollo.io/#/search?q=${searchName}&organizationLocations[]=${searchLoc}`;
+
+    // Enrichment badge
+    const enrichBadge = f.apollo_enriched 
+      ? (contacts.length > 0 
+        ? '<span class="apollo-badge apollo-rich">Apollo Enriched</span>'
+        : (f.apollo_org ? '<span class="apollo-badge apollo-partial">Apollo Org Data</span>' : '<span class="apollo-badge apollo-searched">Apollo Searched</span>'))
+      : '';
 
     return `<div class="popup-header">
       <div class="popup-name">${escHtml(f.name)}</div>
@@ -248,11 +342,13 @@
         <div class="popup-type-dot" style="background:${color}"></div>
         <span class="popup-type-label">${escHtml(f.type)}</span>
         <span class="popup-rel rel-badge ${relClass}">${escHtml(f.relevance)}</span>
+        ${enrichBadge}
       </div>
     </div>
     <div class="popup-body">
       ${rows}
       ${metaGrid}
+      ${contactsHtml}
       <div class="popup-search-row">
         <a href="${googleUrl}" target="_blank" rel="noopener noreferrer" class="popup-search-btn popup-search-google" title="Search on Google">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none">
@@ -294,7 +390,16 @@
       const fState = f.state || '';
       if (!filters.states.has(fState)) return false;
       if (!filters.relevance.has(f.relevance)) return false;
-      if (search && !f.name.toLowerCase().includes(search)) return false;
+      if (filters.apolloOnly && !f.apollo_contacts && !f.apollo_org) return false;
+      if (search) {
+        const nameMatch = f.name.toLowerCase().includes(search);
+        const contactMatch = (f.apollo_contacts || []).some(c => 
+          (c.name && c.name.toLowerCase().includes(search)) ||
+          (c.title && c.title.toLowerCase().includes(search)) ||
+          (c.email && c.email.toLowerCase().includes(search))
+        );
+        if (!nameMatch && !contactMatch) return false;
+      }
       return true;
     });
 
@@ -330,6 +435,15 @@
       : '—';
     document.getElementById('statAvgDist').textContent = shown > 0 ? avgDist + ' mi' : '—';
 
+    // Apollo stats
+    const apolloEnriched = visibleFacilities.filter(f => f.apollo_enriched).length;
+    const withContacts = visibleFacilities.filter(f => f.apollo_contacts && f.apollo_contacts.length > 0).length;
+    const totalContacts = visibleFacilities.reduce((s, f) => s + (f.apollo_contacts ? f.apollo_contacts.length : 0), 0);
+    
+    document.getElementById('statApolloEnriched').textContent = apolloEnriched.toLocaleString();
+    document.getElementById('statWithContacts').textContent = withContacts.toLocaleString();
+    document.getElementById('statTotalContacts').textContent = totalContacts.toLocaleString();
+
     // Type breakdown
     const typeCount = {};
     visibleFacilities.forEach(f => {
@@ -362,7 +476,6 @@
       return;
     }
 
-    // Sort by distance
     const sorted = [...visibleFacilities].sort((a, b) => (a.distance || 999) - (b.distance || 999));
 
     list.innerHTML = sorted.map((f, i) => {
@@ -375,7 +488,33 @@
       const sName = encodeURIComponent(f.name);
       const sLoc  = encodeURIComponent((f.city || '') + ' ' + (f.state || ''));
 
-      return `<div class="facility-item" data-idx="${origIdx}" role="button" tabindex="0">
+      const hasContacts = f.apollo_contacts && f.apollo_contacts.length > 0;
+      const hasOrg = f.apollo_org;
+      const org = f.apollo_org || {};
+      
+      // Apollo enrichment indicator
+      let apolloIndicator = '';
+      if (hasContacts) {
+        apolloIndicator = `<span class="list-apollo-badge rich" title="${f.apollo_contacts.length} contacts available">
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><circle cx="4" cy="4" r="3" fill="#00b4d8"/></svg>
+          ${f.apollo_contacts.length}
+        </span>`;
+      } else if (hasOrg) {
+        apolloIndicator = `<span class="list-apollo-badge partial" title="Org data available">
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><circle cx="4" cy="4" r="3" fill="#6C2BD9" opacity="0.7"/></svg>
+        </span>`;
+      }
+
+      // Extra info line
+      let extraInfo = '';
+      if (org.employees || org.revenue) {
+        const parts = [];
+        if (org.employees) parts.push(`${org.employees} emp`);
+        if (org.revenue) parts.push(org.revenue);
+        extraInfo = `<div class="facility-item-extra">${parts.join(' · ')}</div>`;
+      }
+
+      return `<div class="facility-item${hasContacts ? ' has-contacts' : ''}" data-idx="${origIdx}" role="button" tabindex="0">
         <div class="facility-item-top">
           <span class="facility-item-name">${escHtml(f.name)}</span>
           <span class="facility-item-dist">${dist}</span>
@@ -383,12 +522,14 @@
         <div class="facility-item-bottom">
           <span class="type-badge" style="background:${color}20;color:${color}">${escHtml(short)}</span>
           ${city ? `<span class="facility-item-city">${escHtml(city)}</span>` : ''}
+          ${apolloIndicator}
         </div>
+        ${extraInfo}
         <div class="facility-item-links">
           <a href="https://www.google.com/search?q=${sName}+${sLoc}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-google" title="Google" onclick="event.stopPropagation()">
             <svg viewBox="0 0 24 24" width="11" height="11" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09A6.97 6.97 0 0 1 5.48 12c0-.72.13-1.43.36-2.09V7.07H2.18A11.96 11.96 0 0 0 0 12c0 1.94.46 3.77 1.28 5.4l3.56-2.76.01-.55z" fill="#FBBC05"/><path d="M12 4.75c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 1.09 14.97 0 12 0 7.7 0 3.99 2.47 2.18 6.07l3.66 2.84c.87-2.6 3.3-4.16 6.16-4.16z" fill="#EA4335"/></svg>
           </a>
-          <a href="https://www.linkedin.com/search/results/companies/?keywords=${sName}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-linkedin" title="LinkedIn" onclick="event.stopPropagation()">
+          <a href="${org.linkedin || 'https://www.linkedin.com/search/results/companies/?keywords=' + sName}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-linkedin" title="LinkedIn" onclick="event.stopPropagation()">
             <svg viewBox="0 0 24 24" width="11" height="11" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.123 2.062 2.062 0 0 1 0 4.123zM6.893 20.452H3.58V9h3.413v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           </a>
           <a href="https://app.apollo.io/#/search?q=${sName}&organizationLocations[]=${sLoc}" target="_blank" rel="noopener noreferrer" class="item-link-btn item-link-apollo" title="Apollo.io" onclick="event.stopPropagation()">
@@ -412,13 +553,11 @@
     const f = FACILITIES[idx];
     if (!f) return;
 
-    // Unspiderfy / zoom in if needed
     mapInstance.flyTo([f.lat, f.lon], Math.max(mapInstance.getZoom(), 13), {
       animate: true,
       duration: 0.8,
     });
 
-    // Open popup after fly
     setTimeout(() => {
       const marker = markerMap.get(idx);
       if (marker) {
@@ -508,6 +647,15 @@
       });
     });
 
+    // ── Apollo filter ──
+    const apolloToggle = document.getElementById('apolloOnlyToggle');
+    if (apolloToggle) {
+      apolloToggle.addEventListener('change', () => {
+        filters.apolloOnly = apolloToggle.checked;
+        applyFilters();
+      });
+    }
+
     // ── Search ──
     const searchInput = document.getElementById('searchInput');
     const searchClear = document.getElementById('searchClear');
@@ -527,30 +675,27 @@
 
     // ── Reset button ──
     document.getElementById('resetFilters').addEventListener('click', () => {
-      // Types
       filters.types = new Set(Object.keys(TYPE_COLORS));
       typeContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = true; });
 
-      // Distance
       slider.value = 125;
       filters.maxDistance = 125;
       updateSliderStyle(125);
 
-      // Rating
       filters.minRating = 0;
       document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('.star-btn[data-rating="0"]').classList.add('active');
       document.getElementById('ratingLabel').textContent = 'Any';
 
-      // States
       filters.states = new Set(['IL', 'IN', 'WI', 'MI', 'IA', '']);
       document.querySelectorAll('[data-state]').forEach(cb => { cb.checked = true; });
 
-      // Relevance
       filters.relevance = new Set(['High', 'Medium']);
       document.querySelectorAll('[data-rel]').forEach(cb => { cb.checked = true; });
 
-      // Search
+      filters.apolloOnly = false;
+      if (apolloToggle) apolloToggle.checked = false;
+
       searchInput.value = '';
       filters.search = '';
       searchClear.classList.remove('visible');
@@ -581,21 +726,50 @@
   function exportCSV() {
     const cols = ['name', 'type', 'subtype', 'address', 'city', 'state', 'zip', 'phone',
                   'beds', 'rating', 'ownership', 'distance', 'relevance', 'website'];
+    
+    // Apollo columns
+    const apolloCols = ['apollo_industry', 'apollo_employees', 'apollo_revenue', 'apollo_linkedin', 'apollo_description',
+                        'contact1_name', 'contact1_title', 'contact1_email', 'contact1_linkedin',
+                        'contact2_name', 'contact2_title', 'contact2_email', 'contact2_linkedin',
+                        'contact3_name', 'contact3_title', 'contact3_email', 'contact3_linkedin'];
 
-    const header = cols.join(',');
+    const allCols = [...cols, ...apolloCols];
+    const header = allCols.join(',');
 
     const rows = visibleFacilities
       .sort((a, b) => (a.distance || 999) - (b.distance || 999))
-      .map(f => cols.map(col => {
-        const val = f[col] != null ? String(f[col]) : '';
-        return /[,"\n]/.test(val) ? `"${val.replace(/"/g, '""')}"` : val;
-      }).join(','));
+      .map(f => {
+        // Build flat row with apollo data
+        const row = {};
+        cols.forEach(col => { row[col] = f[col] != null ? String(f[col]) : ''; });
+        
+        const org = f.apollo_org || {};
+        row['apollo_industry'] = org.industry || '';
+        row['apollo_employees'] = org.employees ? String(org.employees) : '';
+        row['apollo_revenue'] = org.revenue || '';
+        row['apollo_linkedin'] = org.linkedin || '';
+        row['apollo_description'] = org.description || '';
+        
+        const contacts = f.apollo_contacts || [];
+        for (let i = 0; i < 3; i++) {
+          const c = contacts[i] || {};
+          row[`contact${i+1}_name`] = c.name || '';
+          row[`contact${i+1}_title`] = c.title || '';
+          row[`contact${i+1}_email`] = c.email || '';
+          row[`contact${i+1}_linkedin`] = c.linkedin || '';
+        }
+        
+        return allCols.map(col => {
+          const val = row[col] || '';
+          return /[,"\n]/.test(val) ? `"${val.replace(/"/g, '""')}"` : val;
+        }).join(',');
+      });
 
     const csv = [header, ...rows].join('\r\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'nexusct_facilities.csv';
+    a.download = 'nexusct_facilities_enriched.csv';
     a.click();
     URL.revokeObjectURL(a.href);
   }
@@ -618,7 +792,6 @@
     applyFilters();
   }
 
-  // Wait for DOM + libraries
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
