@@ -1065,6 +1065,114 @@
   white-space: nowrap;
 }
 
+/* ---- Product Card Grid (enriched catalog view) ---- */
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.product-card {
+  display: flex;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  transition: box-shadow 150ms;
+}
+
+.product-card:hover {
+  box-shadow: 0 2px 8px oklch(from var(--color-text) l c h / 0.08);
+}
+
+.product-card--compact {
+  padding: var(--space-2) var(--space-3);
+}
+
+.product-card-img {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-surface-offset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-card-noimg {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-1);
+}
+
+.product-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-card-name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.product-card-real {
+  font-size: 11px;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.product-card-desc {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.product-card-specs {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.01em;
+  opacity: 0.8;
+}
+
+.product-card-mfr {
+  font-size: 10px;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 640px) {
+  .product-card-img {
+    width: 56px;
+    height: 56px;
+  }
+  .product-card-desc {
+    display: none;
+  }
+}
+
 /* Estimated Investment Box */
 .estimate-box {
   background: linear-gradient(135deg, oklch(0.25 0.02 250) 0%, oklch(0.18 0.02 260) 100%);

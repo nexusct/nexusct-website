@@ -246,6 +246,771 @@ const SLA_PACKAGES = {
   }
 };
 
+// =====================================================
+// PRODUCT CATALOG — Images, Descriptions, Specs, Manufacturer Info
+// =====================================================
+const PRODUCT_CATALOG = {
+  // ---- Manufacturer Logos ----
+  _manufacturers: {
+    jeron: {
+      name: "Jeron Electronic Systems",
+      logo: "https://www.jeron.com/wp-content/uploads/2022/07/jeron-logo.png",
+      website: "https://www.jeron.com",
+      tagline: "Provider 790 Nurse Call System — Made in the U.S.A."
+    },
+    rcare: {
+      name: "RCare, Inc.",
+      logo: "https://rcareinc.com/wp-content/uploads/2022/05/rcare-logo-sm.png",
+      website: "https://rcareinc.com",
+      tagline: "G4 Wireless Nurse Call — UL 1069 Certified"
+    },
+    smartcaregiver: { name: "Smart Caregiver Corp.", logo: "", website: "https://www.smartcaregivercorp.com" },
+    curbell: { name: "Curbell Medical", logo: "", website: "https://www.curbellmedical.com" },
+    sonifi: { name: "SONIFI Health", logo: "", website: "https://www.sonifihealth.com" },
+    amazon: { name: "Amazon Alexa Smart Properties", logo: "", website: "https://developer.amazon.com/en-US/alexa/alexasmartproperties/healthcare" },
+    samsung: { name: "Samsung Electronics", logo: "", website: "https://www.samsung.com" },
+    pdi: { name: "PDi Communication Systems", logo: "", website: "https://www.pdiarm.com" },
+    medisign: { name: "MEDI+SIGN", logo: "", website: "https://medisigndisplays.com" },
+    bogen: { name: "Bogen Communications", logo: "", website: "https://www.bogen.com" },
+    honeywell: { name: "Honeywell", logo: "", website: "https://www.honeywell.com" },
+    cornell: { name: "Cornell Communications", logo: "", website: "https://www.cornell.com" },
+    crest: { name: "Crest Healthcare", logo: "", website: "https://www.cresthealthcare.com" },
+    philips: { name: "Signify / Philips", logo: "", website: "https://www.signify.com" },
+    posey: { name: "Posey Company", logo: "", website: "https://www.posey.com" },
+  },
+
+  // ==== JERON PARTS ====
+  // Infrastructure
+  "7950": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Core infrastructure device providing power, signaling, and audio distribution to up to 15 stations within a patient room.",
+    specs: "15 stations/room | 4x RJ-45 | 40V system | UL 1069 Listed | Made in U.S.A.",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7953": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/behavioral2.jpg",
+    mfr: "jeron",
+    desc: "Room Controller with integrated Prism multi-color LED dome light for corridor call indication — 8 colors, 5 flash patterns, 180° visibility.",
+    specs: "4.8\"×4.9\"×3.7\" | 8 LED colors | 15 stations | 40V @ 1.2W | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7953-T": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/behavioral2.jpg",
+    mfr: "jeron",
+    desc: "Room Controller with Prism Dome Light plus audible code tone output for emergency call annunciation.",
+    specs: "Same as 7953 + code tone | 40V @ 1.2W | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7991": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Dedicated 8-port Ethernet switch creating an isolated VoIP LAN segment for nurse call traffic.",
+    specs: "8x RJ-45 | Fiber variants available | Isolated network | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7992": {
+    img: "https://totallifesafetysolutions.com/cdn/shop/files/7993_1681x.jpg?v=1697647657",
+    mfr: "jeron",
+    desc: "2-channel gateway — central processing engine handling call routing, audio distribution, and VoIP communications.",
+    specs: "2 audio channels | Embedded OS | VoIP | No PC required | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7993": {
+    img: "https://totallifesafetysolutions.com/cdn/shop/files/7993_1681x.jpg?v=1697647657",
+    mfr: "jeron",
+    desc: "8-channel gateway for larger nursing units — handles call processing, audio, VoIP, and all software integrations.",
+    specs: "8 audio channels | Embedded OS | Rack-mountable | UL 1069",
+    url: "https://totallifesafetysolutions.com/products/7993"
+  },
+  "7989": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Wall-mount steel enclosure cabinet (30\"×24\") for housing gateways, switches, and power supplies.",
+    specs: "30\"×24\" | Steel | Holds ~4 gateways | Smaller 7988 variant available",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7960": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Provides power, signaling, and audio to an associated Nurse Console. Infrastructure backbone for console connectivity.",
+    specs: "RJ-45 connection | Powers console | UL 1069 | Made in U.S.A.",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7963": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Console Controller with integrated Prism Zone Light for nursing unit corridor call indication.",
+    specs: "Console power + zone light | Programmable LED | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7995": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Dedicated power supply with sealed lead-acid battery backup for continuity during AC power outages.",
+    specs: "Battery backup | Powers gateway + stations | 220V variant (7995-HV) | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+
+  // Patient Stations
+  "7920": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Single-bed audio intercom station with call button and DIN receptacle for pillow speaker.",
+    specs: "1 bed | Full-duplex audio | DIN jack | Call indicator | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7922": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Two-bed audio intercom station with independent call buttons and DIN receptacles per position.",
+    specs: "2 beds | Full-duplex audio | 2x DIN jack | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7923": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Enhanced single-bed station with TV/lighting control via pillow speaker interface and auxiliary alarm input.",
+    specs: "1 bed | Enhanced pillow speaker support | Aux alarm input | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7924": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Enhanced dual-bed station with all 7923 features for two patient positions.",
+    specs: "2 beds | Enhanced | Aux alarm per position | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7925": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Simplified single-bed station with DIN receptacle only — communication via pillow speaker.",
+    specs: "1 bed | DIN only | Lower cost | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7926": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Dual-position DIN-only station providing two receptacles for pillow speaker call cords.",
+    specs: "2 beds | 2x DIN jacks | Lower cost | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7912": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Combined staff presence/duty station with patient pushbutton call — registers staff presence in room.",
+    specs: "Staff presence + patient call | Visual indicator | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7919": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Bathroom audio station with integrated pullcord — two-way intercom when cord is pulled.",
+    specs: "Pull cord + full-duplex audio | Water-resistant | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7930": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Simple single-button call station for hallways, corridors, or ancillary areas.",
+    specs: "Single pushbutton | Visual indicator | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7932": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Combined pullcord and pushbutton station for bathroom/restroom environments.",
+    specs: "Pull cord + pushbutton | Visual indicator | Timer variant (7932-R) | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7958": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Water-resistant pullcord and pushbutton station designed specifically for shower room environments.",
+    specs: "Water-resistant | Pull cord + pushbutton | Timer variant (7958-R) | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+
+  // Behavioral
+  "7912-PC": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/Jeron_Behavioral-Nurse-Call-1.jpg",
+    mfr: "jeron",
+    desc: "Heavy-gauge, anti-ligature behavioral health intercom station with tamper-resistant construction.",
+    specs: "Anti-ligature | Vandal-resistant | Flush mount | Concealed fasteners | UL 1069",
+    url: "https://www.jeron.com/solution/behavioral/"
+  },
+  "7912-PCC": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/Jeron_Behavioral-Nurse-Call-1.jpg",
+    mfr: "jeron",
+    desc: "Behavioral intercom with patient self-cancellation button — reduces staff workload in secured units.",
+    specs: "Anti-ligature | Call + Cancel | Vandal-resistant | UL 1069",
+    url: "https://www.jeron.com/solution/behavioral/"
+  },
+  "7912-PCK": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/Jeron_Behavioral-Nurse-Call-1.jpg",
+    mfr: "jeron",
+    desc: "Highest-security behavioral station with panic call and remote cancel via companion keyswitch station.",
+    specs: "Anti-ligature | Panic + Remote Cancel | 7915-PCK companion | UL 1069",
+    url: "https://www.jeron.com/solution/behavioral/"
+  },
+  "7920-PC": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/Jeron_Behavioral-Nurse-Call-1.jpg",
+    mfr: "jeron",
+    desc: "Behavioral patient station with cancel capability in anti-ligature housing.",
+    specs: "Behavioral | Anti-ligature | Patient cancel | UL 1069",
+    url: "https://www.jeron.com/solution/behavioral/"
+  },
+  "7930-PC": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/Jeron_Behavioral-Nurse-Call-1.jpg",
+    mfr: "jeron",
+    desc: "Behavioral single-button call station with cancel in anti-ligature design.",
+    specs: "Behavioral | Anti-ligature | Call + Cancel | UL 1069",
+    url: "https://www.jeron.com/solution/behavioral/"
+  },
+
+  // Consoles
+  "7965": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Primary touchscreen nurse console — graphical display of all room status, call priority, and two-way intercom.",
+    specs: "Touchscreen | Full room status | Call priority | Two-way audio | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7965-B": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Touchscreen console with integrated Bluetooth for wireless handset operation.",
+    specs: "Touchscreen + Bluetooth | Wireless handset | Full room status | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7967-M": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Compact touchscreen nurse terminal for secondary nursing locations.",
+    specs: "Compact touchscreen | Room status | Two-way audio | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7967-P": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Touchscreen workflow terminal for medication rooms, utility areas, and ancillary locations.",
+    specs: "Workflow terminal | Touch display | Staff presence | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7967-S": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "jeron",
+    desc: "Touchscreen staff duty terminal for staff check-in and assignment management.",
+    specs: "Staff duty terminal | Touch display | Check-in/out | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+
+  // Dome/Zone
+  "7973": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/behavioral2.jpg",
+    mfr: "jeron",
+    desc: "Multi-color Prism zone light providing corridor visual indication of calls, services, and staff presence.",
+    specs: "8 LED colors | 5 flash patterns | 180° visibility | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7973-T": {
+    img: "https://www.jeron.com/wp-content/uploads/2024/02/behavioral2.jpg",
+    mfr: "jeron",
+    desc: "Prism zone light with integrated audible code tone for emergency call annunciation.",
+    specs: "8 LED colors + code tone | 180° visibility | UL 1069",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+
+  // Accessories
+  "7901": {
+    img: "https://www.curbellmedical.com/wp-content/uploads/2019/08/genplus-callouts.jpg",
+    mfr: "curbell",
+    realProduct: "Curbell Gen4+ Pillow Speaker",
+    desc: "Sealed, infection-resistant pillow speaker with nurse call button, TV control, and 8-pin DIN connector.",
+    specs: "IPX4 rated | UL 94V-O | 8-pin DIN | UL 1069 | FDA listed",
+    url: "https://www.curbellmedical.com/gen4-pillow-speakers/"
+  },
+  "7905": {
+    img: "https://www.curbellmedical.com/wp-content/uploads/2019/08/genplus-callouts.jpg",
+    mfr: "curbell",
+    realProduct: "Curbell Gen4+ Enhanced Pillow Speaker",
+    desc: "Enhanced pillow speaker with backlit buttons, TV/lighting control, and headphone jack.",
+    specs: "Enhanced controls | Backlit | 3.5mm jack | IPX4 | UL 1069 | FDA listed",
+    url: "https://www.curbellmedical.com/gen4-pillow-speakers/"
+  },
+  "7908": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "10-foot sealed DIN call cord for patient stations — sealed housing for infection control.",
+    specs: "10 ft | DIN connector | Sealed | Infection control",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7910": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Standard 10-foot DIN call cord connecting patient to nurse call station.",
+    specs: "10 ft | DIN connector | Standard",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7914": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/station_voice_communication.png",
+    mfr: "jeron",
+    desc: "Geriatric-friendly call cord with oversized pushbutton — easier for elderly patients to activate.",
+    specs: "Oversized button | Geriatric-friendly | DIN connector",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+
+  // Software (no physical images)
+  "7970": { img: "", mfr: "jeron", desc: "Automated voice paging license for overhead announcements and emergency codes.", specs: "Per-gateway license | Voice PA | Emergency codes", url: "https://www.jeron.com/product/provider-790/" },
+  "7977": { img: "", mfr: "jeron", desc: "ADT/EHR integration license — auto-populates patient data from hospital information system.", specs: "Per-gateway license | HL7 ADT feed | Auto patient data", url: "https://www.jeron.com/product/provider-790/" },
+  "7978": { img: "", mfr: "jeron", desc: "SIP phone integration — routes nurse call alerts to IP desk phones and softphones.", specs: "Per-gateway license | SIP/VoIP | IP phone routing", url: "https://www.jeron.com/product/provider-790/" },
+  "7979": { img: "", mfr: "jeron", desc: "Pocket paging integration — sends call alerts to wireless pagers.", specs: "Per-gateway license | Pager integration | Wireless alerts", url: "https://www.jeron.com/product/provider-790/" },
+  "7979D": { img: "", mfr: "jeron", desc: "Dual pocket paging with backup channel for critical alert redundancy.", specs: "Per-gateway license | Dual channel | Redundant alerts", url: "https://www.jeron.com/product/provider-790/" },
+  "7980": { img: "", mfr: "jeron", desc: "Staff assignment software — assign caregivers to specific rooms/patients with automatic routing.", specs: "Per-gateway license | Room assignment | Auto-routing", url: "https://www.jeron.com/product/provider-790/" },
+  "7981": { img: "", mfr: "jeron", desc: "Real-Time Location System integration — tracks staff badges for automatic presence detection.", specs: "Per-gateway license | RTLS | Badge tracking", url: "https://www.jeron.com/product/provider-790/" },
+  "7982": { img: "", mfr: "jeron", desc: "Barcode staff management — scan-based staff check-in/out at patient rooms.", specs: "Per-gateway license | Barcode scan | Staff tracking", url: "https://www.jeron.com/product/provider-790/" },
+  "7983": { img: "", mfr: "jeron", desc: "EIS logging and reporting — comprehensive event logs, response times, and compliance reporting.", specs: "Per-gateway license | Event logging | Compliance reports", url: "https://www.jeron.com/product/provider-790/" },
+  "7984": { img: "", mfr: "jeron", desc: "LAN Bridge for multi-switch deployments — enables communication across multiple network segments.", specs: "Per-system license | Multi-switch | Campus-wide", url: "https://www.jeron.com/product/provider-790/" },
+  "7985": { img: "", mfr: "jeron", desc: "PC Console Software — desktop application for centralized call monitoring and management.", specs: "Per-system license | Desktop app | Central monitoring", url: "https://www.jeron.com/product/provider-790/" },
+  "7986": { img: "", mfr: "jeron", desc: "PC Console MapView — graphical facility map with real-time call status overlay.", specs: "Per-system license | Floor plan view | Real-time status", url: "https://www.jeron.com/product/provider-790/" },
+  "7987": { img: "", mfr: "jeron", desc: "Android notification app with 2 mobile devices — push alerts to smartphones/tablets.", specs: "Includes 2 devices | Push notifications | Android app", url: "https://www.jeron.com/product/provider-790/" },
+  "7987-05": { img: "", mfr: "jeron", desc: "Additional 5-pack of Android notification devices for expanding mobile alert coverage.", specs: "5 additional devices | Push notifications", url: "https://www.jeron.com/product/provider-790/" },
+  "7990": { img: "", mfr: "jeron", desc: "Admin/programming software for system configuration, room assignments, and alert management.", specs: "System-wide | Configuration tool | Room programming", url: "https://www.jeron.com/product/provider-790/" },
+
+  // Services
+  "9965": { img: "", mfr: "jeron", desc: "Factory commissioning — Jeron technician performs on-site system verification and testing.", specs: "On-site | Factory technician | Full system test", url: "https://www.jeron.com/product/provider-790/" },
+  "9967": { img: "", mfr: "jeron", desc: "Integration support — Jeron engineering assistance for third-party system integration.", specs: "Engineering support | Third-party integration", url: "https://www.jeron.com/product/provider-790/" },
+  "9971": { img: "", mfr: "jeron", desc: "Clinical in-service training — on-site staff training for system operation and workflows.", specs: "On-site training | Clinical workflows | Staff education", url: "https://www.jeron.com/product/provider-790/" },
+
+  // Infrastructure Accessories
+  "9778": { img: "", mfr: "jeron", desc: "J-Bus terminator — required at the end of each J-Bus daisy chain to prevent signal reflection.", specs: "Signal termination | 1 per gateway", url: "https://www.jeron.com/product/provider-790/" },
+  "9779": { img: "", mfr: "jeron", desc: "J-Bus splitter — allows branching of J-Bus daisy chain for flexible room wiring.", specs: "Daisy chain branch | Flexible wiring", url: "https://www.jeron.com/product/provider-790/" },
+  "7969": { img: "", mfr: "jeron", desc: "Console receptacle — flush-mount wall plate for Nurse Console connection.", specs: "Flush mount | Console connection | 1 per console", url: "https://www.jeron.com/product/provider-790/" },
+  "9840": { img: "", mfr: "jeron", desc: "Rack mount adaptor for gateway installation in standard 19\" equipment rack.", specs: "19\" rack | Gateway mount", url: "https://www.jeron.com/product/provider-790/" },
+  "9842": { img: "", mfr: "jeron", desc: "Rack mount adaptor for Ethernet switch installation in standard 19\" equipment rack.", specs: "19\" rack | Switch mount", url: "https://www.jeron.com/product/provider-790/" },
+
+  // ---- JERON GENERIC ITEMS → NOW MAPPED TO REAL PRODUCTS ----
+  "7912-STA": {
+    img: "https://medisigndisplays.com/wp-content/uploads/2023/01/medisign-door-display.jpg",
+    mfr: "medisign",
+    realProduct: "MEDI+SIGN Digital Door Display",
+    desc: "Digital hallway display showing nurse assignments, isolation precautions, dietary restrictions — auto-updated from EHR.",
+    specs: "EHR integration | HIPAA compliant | ADA compliant | Auto-updates",
+    url: "https://medisigndisplays.com"
+  },
+  "7967-DIS": {
+    img: "https://image-us.samsung.com/SamsungUS/samsungbusiness/displays/4k-uhd/qm-series/08222023/Gallery_Images_QMC_004_R_Perspective_Black.png",
+    mfr: "samsung",
+    realProduct: "Samsung QM43C 43\" Commercial Display",
+    desc: "43\" 4K UHD commercial-grade display rated for 24/7 operation — ideal for nurse station status boards.",
+    specs: "43\" 4K UHD | 500 nit | 24/7 rated | IP5X | VESA 200×200",
+    url: "https://www.samsung.com/us/business/displays/4k-uhd/qm-series/"
+  },
+  "7950-DB": {
+    img: "https://www.jeron.com/wp-content/uploads/2022/06/Provider-790-01_UL_listed.jpg",
+    mfr: "honeywell",
+    realProduct: "Honeywell 7939WG Surface Mount Contact",
+    desc: "Surface-mount door/window contact sensor for monitoring room door open/close status.",
+    specs: "Surface mount | Magnetic contact | Nurse call interface",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7950-BE": {
+    img: "https://cdn11.bigcommerce.com/s-xm95bud4ol/images/stencil/1280x1280/products/7058/11119/LHSSCG-TL-2100G-2__80554.1504043622.jpg",
+    mfr: "smartcaregiver",
+    realProduct: "Smart Caregiver TL-2100G CordLess Bed Alarm",
+    desc: "Wireless bed exit alarm system — sensor pad under mattress detects when patient leaves bed.",
+    specs: "Wireless | 50 ft range | Dual-pad capable | Nurse call port | UL Listed",
+    url: "https://www.smartcaregivercorp.com"
+  },
+  "7970-PA": {
+    img: "",
+    mfr: "bogen",
+    realProduct: "Bogen MB8TSQ Wall Speaker",
+    desc: "Commercial wall-mount corridor speaker for hallway audio paging and announcements.",
+    specs: "8\" speaker | 70V/25V | Multi-tap | UL rated",
+    url: "https://www.bogen.com"
+  },
+  "7973-D": {
+    img: "https://medisigndisplays.com/wp-content/uploads/2023/01/medisign-door-display.jpg",
+    mfr: "medisign",
+    realProduct: "MEDI+SIGN Digital Hallway Display",
+    desc: "Real-time digital hallway display showing patient status, isolation precautions, and nurse assignments per room.",
+    specs: "EHR integration | ADA compliant | HIPAA | Auto-updates",
+    url: "https://medisigndisplays.com"
+  },
+  "7973-M": {
+    img: "https://image-us.samsung.com/SamsungUS/samsungbusiness/displays/4k-uhd/qm-series/08222023/Gallery_Images_QMC_004_R_Perspective_Black.png",
+    mfr: "samsung",
+    realProduct: "Samsung QM55C 55\" Commercial Display",
+    desc: "55\" 4K UHD commercial display for centralized nurse station unit overview — 24/7 rated.",
+    specs: "55\" 4K UHD | 500 nit | 24/7 rated | MagicInfo CMS | VESA 400×400",
+    url: "https://www.samsung.com/us/business/displays/4k-uhd/qm-series/"
+  },
+  "7973-RM": {
+    img: "",
+    mfr: "jeron",
+    realProduct: "LED Room Number Indicator",
+    desc: "LED-backlit room number panel mounted outside patient rooms for easy room identification.",
+    specs: "LED backlit | High visibility | ADA compliant",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7973-ST": {
+    img: "",
+    mfr: "jeron",
+    realProduct: "Patient Status LED Display",
+    desc: "Multi-color LED panel showing patient call status, staff presence, and service requirements outside each room.",
+    specs: "Multi-color LED | Call status | Staff presence | Room-level",
+    url: "https://www.jeron.com/product/provider-790/"
+  },
+  "7973-RGB": {
+    img: "",
+    mfr: "philips",
+    realProduct: "Philips Hue Commercial LED Strip",
+    desc: "RGB LED strip for room door frame — color-coded status indication (call, emergency, staff presence).",
+    specs: "RGB programmable | Door frame mount | Status indication",
+    url: "https://www.signify.com"
+  },
+  "TV-INT": {
+    img: "https://cresthealthcare.com/product/image/mediumlarge/PDI-A32C2_1.png",
+    mfr: "sonifi",
+    realProduct: "SONIFI Health Interactive TV System",
+    desc: "In-room TV integration connecting nurse call with patient entertainment, education, and EHR display.",
+    specs: "EHR integration | Nurse call | Patient education | HIPAA compliant",
+    url: "https://www.sonifihealth.com/interactive-tv/"
+  },
+  "AI-ASST": {
+    img: "https://ds6yc8t7pnx74.cloudfront.net/content/dam/a4hc-patient.png",
+    mfr: "amazon",
+    realProduct: "Amazon Alexa Smart Properties for Healthcare",
+    desc: "Voice-activated AI assistant — patients control lights, TV, request nurse assistance, connect with family hands-free.",
+    specs: "HIPAA eligible | Nurse call routing | Echo devices | Voice control",
+    url: "https://developer.amazon.com/en-US/alexa/alexasmartproperties/healthcare"
+  },
+  "TAB-CC": {
+    img: "https://image-us.samsung.com/SamsungUS/home/mobile/tablets/all-tablets/01302024/galaxy-tab-a9plus_1.jpg",
+    mfr: "samsung",
+    realProduct: "Samsung Galaxy Tab A9+ (Healthcare)",
+    desc: "11\" patient bedside tablet for care coordination, education, video calling, and entertainment.",
+    specs: "11\" LCD | Android 14 | Knox MDM | Wi-Fi/5G | 15hr battery",
+    url: "https://www.samsung.com/us/tablets/"
+  },
+  "DIS-INFO": {
+    img: "https://cresthealthcare.com/product/image/mediumlarge/pdi-a43C2_1.png",
+    mfr: "pdi",
+    realProduct: "PDi A-Series 43\" Smart medTV",
+    desc: "43\" 4K UHD hospital-grade smart TV with nurse call integration, Epic MyChart, and built-in apps.",
+    specs: "43\" 4K | Android 11 | Epic compatible | UL Listed | Pillow speaker jack",
+    url: "https://www.pdiarm.com/products/a-series43"
+  },
+  "PP-SENSOR": {
+    img: "https://cdn11.bigcommerce.com/s-xm95bud4ol/images/stencil/1280x1280/products/7058/11119/LHSSCG-TL-2100G-2__80554.1504043622.jpg",
+    mfr: "smartcaregiver",
+    realProduct: "Smart Caregiver TL-2100G Bed Sensor System",
+    desc: "Wireless bed sensor pad with CordLess monitor — detects bed exit and alerts via nurse call integration.",
+    specs: "10\"×30\" pad | Wireless 50ft | Dual-pad | Nurse call port | UL Listed",
+    url: "https://www.smartcaregivercorp.com"
+  },
+
+  // ==== RCARE PARTS ====
+  "RCube": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-nurse-call-system-hdcube.png",
+    mfr: "rcare",
+    desc: "Enterprise Linux-based server — unlimited beds and devices, 99.99% uptime, built-in analytics.",
+    specs: "Unlimited beds | Linux | UL 1069 Ed.7 | UL 2560 | Multi-campus",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "BCube": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-nurse-call-system-mini-cube.png",
+    mfr: "rcare",
+    desc: "Small facility server — solid-state touchscreen for campuses with 128 beds or fewer.",
+    specs: "≤128 beds | All-in-one touchscreen | UL 1069 Ed.7 | UL 2560",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "MR-500-G4": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-master-receiver.png",
+    mfr: "rcare",
+    desc: "Central RF hub — accepts signals from locators/repeaters and transmits to Cube server via serial.",
+    specs: "100 locators/repeaters | RS-232 | 4,000 ft range | Dual antenna | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "LT-490-G4": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-g4-locator.png",
+    mfr: "rcare",
+    desc: "Receives wireless transmissions from pendants/sensors and relays to master receiver with pinpoint ALP location.",
+    specs: "400 ft receive | 4,000 ft transmit | 24hr battery backup | 922 MHz | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RP-990-G4": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-master-receiver.png",
+    mfr: "rcare",
+    desc: "Extends wireless coverage across larger campuses by relaying signals between locators and master receiver.",
+    specs: "4,000 ft range | 24hr battery backup | Tamper detection | UL 1069 | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Outdoor-Enc": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-weatherproof-enclosure.png",
+    mfr: "rcare",
+    desc: "Weatherproof enclosure with heating/cooling for outdoor locator or repeater installations.",
+    specs: "Thermostat | Heat plate + fan | 120V | For LT-490/RP-990",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "WTC-G4": {
+    img: "https://rcareinc.com/wp-content/uploads/2026/03/WTC-White-G4-600x600-2.png",
+    mfr: "rcare",
+    desc: "Standard waterproof wearable pendant — necklace or wristband, 3-5 year battery life.",
+    specs: "Waterproof 25ft | LED | 3-5yr battery | Lanyard + wristband | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Pretty-G4": {
+    img: "https://rcareinc.com/wp-content/uploads/2016/02/RC-PPP-2.png",
+    mfr: "rcare",
+    desc: "Fashionable waterproof pendant in multiple stylish patterns — necklace-to-wristband in 5 seconds.",
+    specs: "Waterproof 25ft | Fashion patterns | 3-5yr battery | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RC-WTC": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-g34-wearable-transmitter.png",
+    mfr: "rcare",
+    desc: "G3/G4 compatible wearable transmitter — ideal for mixed or transitioning networks.",
+    specs: "G3+G4 compatible | Waterproof | Necklace or wristband",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Staff-Pend": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-g34-wearable-transmitter.png",
+    mfr: "rcare",
+    desc: "Staff emergency pendant — discreet wearable allowing staff to trigger emergency alerts instantly.",
+    specs: "Staff emergency | Discreet | Waterproof | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "BP-7RWR": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-emergency-pull-cord.png",
+    mfr: "rcare",
+    desc: "Wireless emergency pull cord station for bathrooms — antimicrobial cord, wall-mounted.",
+    specs: "Wireless | Pull cord | Wall mount | Battery powered | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "JR-14": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-bedside-station.png",
+    mfr: "rcare",
+    desc: "Wireless bedside station with large push button — placed on nightstand or mounted at bed rail.",
+    specs: "Wireless | Large button | Bedside/wall mount | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "WM-8": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-wall-push-button.png",
+    mfr: "rcare",
+    desc: "Wireless wall push button for UL 1069 compliance — hardwired appearance, wireless operation.",
+    specs: "UL 1069 | Wall mount | Wireless | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Help-Btn": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-wall-push-button.png",
+    mfr: "rcare",
+    desc: "Large oversized help button for common areas — easy for residents with limited dexterity.",
+    specs: "Oversized button | Common areas | Wireless | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "WD-3": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-door-window-contact.png",
+    mfr: "rcare",
+    desc: "Wireless door/window contact sensor — alerts when doors or windows are opened in secured areas.",
+    specs: "Wireless | Magnetic contact | Tamper detection | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "MS-6": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-activity-sensor.png",
+    mfr: "rcare",
+    desc: "Wireless passive infrared activity sensor — detects resident movement patterns and inactivity alerts.",
+    specs: "PIR sensor | Inactivity alerts | Wireless | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "UT-RE3": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-universal-transmitter.png",
+    mfr: "rcare",
+    desc: "Universal transmitter — connects any dry-contact device (smoke detectors, bed alarms) to the G4 network.",
+    specs: "Dry contact input | Universal | Wireless bridge | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RC-BCA9": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-bed-chair-pad-alarm.png",
+    mfr: "rcare",
+    desc: "Wireless bed/chair pad alarm — sensor pad with integrated wireless transmitter for fall prevention.",
+    specs: "Bed or chair pad | Wireless | Fall prevention | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RK-77": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-remote-keypad.png",
+    mfr: "rcare",
+    desc: "Remote keypad for wander management exit points — authorized staff bypass with code entry.",
+    specs: "Wander management | Code entry | Staff bypass | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "CC980": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-cc980-console.png",
+    mfr: "rcare",
+    desc: "15\" touchscreen nurse console — full call management, resident status, staff assignments, and reporting.",
+    specs: "15\" touchscreen | Full status | Call management | UL 1069",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "CC-10": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-cc10-console.png",
+    mfr: "rcare",
+    desc: "Compact 10\" touchscreen console for secondary nursing locations or smaller units.",
+    specs: "10\" touchscreen | Compact | Secondary station | UL 1069",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RC-3900": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-voice-communicator.png",
+    mfr: "rcare",
+    desc: "Two-way voice communicator — wall-mounted for hands-free resident-to-staff conversation.",
+    specs: "Two-way voice | Wall mount | Hands-free | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RC-5200": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-cellular-voice-dialer.png",
+    mfr: "rcare",
+    desc: "Cellular voice dialer — auto-dials caregivers via cellular network when alerts are triggered.",
+    specs: "Cellular | Auto-dial | Backup alerting | G4",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Indoor-Int": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-voice-communicator.png",
+    mfr: "rcare",
+    desc: "Indoor intercom station for room-to-station or room-to-room voice communication.",
+    specs: "Indoor | Voice intercom | Wall mount",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RPhone": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-rphone.png",
+    mfr: "rcare",
+    desc: "Locked ruggedized smartphone for staff — receives push notifications for all nurse call alerts.",
+    specs: "Ruggedized | Locked | Push alerts | Wi-Fi | Staff device",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Pager-Int": {
+    img: "",
+    mfr: "rcare",
+    desc: "Pager integration module — sends nurse call alerts to wireless paging system.",
+    specs: "Pager integration | Wireless alerts",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "Dome-LED": {
+    img: "https://rcareinc.com/wp-content/uploads/2025/02/rcare-corridor-dome-light.png",
+    mfr: "rcare",
+    desc: "3-color LED corridor dome light — visual call status above each room door.",
+    specs: "3-color LED | Corridor mount | Visual alerts | G4 compatible",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "PCC-Int": { img: "", mfr: "rcare", desc: "PointClickCare EHR integration — bi-directional data sync for resident information.", specs: "EHR integration | PointClickCare | Bi-directional", url: "https://rcareinc.com/catalog/" },
+  "Wander-Int": { img: "", mfr: "rcare", desc: "Wander management system integration — geo-fencing, safe zone alerts, and elopement prevention.", specs: "Geo-fencing | Safe zones | Elopement prevention", url: "https://rcareinc.com/catalog/" },
+  "VCube": { img: "", mfr: "rcare", desc: "Voice-to-Voice upgrade — enables two-way voice communication at every pendant and pull cord.", specs: "Two-way voice | Pendant communication | System upgrade", url: "https://rcareinc.com/catalog/" },
+  "MCube": { img: "", mfr: "rcare", desc: "RCare Mobile upgrade — full system monitoring and alert management from smartphone app.", specs: "Mobile app | Real-time alerts | Remote management", url: "https://rcareinc.com/catalog/" },
+  "RC-ACT": { img: "", mfr: "rcare", desc: "Activity monitoring and reporting license — tracks resident activity patterns with analytics dashboards.", specs: "Activity analytics | Pattern tracking | Dashboard", url: "https://rcareinc.com/catalog/" },
+
+  // ---- RCARE GENERIC ITEMS → NOW MAPPED TO REAL PRODUCTS ----
+  "RC-TV": {
+    img: "https://cresthealthcare.com/product/image/mediumlarge/PDI-A32C2_1.png",
+    mfr: "sonifi",
+    realProduct: "SONIFI Health Interactive TV System",
+    desc: "In-room TV integration connecting nurse call with patient entertainment, education, and EHR display.",
+    specs: "EHR integration | Nurse call | Patient education | HIPAA compliant",
+    url: "https://www.sonifihealth.com/interactive-tv/"
+  },
+  "RC-AI": {
+    img: "https://ds6yc8t7pnx74.cloudfront.net/content/dam/a4hc-patient.png",
+    mfr: "amazon",
+    realProduct: "Amazon Alexa Smart Properties for Healthcare",
+    desc: "Voice-activated AI assistant — patients control lights, TV, request nurse assistance hands-free.",
+    specs: "HIPAA eligible | Nurse call routing | Echo devices | Voice control",
+    url: "https://developer.amazon.com/en-US/alexa/alexasmartproperties/healthcare"
+  },
+  "RC-TAB": {
+    img: "https://image-us.samsung.com/SamsungUS/home/mobile/tablets/all-tablets/01302024/galaxy-tab-a9plus_1.jpg",
+    mfr: "samsung",
+    realProduct: "Samsung Galaxy Tab A9+ (Healthcare)",
+    desc: "11\" patient bedside tablet for care coordination, education, video calling, and entertainment.",
+    specs: "11\" LCD | Android 14 | Knox MDM | Wi-Fi/5G | 15hr battery",
+    url: "https://www.samsung.com/us/tablets/"
+  },
+  "RC-INFO": {
+    img: "https://cresthealthcare.com/product/image/mediumlarge/pdi-a43C2_1.png",
+    mfr: "pdi",
+    realProduct: "PDi A-Series 43\" Smart medTV",
+    desc: "43\" 4K hospital-grade smart TV with nurse call integration, Epic MyChart, and built-in apps.",
+    specs: "43\" 4K | Android 11 | Epic compatible | UL Listed | Pillow speaker jack",
+    url: "https://www.pdiarm.com/products/a-series43"
+  },
+  "RC-HAUD": {
+    img: "",
+    mfr: "bogen",
+    realProduct: "Bogen MB8TSQ Wall Speaker",
+    desc: "Commercial wall-mount corridor speaker for hallway audio paging and announcements.",
+    specs: "8\" speaker | 70V/25V | Multi-tap | UL rated",
+    url: "https://www.bogen.com"
+  },
+  "RC-HDIS": {
+    img: "https://medisigndisplays.com/wp-content/uploads/2023/01/medisign-door-display.jpg",
+    mfr: "medisign",
+    realProduct: "MEDI+SIGN Digital Hallway Display",
+    desc: "Digital hallway display showing patient status, isolation precautions, and nurse assignments.",
+    specs: "EHR integration | ADA compliant | HIPAA | Auto-updates",
+    url: "https://medisigndisplays.com"
+  },
+  "RC-MDIS": {
+    img: "https://image-us.samsung.com/SamsungUS/samsungbusiness/displays/4k-uhd/qm-series/08222023/Gallery_Images_QMC_004_R_Perspective_Black.png",
+    mfr: "samsung",
+    realProduct: "Samsung QM55C 55\" Commercial Display",
+    desc: "55\" 4K commercial display for centralized nurse station unit overview — 24/7 rated.",
+    specs: "55\" 4K UHD | 500 nit | 24/7 rated | MagicInfo CMS",
+    url: "https://www.samsung.com/us/business/displays/4k-uhd/qm-series/"
+  },
+  "RC-RMPN": {
+    img: "",
+    mfr: "rcare",
+    realProduct: "LED Room Number Indicator",
+    desc: "LED-backlit room number panel for easy room identification.",
+    specs: "LED backlit | High visibility | ADA compliant",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RC-STPN": {
+    img: "",
+    mfr: "rcare",
+    realProduct: "Patient Status LED Display",
+    desc: "Multi-color LED panel showing call status, staff presence, and service requirements.",
+    specs: "Multi-color LED | Call status | Staff presence",
+    url: "https://rcareinc.com/catalog/"
+  },
+  "RC-RGB": {
+    img: "",
+    mfr: "philips",
+    realProduct: "Philips Hue Commercial LED Strip",
+    desc: "RGB LED strip for room door frame — color-coded status indication.",
+    specs: "RGB programmable | Door frame mount | Status indication",
+    url: "https://www.signify.com"
+  },
+  "RC-PP": {
+    img: "https://cdn11.bigcommerce.com/s-xm95bud4ol/images/stencil/1280x1280/products/7058/11119/LHSSCG-TL-2100G-2__80554.1504043622.jpg",
+    mfr: "smartcaregiver",
+    realProduct: "Smart Caregiver TL-2100G Bed Sensor System",
+    desc: "Wireless bed sensor pad — detects bed exit and alerts via nurse call integration.",
+    specs: "10\"×30\" pad | Wireless 50ft | Nurse call port | UL Listed",
+    url: "https://www.smartcaregivercorp.com"
+  },
+};
+
+// Helper: Get catalog info for a part number
+function getCatalogInfo(pn) {
+  return PRODUCT_CATALOG[pn] || null;
+}
+
+// Helper: Get manufacturer info
+function getMfrInfo(pn) {
+  const cat = PRODUCT_CATALOG[pn];
+  if (!cat) return null;
+  return PRODUCT_CATALOG._manufacturers[cat.mfr] || null;
+}
+
+
 const MARGIN = 0.25;
 function sellPrice(cost) { return cost / (1 - MARGIN); }
 function fmt(n) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -1607,7 +2372,7 @@ function renderQuote(result) {
   const rangeLow = Math.round(result.grandTotal * 0.70);
   const rangeHigh = Math.round(result.grandTotal * 1.30);
 
-  // Build system summary grouped by category
+  // Build system summary grouped by category — with product images and details
   const categories = {};
   result.bom.forEach(item => {
     if (!categories[item.cat]) categories[item.cat] = [];
@@ -1615,9 +2380,34 @@ function renderQuote(result) {
   });
   let summaryHtml = '';
   for (const [cat, items] of Object.entries(categories)) {
-    summaryHtml += `<div class="summary-category"><h3 class="summary-cat-title">${cat}</h3><ul class="summary-list">`;
-    items.forEach(item => { summaryHtml += `<li>${item.name} <span class="summary-qty">\u00d7${item.qty}</span></li>`; });
-    summaryHtml += '</ul></div>';
+    summaryHtml += `<div class="summary-category"><h3 class="summary-cat-title">${cat}</h3>`;
+    summaryHtml += `<div class="product-grid">`;
+    items.forEach(item => {
+      const catInfo = getCatalogInfo(item.pn);
+      const mfrInfo = catInfo ? getMfrInfo(item.pn) : null;
+      if (catInfo && catInfo.img) {
+        summaryHtml += `<div class="product-card">
+          <div class="product-card-img"><img src="${catInfo.img}" alt="${item.name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=product-card-noimg>${item.pn}</div>'" /></div>
+          <div class="product-card-body">
+            <div class="product-card-name">${item.name} <span class="summary-qty">\u00d7${item.qty}</span></div>
+            ${catInfo.realProduct ? `<div class="product-card-real">${catInfo.realProduct}</div>` : ''}
+            <div class="product-card-desc">${catInfo.desc}</div>
+            <div class="product-card-specs">${catInfo.specs}</div>
+            ${mfrInfo ? `<div class="product-card-mfr">${mfrInfo.name}</div>` : ''}
+          </div>
+        </div>`;
+      } else {
+        summaryHtml += `<div class="product-card product-card--compact">
+          <div class="product-card-body">
+            <div class="product-card-name">${item.name} <span class="summary-qty">\u00d7${item.qty}</span></div>
+            ${catInfo ? `<div class="product-card-desc">${catInfo.desc}</div>` : ''}
+            ${catInfo ? `<div class="product-card-specs">${catInfo.specs}</div>` : ''}
+            ${mfrInfo ? `<div class="product-card-mfr">${mfrInfo.name}</div>` : ''}
+          </div>
+        </div>`;
+      }
+    });
+    summaryHtml += `</div></div>`;
   }
 
   // Facility image
@@ -1686,6 +2476,12 @@ function renderQuote(result) {
     <div class="quote-header">
       <div class="quote-header-left">
         <h1>System Estimate</h1>
+        <div class="quote-mfr-logo" style="margin-top:var(--space-2);margin-bottom:var(--space-2);">
+          ${a.platform === 'rcare'
+            ? '<img src="' + PRODUCT_CATALOG._manufacturers.rcare.logo + '" alt="RCare" style="height:30px;object-fit:contain;" onerror="this.style.display=\'none\'" />'
+            : '<img src="' + PRODUCT_CATALOG._manufacturers.jeron.logo + '" alt="Jeron" style="height:30px;object-fit:contain;" onerror="this.style.display=\'none\'" />'
+          }
+        </div>
         <p>${a.leadFacility ? a.leadFacility + ' \u2014 ' : ''}${a.facilityTypeLabel || ''} \u2014 ${a.beds} Beds | ${today}</p>
         ${a.leadName ? `<p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-top:var(--space-1);">Prepared for ${a.leadName}</p>` : ''}
       </div>
