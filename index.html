@@ -1,459 +1,354 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-<!--
-   ______                            __
-  / ____/___  ____ ___  ____  __  __/ /____  _____
- / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
-/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
-\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
-                    /_/
-        Created with Perplexity Computer
-        https://www.perplexity.ai/computer
--->
-<meta name="generator" content="Perplexity Computer">
-<meta name="author" content="Perplexity Computer">
-<meta property="og:see_also" content="https://www.perplexity.ai/computer">
-<link rel="author" href="https://www.perplexity.ai/computer">
+  <!--
+   ____                _           _ _           ___ 
+  |  _ \ ___ _ __ _ __| | _____  _(_) |_ _   _  / _ \___  _ __ ___  _ __  _   _| |_ ___ _ __
+  | |_) / _ \ '__| '__| |/ _ \ \/ / | __| | | || | | / _ \| '_ ` _ \| '_ \| | | | __/ _ \ '__|
+  |  __/  __/ |  | |  |  __/>  <| | |_| |_| || |_| | (_) | | | | | | |_) | |_| | ||  __/ |
+  |_|   \___|_|  |_|  \___/_/\_\_|\__|\__, | \___/ \___/|_| |_| |_| .__/ \__,_|\__\___|_|
+                                       |___/                       |_|
+  
+  Created with Perplexity Computer — https://www.perplexity.ai/computer
+  -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enterprise Technology Solutions | NexusCT — Healthcare IT, Nurse Call, Networking</title>
-  <meta name="description" content="NexusCT delivers healthcare technology, nurse call systems, structured cabling, and managed IT for facilities nationwide. Serving Schaumburg IL and beyond since 2016.">
-  <meta name="keywords" content="nurse call systems, healthcare IT, structured cabling, managed networking, UniFi, RTLS, wander management, patient safety, Schaumburg IL">
+  <title>Nurse Call System Designer | NexusCT</title>
+  <meta name="description" content="Design and price your Jeron Provider 790 or RCare G4 wireless nurse call system with NexusCT's intelligent quoting tool. Instant estimates for hospitals, SNFs, assisted living, memory care, and behavioral health.">
+  <meta name="keywords" content="nurse call system, hospital nurse call, Jeron Provider 790, RCare G4, nurse call pricing, nurse call designer, NexusCT">
+  <meta name="author" content="NexusCT — Nexus Communications Technology">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Nurse Call System Designer | NexusCT">
+  <meta property="og:description" content="Design and price your nurse call system — Jeron Provider 790 or RCare G4 Wireless. Instant estimates with full product catalog.">
+  <meta property="og:type" content="website">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./base.css">
-  <link rel="stylesheet" href="./style.css">
+
+  <!-- jsPDF for quote PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Tool styles -->
+  <link rel="stylesheet" href="./nurse-call-base.css">
+  <link rel="stylesheet" href="./nurse-call-style.css">
+
+<style>
+/* ---- Standalone Tool Shell ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --shell-bg: #0a0f1a;
+  --shell-text: #e2e8f0;
+  --shell-muted: #94a3b8;
+  --shell-accent: #3b82f6;
+  --shell-border: rgba(255,255,255,0.08);
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--color-bg, #f8fafc);
+  color: var(--color-text, #1e293b);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tool Header */
+.tool-header {
+  background: var(--shell-bg);
+  color: var(--shell-text);
+  border-bottom: 1px solid var(--shell-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tool-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tool-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.tool-brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--shell-accent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-brand-text {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.tool-brand-text span {
+  color: var(--shell-accent);
+}
+
+.tool-brand-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--shell-border);
+  margin: 0 4px;
+}
+
+.tool-brand-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--shell-muted);
+}
+
+.tool-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tool-header-contact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--shell-muted);
+}
+
+.tool-header-contact a {
+  color: var(--shell-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 150ms;
+}
+
+.tool-header-contact a:hover {
+  color: var(--shell-text);
+}
+
+.tool-header-contact svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Competitor Comparison Table */
+.competitor-table-wrap { overflow-x:auto; margin:var(--space-3) 0; }
+.competitor-table { width:100%; border-collapse:collapse; font-size:var(--text-sm); }
+.competitor-table th { background:var(--color-surface-offset); padding:10px 12px; text-align:left; font-weight:600; font-size:var(--text-xs); text-transform:uppercase; letter-spacing:0.04em; border-bottom:2px solid var(--color-border); }
+.competitor-table td { padding:10px 12px; border-bottom:1px solid var(--color-border); vertical-align:top; }
+.competitor-row--nexus { background:rgba(74,222,128,0.06); }
+.competitor-row--nexus td { border-bottom:2px solid rgba(74,222,128,0.3); }
+.comp-note { font-size:var(--text-xs); display:block; margin-top:2px; }
+.competitor-savings-callout { display:flex; align-items:flex-start; gap:var(--space-3); background:rgba(74,222,128,0.06); border:1px solid rgba(74,222,128,0.2); border-radius:var(--radius-lg); padding:var(--space-4); margin-top:var(--space-4); }
+.competitor-savings-callout p { font-size:var(--text-xs); color:var(--color-text-muted); margin-top:var(--space-1); }
+
+/* SLA Cards */
+.sla-cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:var(--space-4); margin-top:var(--space-4); }
+.sla-card { position:relative; background:var(--color-surface-offset); border:1px solid var(--color-border); border-radius:var(--radius-lg); padding:var(--space-5) var(--space-4); text-align:center; }
+.sla-card--popular { border-color:#C0C0C0; box-shadow:0 0 0 1px #C0C0C0; }
+.sla-badge { position:absolute; top:-12px; left:50%; transform:translateX(-50%); padding:3px 14px; border-radius:var(--radius-full); color:#000; font-size:var(--text-xs); font-weight:700; letter-spacing:0.03em; }
+.sla-tier { font-size:var(--text-xl); font-weight:800; margin-bottom:var(--space-2); }
+.sla-price { font-size:var(--text-3xl); font-weight:800; }
+.sla-price span { font-size:var(--text-sm); font-weight:400; }
+.sla-perbed { font-size:var(--text-sm); color:var(--color-text-muted); margin-top:var(--space-1); }
+.sla-annual { font-size:var(--text-xs); color:var(--color-text-muted); margin-bottom:var(--space-4); }
+.sla-features { list-style:none; padding:0; margin:0; text-align:left; }
+.sla-features li { display:flex; align-items:flex-start; gap:var(--space-2); padding:var(--space-1) 0; font-size:var(--text-sm); line-height:1.5; }
+.sla-note { margin-top:var(--space-3); padding-top:var(--space-3); border-top:1px solid var(--color-border); font-size:var(--text-xs); color:var(--color-text-muted); }
+
+/* Combined Quote Float Button */
+.combined-quote-float { position:fixed; bottom:24px; right:24px; z-index:9999; }
+
+/* Combined Quote Modal */
+.combined-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px; }
+.combined-modal { background:var(--color-bg); border-radius:var(--radius-xl); padding:var(--space-6); max-width:700px; width:100%; max-height:85vh; overflow-y:auto; box-shadow:0 25px 50px rgba(0,0,0,0.25); }
+.combined-modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-4); }
+.combined-modal-header h2 { margin:0; }
+
+/* Tool Footer */
+.tool-footer {
+  background: var(--shell-bg);
+  color: var(--shell-muted);
+  border-top: 1px solid var(--shell-border);
+  margin-top: auto;
+}
+
+.tool-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.tool-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 13px;
+}
+
+.tool-footer-left a {
+  color: var(--shell-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 150ms;
+}
+
+.tool-footer-left a:hover { color: var(--shell-text); }
+
+.tool-footer-left svg { width: 14px; height: 14px; }
+
+.tool-footer-right {
+  font-size: 12px;
+  color: rgba(148,163,184,0.6);
+}
+
+.tool-footer-right a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tool-footer-right a:hover { color: var(--shell-muted); }
+
+/* Hide the old embedded header/footer */
+.app-header, .app-footer { display: none !important; }
+
+/* Make the tool fill the page */
+.nc-designer-wrapper { flex: 1; }
+
+@media (max-width: 768px) {
+  .tool-header-contact { display: none; }
+  .tool-brand-divider, .tool-brand-label { display: none; }
+  .tool-footer-inner { flex-direction: column; text-align: center; }
+  .tool-footer-left { flex-direction: column; gap: 8px; }
+  .competitor-table { font-size: var(--text-xs); }
+  .competitor-table th, .competitor-table td { padding: 6px 8px; }
+  .sla-cards { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
-<div class="page-wrapper">
 
-<!-- Utility Bar -->
-<div class="utility-bar">
-  <div class="container">
-    <div class="utility-bar-left">
-      <a href="tel:8477965585"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (847) 796-5585</a>
-      <span class="utility-bar-divider"></span>
-      <a href="mailto:info@nxsct.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> info@nxsct.com</a>
-      <span class="utility-bar-divider"></span>
-      <a href="https://maps.google.com/?q=1171+Tower+Rd,+Schaumburg,+IL+60173" target="_blank" rel="noopener noreferrer" class="utility-bar-location"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> 1171 Tower Rd, Schaumburg, IL 60173</a>
+<!-- Tool Header -->
+<header class="tool-header">
+  <div class="tool-header-inner">
+    <div class="tool-brand">
+      <div class="tool-brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="tool-brand-text">Nexus<span>CT</span></div>
+      <div class="tool-brand-divider"></div>
+      <div class="tool-brand-label">Nurse Call System Designer</div>
     </div>
-    <div class="utility-bar-right">
-      <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support</a>
-      <span class="utility-bar-divider"></span>
-      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Login</a>
-      <span class="utility-bar-divider"></span>
-      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Client Portal</a>
-    </div>
-  </div>
-</div>
-
-<!-- Site Header -->
-<header class="site-header">
-  <div class="container">
-    <a href="index.html" class="site-logo" aria-label="NexusCT Home">
-      <div class="site-logo-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    <div class="tool-header-right">
+      <div class="tool-header-contact">
+        <a href="tel:8477965585">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          (847) 796-5585
+        </a>
+        <a href="mailto:info@nxsct.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          info@nxsct.com
+        </a>
       </div>
-      <div class="site-logo-text">Nexus<span>CT</span></div>
-    </a>
-
-    <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-      <!-- Products -->
-      <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Products <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="mega-menu">
-          <div class="mega-menu-grid mega-menu-grid--5">
-            <div class="mega-menu-group">
-              <h5>Nurse Call</h5>
-              <ul>
-                <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
-                <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
-                <li><a href="ncaas.html">NCaaS</a></li>
-                <li><a href="nurse-call-designer.html">System Designer</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Networking</h5>
-              <ul>
-                <li><a href="unifi360.html">UniFi / Ubiquiti</a></li>
-                <li><a href="nexus-configurator/index.html">Network Configurator</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Security</h5>
-              <ul>
-                <li><a href="services.html">IP CCTV</a></li>
-                <li><a href="services.html">Access Control</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Patient Safety</h5>
-              <ul>
-                <li><a href="rtls.html">RTLS</a></li>
-                <li><a href="patient-safety.html">Wander Management</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Smart Building</h5>
-              <ul>
-                <li><a href="services.html">IoT Integration</a></li>
-                <li><a href="services.html">Energy Management</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Solutions -->
-      <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Solutions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="mega-menu">
-          <div class="mega-menu-grid mega-menu-grid--4">
-            <div class="mega-menu-group">
-              <h5>Managed Services</h5>
-              <ul>
-                <li><a href="unifi360.html">UniFi360</a></li>
-                <li><a href="nexus360.html">Nexus360</a></li>
-                <li><a href="ncaas.html">NCaaS</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Infrastructure</h5>
-              <ul>
-                <li><a href="services.html">Structured Cabling</a></li>
-                <li><a href="services.html">Network Design</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Professional Services</h5>
-              <ul>
-                <li><a href="services.html">Site Surveys</a></li>
-                <li><a href="services.html">Project Management</a></li>
-                <li><a href="services.html">Commissioning</a></li>
-              </ul>
-            </div>
-            <div class="mega-menu-group">
-              <h5>Support</h5>
-              <ul>
-                <li><a href="services.html">24/7 NOC</a></li>
-                <li><a href="services.html">Remote Monitoring</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Industries -->
-      <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Industries <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="nav-dropdown">
-          <a href="healthcare.html" class="dropdown-link">Healthcare<small>Hospitals, clinics, long-term care</small></a>
-          <a href="services.html" class="dropdown-link">Senior Living<small>Assisted living, memory care</small></a>
-          <a href="services.html" class="dropdown-link">Hospitality<small>Hotels, resorts, conference centers</small></a>
-          <a href="services.html" class="dropdown-link">Commercial Real Estate<small>Office, retail, mixed-use</small></a>
-          <a href="services.html" class="dropdown-link">Education<small>K-12, higher education</small></a>
-          <a href="services.html" class="dropdown-link">Government<small>Municipal, federal</small></a>
-        </div>
-      </div>
-
-      <!-- Partners & Catalog -->
-      <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Partners <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="nav-dropdown">
-          <a href="services.html" class="dropdown-link">Technology Partners<small>Cisco, Ubiquiti, Jeron, RCare</small></a>
-          <a href="services.html" class="dropdown-link">Product Catalog<small>Browse all products</small></a>
-          <a href="services.html" class="dropdown-link">Become a Partner<small>Join our partner program</small></a>
-        </div>
-      </div>
-
-      <!-- Resources -->
-      <div class="nav-item" data-dropdown>
-        <a href="#" class="nav-link">Resources <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></a>
-        <div class="nav-dropdown">
-          <a href="about.html" class="dropdown-link">About NexusCT<small>Our story and team</small></a>
-          <a href="services.html" class="dropdown-link">Case Studies<small>Client success stories</small></a>
-          <a href="services.html" class="dropdown-link">Blog<small>News and insights</small></a>
-          <a href="services.html" class="dropdown-link">Documentation<small>Technical resources</small></a>
-        </div>
-      </div>
-
-      <!-- Contact -->
-      <a href="contact.html" class="nav-link">Contact</a>
-    </nav>
-
-    <div class="header-actions">
-      <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <button class="theme-toggle" data-theme-toggle aria-label="Switch to dark mode" style="background:none;border:none;cursor:pointer;color:var(--shell-muted);padding:8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       </button>
-      <a href="contact.html" class="btn btn--primary btn--sm header-cta header-cta-desktop">Get a Quote</a>
-      <button class="mobile-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
 
-<!-- Mobile Nav Overlay -->
-<div class="nav-overlay" id="navOverlay"></div>
-
-<main class="page-content">
-
-<!-- Hero -->
-<section class="hero hero--gradient">
-  <div class="container">
-    <div class="hero-content">
-      <div class="hero-badge"><span class="dot"></span> Enterprise Technology Since 2016</div>
-      <h1>Connecting Your World, <span class="accent">Powering Your Future</span></h1>
-      <p class="hero-desc">NexusCT delivers end-to-end technology solutions for healthcare, commercial real estate, and hospitality — from nurse call systems to managed networks.</p>
-      <div class="hero-actions">
-        <a href="contact.html" class="btn btn--accent btn--lg">Schedule a Free Site Survey</a>
-        <a href="services.html" class="btn btn--outline btn--lg">Explore Solutions</a>
+<!-- Nurse Call Tool -->
+<div class="nc-designer-wrapper">
+  <div class="app-container" id="app">
+    <header class="app-header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div class="logo-text">Nexus<span>CT</span></div>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="number">200+</div><div class="label">Facilities Served</div></div>
-        <div class="hero-stat"><div class="number">24/7</div><div class="label">NOC Support</div></div>
-        <div class="hero-stat"><div class="number">Since 2016</div><div class="label">Schaumburg, IL</div></div>
+      <div class="header-right">
+        <span style="font-size:var(--text-xs);color:var(--color-text-muted);">Nurse Call System Designer</span>
+      </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-bar-inner">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="progress-text" id="progressText">Step 0 of 12</div>
       </div>
     </div>
+
+    <!-- Main Content Area -->
+    <main id="mainContent">
+      <div class="chat-container" id="chatView">
+        <div class="chat-messages" id="chatMessages"></div>
+      </div>
+      <div class="designing-overlay" id="designingView" style="display:none;">
+        <div class="designing-spinner"></div>
+        <div class="designing-text">Designing your system...</div>
+        <div class="designing-sub" id="designingSubtext">Analyzing facility requirements and optimizing component selection</div>
+      </div>
+      <div class="quote-container" id="quoteView" style="display:none;"></div>
+      <div class="admin-container" id="adminView" style="display:none;"></div>
+    </main>
+
+    <footer class="app-footer">
+      Powered by <strong>NexusCT</strong>
+    </footer>
   </div>
-</section>
+</div>
 
-<!-- Solutions Overview -->
-<section class="section reveal">
-  <div class="container">
-    <div class="section-header section-header--center">
-      <span class="section-overline">Solutions</span>
-      <h2 class="section-title">Technology That Protects and Connects</h2>
-      <p class="section-subtitle">From life-safety nurse call to enterprise networking, we design, install, and manage the systems your facility depends on.</p>
-    </div>
-    <div class="card-grid card-grid--3">
-      <a href="healthcare.html" class="card card-link">
-        <div class="card-body">
-          <div class="card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </div>
-          <h3 class="card-title">Healthcare &amp; Life Safety</h3>
-          <p class="card-text">UL1069 nurse call systems, RTLS, wander management, and patient safety solutions for healthcare facilities.</p>
-          <span class="card-action">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-        </div>
+<!-- Tool Footer -->
+<footer class="tool-footer">
+  <div class="tool-footer-inner">
+    <div class="tool-footer-left">
+      <span>&copy; 2026 NexusComm LLC</span>
+      <a href="tel:8477965585">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        (847) 796-5585
       </a>
-      <a href="unifi360.html" class="card card-link">
-        <div class="card-body">
-          <div class="card-icon" style="background: var(--blue-50); color: var(--blue-600);">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-          </div>
-          <h3 class="card-title">UniFi360</h3>
-          <p class="card-text">Your entire building — internet, cameras, access control, and networking — for one flat monthly fee.</p>
-          <span class="card-action">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-        </div>
+      <a href="mailto:info@nxsct.com">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        info@nxsct.com
       </a>
-      <a href="services.html" class="card card-link">
-        <div class="card-body">
-          <div class="card-icon card-icon--success">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <h3 class="card-title">Security &amp; Smart Building</h3>
-          <p class="card-text">IP CCTV, access control, smart lighting, solar, and IoT integration for modern commercial facilities.</p>
-          <span class="card-action">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-        </div>
-      </a>
+      <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a>
     </div>
-  </div>
-</section>
-
-<!-- Why NexusCT -->
-<section class="section section--alt reveal">
-  <div class="container">
-    <div class="section-header section-header--center">
-      <span class="section-overline">Why NexusCT</span>
-      <h2 class="section-title">What Sets Us Apart</h2>
-    </div>
-    <div class="feature-grid">
-      <div class="feature-item">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="feature-text">
-          <h3>Exclusive IL Distributor</h3>
-          <p>Authorized exclusive Illinois distributor for Jeron and RCare nurse call systems.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="feature-text">
-          <h3>24/7 NOC Support</h3>
-          <p>Round-the-clock network operations center monitoring with rapid response for critical systems.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon feature-icon--success">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </div>
-        <div class="feature-text">
-          <h3>BICSI &amp; AVIXA Certified</h3>
-          <p>Industry-certified professionals ensuring every installation meets the highest standards.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="feature-text">
-          <h3>End-to-End Solutions</h3>
-          <p>From design and engineering to installation, commissioning, and ongoing managed services.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-        </div>
-        <div class="feature-text">
-          <h3>Technology Leadership</h3>
-          <p>Partnered with Cisco, Ubiquiti, Hanwha, Samsung, and other industry leaders.</p>
-        </div>
-      </div>
-      <div class="feature-item">
-        <div class="feature-icon feature-icon--success">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <div class="feature-text">
-          <h3>Client-Centric Approach</h3>
-          <p>Dedicated project management and customized solutions tailored to your facility's specific needs.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Split CTO Banner: Business | Healthcare -->
-<section class="cto-split-banner reveal">
-  <div class="cto-split-panel cto-split-panel--business">
-    <div class="cto-split-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
-    </div>
-    <h3>Business Technology</h3>
-    <p>Managed networking, security, structured cabling, and smart building solutions for commercial properties.</p>
-    <a href="unifi360.html" class="btn--cto-business">Explore UniFi360 &rarr;</a>
-  </div>
-  <div class="cto-split-panel cto-split-panel--healthcare">
-    <div class="cto-split-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    </div>
-    <h3>Healthcare Technology</h3>
-    <p>UL1069 nurse call systems, RTLS, wander management, and patient safety for healthcare facilities.</p>
-    <a href="healthcare.html" class="btn--cto-healthcare">Explore Healthcare &rarr;</a>
-  </div>
-</section>
-
-<!-- Configurator Tools -->
-<section class="configurator-bar reveal">
-  <div class="container">
-    <div class="configurator-bar-header">
-      <h2>System Configurator Tools</h2>
-      <p>Design and price your system with our interactive configurators.</p>
-    </div>
-    <div class="configurator-grid">
-      <a href="nexus-configurator/index.html" class="configurator-card">
-        <div class="configurator-card-icon configurator-card-icon--network">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-        </div>
-        <h3>Network Configurator</h3>
-        <p>Build your UniFi as a Service package with internet, cabling, cameras, and access control pricing.</p>
-        <span class="configurator-cta">Configure Network <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-      </a>
-      <a href="nurse-call-designer.html" class="configurator-card">
-        <div class="configurator-card-icon configurator-card-icon--nursecall">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        </div>
-        <h3>Nurse Call Designer</h3>
-        <p>Design your nurse call system with Jeron wired or RCare wireless, and get an instant budget estimate.</p>
-        <span class="configurator-cta">Design System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-      </a>
-      <a href="contact.html" class="configurator-card">
-        <div class="configurator-card-icon configurator-card-icon--directv">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <h3>DirecTV Headend</h3>
-        <p>Configure a DirecTV COM headend system for your hospitality or healthcare property with channel lineup and pricing.</p>
-        <span class="configurator-cta">Configure Headend <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
-      </a>
-    </div>
-  </div>
-</section>
-
-</main>
-
-<!-- Site Footer -->
-<footer class="site-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="site-logo-text">Nexus<span>CT</span></div>
-        <p>Connecting Your World, Powering Your Future. Enterprise-grade technology solutions for healthcare, commercial real estate, and hospitality since 2016.</p>
-        <div class="footer-contact">
-          <a href="tel:8477965585"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (847) 796-5585</a>
-          <a href="mailto:info@nxsct.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> info@nxsct.com</a>
-          <a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Support Portal</a>
-          <a href="https://maps.google.com/?q=1171+Tower+Rd,+Schaumburg,+IL+60173" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> 1171 Tower Rd, Schaumburg, IL 60173</a>
-          <a href="https://www.facebook.com/nexuscommtech/" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg> Facebook</a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>Products</h4>
-        <ul>
-          <li><a href="nurse-call-wired.html">Wired Nurse Call</a></li>
-          <li><a href="nurse-call-wireless.html">Wireless Nurse Call</a></li>
-          <li><a href="ncaas.html">NCaaS</a></li>
-          <li><a href="unifi360.html">UniFi360</a></li>
-          <li><a href="rtls.html">RTLS</a></li>
-          <li><a href="nexus-configurator/index.html">Network Configurator</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Solutions</h4>
-        <ul>
-          <li><a href="healthcare.html">Healthcare</a></li>
-          <li><a href="services.html">Managed Services</a></li>
-          <li><a href="services.html">Structured Cabling</a></li>
-          <li><a href="nexus360.html">Nexus360</a></li>
-          <li><a href="patient-safety.html">Patient Safety</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Company</h4>
-        <ul>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="contact.html">Contact</a></li>
-          <li><a href="services.html">Careers</a></li>
-          <li><a href="services.html">Partners</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Support</h4>
-        <ul>
-          <li><a href="https://nexusct.simprosuite.com/customer" target="_blank" rel="noopener noreferrer">Support Portal</a></li>
-          <li><a href="nurse-call-designer.html">System Designer</a></li>
-          <li><a href="services.html">Documentation</a></li>
-          <li><a href="services.html">Privacy Policy</a></li>
-          <li><a href="services.html">Terms of Service</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 NexusComm LLC. All rights reserved. 1171 Tower Rd, Schaumburg, IL 60173</p>
-      <div class="footer-certifications">
-        <span>BICSI</span>
-        <span>AVIXA</span>
-      </div>
-    </div>
-    <div style="text-align:center; margin-top: var(--space-4);">
-      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer" style="font-size: var(--text-xs); color: var(--gray-600);">Created with Perplexity Computer</a>
+    <div class="tool-footer-right">
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
     </div>
   </div>
 </footer>
-</div>
-<script src="./site.js"></script>
+
+<script src="./nurse-call-app.js"></script>
 </body>
 </html>
